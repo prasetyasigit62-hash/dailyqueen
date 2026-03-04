@@ -1,0 +1,49 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:react/recommended",
+    "airbnb",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "lf"
+      }
+    ],
+    // suppress errors for missing 'import React' in files
+    "react/react-in-jsx-scope": "off",
+   // allow jsx syntax in js files (for next.js project)
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".tsx", ".ts"] }], //should add ".ts" if typescript project
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "map": [
+          ["@/pages/primarylayout", "app/(primaryLayout)"],
+          ["@/pages/secondarylayout", "app/(secondaryLayout)"],
+          ["@/components", "app/_components"],
+          ["@/types", "app/_types"],
+          ["@/helpers", "app/_helpers"],
+          ["@/styles", "app/_styles"],
+          ["@", "."]
+        ]
+      }
+    }
+  }
+}

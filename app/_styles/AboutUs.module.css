@@ -1,0 +1,7 @@
+.lineRow
+{
+    line-height: 3.5ch;
+    background-image: linear-gradient(transparent, transparent calc(3.5ch - 1px), #29328d 0);
+    background-size: 100% 3.5ch;
+    border: none;
+}
