@@ -25,31 +25,60 @@ function getTimestampInSeconds() {
 }
 
 export default async function getInfoMall() {
+    const defaultData = {
+        data: {
+            id: Number(process.env.MALL_ID) || 3,
+            nama_mall: process.env.MALL_NAME || 'Lawu Plaza',
+            meta_description: `${process.env.MALL_NAME || 'Lawu Plaza'} Madiun`,
+            alamat: '',
+            telepon: '',
+            email: '',
+            gambar_mall: '',
+            logo: '',
+            logo_footer: '',
+            favicon: '',
+            mall_hours: '',
+            play_store: '',
+            app_store: '',
+            facebook: '',
+            instagram: '',
+            youtube: '',
+            whatsapp: '',
+            twitter: '',
+            tiktok: '',
+            primary_color: '29328d',
+            secondary_color: '0d3c4c',
+            kordinat: '',
+        },
+    };
+
     try {
         const res = await fetchWithRetry(`${process.env.HOST_API}/api/guest/infomall/${process.env.MALL_ID}`, { next: { revalidate: 300 } });
-        // The return value is *not* serialized
-        // You can return Date, Map, Set, etc.
 
-        // Recommendation: handle errors
         if (!res.ok) {
-            // This will activate the closest `error.js` Error Boundary
-            // eslint-disable-next-line no-console
-            console.log('failed getInfoMall');
-            throw new Error('Failed to fetch data getInfoMall');
+            console.error(`Failed to fetch infoMall: Status ${res.status}`);
+            return defaultData;
         }
 
         const infoMall = await res.json();
+        
+        // Ensure data exists in the response
+        if (!infoMall || !infoMall.data) {
+            return defaultData;
+        }
+
         const timestamp = getTimestampInSeconds();
         const faviconFile = `./public/favicon-${timestamp}.png`;
-        if (!fs.existsSync(faviconFile)) {
+        if (!fs.existsSync(faviconFile) && infoMall.data.favicon) {
             try {
                 await downloadImage(infoMall.data.favicon, faviconFile);
             } catch (error) {
-                console.log('favicon error', error);
+                console.error('favicon download error', error);
             }
         }
         return infoMall;
     } catch (error) {
-        return console.log(error);
+        console.error('getInfoMall catch error:', error);
+        return defaultData;
     }
 }

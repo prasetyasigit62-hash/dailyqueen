@@ -34,9 +34,24 @@ export default function RootLayout({
         mall: mall;
     };
 }) {
-    const infoMall = React.use(getInfoMall());
+    let infoMall: any;
+    try {
+        infoMall = React.use(getInfoMall());
+    } catch (error) {
+        console.error('Layout fetch error:', error);
+        infoMall = {
+            data: {
+                id: Number(process.env.MALL_ID) || 3,
+                nama_mall: process.env.MALL_NAME || 'Lawu Plaza',
+                meta_description: `${process.env.MALL_NAME || 'Lawu Plaza'} Madiun`,
+                primary_color: '29328d',
+                secondary_color: '0d3c4c',
+            },
+        };
+    }
+
     let color = '';
-    if (infoMall.data.primary_color === '') {
+    if (!infoMall.data.primary_color) {
         color = '#29328d';
     } else {
         color = `#${infoMall.data.primary_color}`;
