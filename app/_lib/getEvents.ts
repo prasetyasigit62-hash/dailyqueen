@@ -1,5 +1,7 @@
+import fetchWithRetry from './api';
+
 export default async function getEvents(pageSize: number = 10) {
-    const res = await fetch(`${process.env.HOST_API}/api/guest/event/${process.env.MALL_ID}?offsite=0&paginate=${pageSize}`, {
+    const res = await fetchWithRetry(`${process.env.HOST_API}/api/guest/event/${process.env.MALL_ID}?offsite=0&paginate=${pageSize}`, {
         next: { revalidate: 300 },
     });
     // The return value is *not* serialized

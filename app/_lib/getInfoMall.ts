@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import axios from 'axios';
 import fs from 'fs';
+import fetchWithRetry from './api';
 
 async function downloadImage(url: string, imagePath: string) {
     const response = await axios({
@@ -25,7 +26,7 @@ function getTimestampInSeconds() {
 
 export default async function getInfoMall() {
     try {
-        const res = await fetch(`${process.env.HOST_API}/api/guest/infomall/${process.env.MALL_ID}`, { next: { revalidate: 300 } });
+        const res = await fetchWithRetry(`${process.env.HOST_API}/api/guest/infomall/${process.env.MALL_ID}`, { next: { revalidate: 300 } });
         // The return value is *not* serialized
         // You can return Date, Map, Set, etc.
 

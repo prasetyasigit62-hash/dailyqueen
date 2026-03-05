@@ -36,19 +36,34 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 // Return a list of `params` to populate the [slug] dynamic segment
 export async function generateStaticParams() {
-    const news = await getNews(20);
-
-    return news.data.map((post: newsType) => ({
-        slug: post.slug,
-    }));
+    try {
+        const news = await getNews(20);
+        return news.data.map((post: newsType) => ({
+            slug: post.slug,
+        }));
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to generate static params for news:', error);
+        return []; // Return empty to allow build to continue
+    }
 }
 
 // Multiple versions of this page will be statically generated
 // using the `params` returned by `generateStaticParams`
 export default function DetailNews({ params }: { params: { mall: infoMallInterface; slug: string } }) {
-    const [detailNews, populerNews, allNews, dataBanner] = React.use(
-        Promise.all([getDetailNews(params.slug), getPopulerNews(), getNews(), getBanner()])
-    );
+    let detailNews, populerNews, allNews, dataBanner;
+    
+    try {
+        [detailNews, populerNews, allNews, dataBanner] = React.use(
+            Promise.all([getDetailNews(params.slug), getPopulerNews(), getNews(), getBanner()])
+        );
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`Error loading data for news ${params.slug}:`, error);
+        // Fallback or handle nulls in rendering
+        return <div className="pt-32 pb-10 text-center">Data news tidak dapat dimuat saat ini.</div>;
+    }
+    
     let sideBarNews = populerNews;
     const { data: banner } = dataBanner;
     if (populerNews.data.length === 0) {

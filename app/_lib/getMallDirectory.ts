@@ -1,5 +1,7 @@
+import fetchWithRetry from './api';
+
 export default async function getMallDirectory() {
-    const res = await fetch(`${process.env.HOST_API}/api/guest/mallDirectory/${process.env.MALL_ID}`, { next: { revalidate: 0 } });
+    const res = await fetchWithRetry(`${process.env.HOST_API}/api/guest/mallDirectory/${process.env.MALL_ID}`, { next: { revalidate: 0 } });
     // The return value is *not* serialized
     // You can return Date, Map, Set, etc.
     // Recommendation: handle errors

@@ -1,5 +1,7 @@
+import fetchWithRetry from './api';
+
 export default async function getAboutUs() {
-    const res = await fetch(`${process.env.HOST_API}/api/guest/about/${process.env.MALL_ID}`, { next: { revalidate: 0 } });
+    const res = await fetchWithRetry(`${process.env.HOST_API}/api/guest/about/${process.env.MALL_ID}`, { next: { revalidate: 0 } });
     // The return value is *not* serialized
     // You can return Date, Map, Set, etc.
     // Recommendation: handle errors
