@@ -4,29 +4,25 @@ import fs from 'fs';
 import fetchWithRetry from './api';
 
 async function downloadImage(url: string, imagePath: string) {
-    try {
-        const response = await axios({
-            url,
-            method: 'GET',
-            responseType: 'stream',
-            timeout: 10000, // 10s timeout
+    const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'stream',
+        timeout: 10000, // 10s timeout
+    });
+
+    if (!response.data) throw new Error('No data received from image download');
+
+    const writer = fs.createWriteStream(imagePath);
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', (err) => {
+            writer.close();
+            reject(err);
         });
-
-        if (!response.data) throw new Error('No data received from image download');
-
-        const writer = fs.createWriteStream(imagePath);
-        response.data.pipe(writer);
-
-        return new Promise((resolve, reject) => {
-            writer.on('finish', resolve);
-            writer.on('error', (err) => {
-                writer.close();
-                reject(err);
-            });
-        });
-    } catch (error) {
-        throw error;
-    }
+    });
 }
 
 function getTimestampInSeconds() {
@@ -78,10 +74,10 @@ export default async function getInfoMall() {
 
         const timestamp = getTimestampInSeconds();
         const faviconFile = `./public/favicon-${timestamp}.png`;
-        
+
         // Skip image downloading during build/CI to avoid network failures and race conditions
         const isCI = process.env.CI || process.env.VERCEL;
-        
+
         if (!isCI && !fs.existsSync(faviconFile) && infoMall.data.favicon) {
             try {
                 await downloadImage(infoMall.data.favicon, faviconFile);
