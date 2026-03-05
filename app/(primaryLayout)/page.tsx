@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { use } from 'react';
 import getBanner from '../_lib/getBanner';
 import getDataLoyalty from '../_lib/getDataLoyalty';
 import getLatestNews from '../_lib/getLatestNews';

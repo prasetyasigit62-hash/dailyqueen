@@ -19,7 +19,7 @@ export const metadata = {
 };
 
 // eslint-disable-next-line no-unused-vars
-export default async function News({ params }: { params: { mall: infoMallInterface; slug: string } }) {
+export default async function News() {
     let populerNews: any;
     let allNews: any;
     let dataBanner: any;

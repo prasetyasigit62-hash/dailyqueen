@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import React from 'react';
 import getAboutUs from '@/app/_lib/getAboutUs';
 import { infoMallInterface } from '@/types/infoMallInterface';
 import AboutUsSection from './_section/aboutUsSection';

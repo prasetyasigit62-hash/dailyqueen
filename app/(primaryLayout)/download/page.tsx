@@ -1,4 +1,3 @@
-import React from 'react';
 import Table from './_section/table';
 import getDownload from '@/app/_lib/getDownload';
 

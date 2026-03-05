@@ -14,7 +14,7 @@ export const metadata = {
     },
 };
 
-export default async function Schedule({ params }: { params: { mall: infoMallInterface; slug: string } }) {
+export default async function Schedule() {
     let allEvents: any;
     let dataBanner: any;
 

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { Suspense, use } from 'react';
+import { Suspense } from 'react';
 import getDataLoyalty from '@/app/_lib/getDataLoyalty';
 import getPromo from '@/app/_lib/getPromo';
 import getTenant from '@/app/_lib/getTenant';
