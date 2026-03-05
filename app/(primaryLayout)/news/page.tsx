@@ -6,7 +6,6 @@ import getLatestNews from '@/app/_lib/getLatestNews';
 import getPopulerNews from '@/app/_lib/getPopulerNews';
 import Sidebar from '@/components/sidebar';
 import srLandNews from '@/public/srlandnews.png';
-import { infoMallInterface } from '@/types/infoMallInterface';
 import HeroImage from '../_section/heroImage';
 import ListNews from './_section/ListNews';
 import TopThree from './_section/TopThree';

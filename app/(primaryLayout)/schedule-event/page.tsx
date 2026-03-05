@@ -2,7 +2,6 @@ import React from 'react';
 import getBanner from '@/app/_lib/getBanner';
 import getEvents from '@/app/_lib/getEvents';
 // import getLatestNews from '@/app/_lib/getLatestNews';
-import { infoMallInterface } from '@/types/infoMallInterface';
 import HeroImage from '../_section/heroImage';
 import ListNews from './_section/ListNews';
 import TopThree from './_section/TopThree';
