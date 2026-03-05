@@ -9,8 +9,15 @@ export const metadata = {
     },
 };
 
-export default function download() {
-    const [dataDownload] = React.use(Promise.all([getDownload()]));
+export default async function download() {
+    let dataDownload: any;
+    try {
+        dataDownload = await getDownload();
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Download page fetch error:', error);
+        dataDownload = { data: [] };
+    }
     const { data: mydownload } = dataDownload;
     return (
         <div className="lg:pt-[7.9rem] py-16">

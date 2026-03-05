@@ -22,17 +22,41 @@ export const metadata: Metadata = {
     },
 };
 
-export default function Home() {
+export default async function Home() {
     // Wait for the promises to resolve
-    const [dataBanner, dataPromo, dataMallDirectory, dataLatestNews, dataNews, dataLoyalty] = use(
-        Promise.all([getBanner(), getPromo(), getMallDirectory(), getLatestNews(), getPopulerNews(), getDataLoyalty()])
-    );
+    let dataBanner: any;
+    let dataPromo: any;
+    let dataMallDirectory: any;
+    let dataLatestNews: any;
+    let dataNews: any;
+    let dataLoyalty: any;
+
+    try {
+        [dataBanner, dataPromo, dataMallDirectory, dataLatestNews, dataNews, dataLoyalty] = await Promise.all([
+            getBanner(),
+            getPromo(),
+            getMallDirectory(),
+            getLatestNews(),
+            getPopulerNews(),
+            getDataLoyalty(),
+        ]);
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Home page fetch error:', error);
+        dataBanner = { data: [] };
+        dataPromo = { data: [] };
+        dataMallDirectory = { data: [] };
+        dataLatestNews = { data: [] };
+        dataNews = { data: [] };
+        dataLoyalty = { data: [{ image: '', title: '', description: '' }] };
+    }
+
     const { data: banner } = dataBanner;
     const { data: promo } = dataPromo;
     const { data: mallDirectory } = dataMallDirectory;
     const { data: latestNews } = dataLatestNews;
     const { data: popularNews } = dataNews;
-    const aboutLoyalty = dataLoyalty.data[0];
+    const aboutLoyalty = dataLoyalty?.data?.[0] || { image: '', title: '', description: '' };
     return (
         <div className="lg:pt-[7.9rem] pt-16">
             <HeroImage banner={banner} />

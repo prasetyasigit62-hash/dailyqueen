@@ -16,11 +16,24 @@ export const metadata = {
     },
 };
 
-export default function Loyalty() {
-    const [dataTenant, dataPromo, dataLoyalty] = use(Promise.all([getTenant(), getPromo(), getDataLoyalty()]));
-    const aboutLoyalty = dataLoyalty.data[0];
-    const { data: tenant } = dataTenant;
-    const { data: promo } = dataPromo;
+export default async function Loyalty() {
+    let dataTenant: any;
+    let dataPromo: any;
+    let dataLoyalty: any;
+
+    try {
+        [dataTenant, dataPromo, dataLoyalty] = await Promise.all([getTenant(), getPromo(), getDataLoyalty()]);
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Loyalty page fetch error:', error);
+        dataTenant = { data: [] };
+        dataPromo = { data: [] };
+        dataLoyalty = { data: [{ image: '', title: '', description: '' }] };
+    }
+
+    const aboutLoyalty = dataLoyalty?.data?.[0] || { image: '', title: '', description: '' };
+    const tenant = dataTenant?.data || [];
+    const promo = dataPromo?.data || [];
     return (
         <div className="lg:pt-[7.9rem] pt-16">
             <section id="hero-image">

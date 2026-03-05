@@ -24,14 +24,26 @@ interface newsType {
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const meta = await getDetailNews(params.slug);
-    return {
-        title: `${meta.data.title} - ${process.env.MALL_NAME}`,
-        description: meta.data.meta_description,
-        icons: {
-            icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
-        },
-    };
+    try {
+        const meta = await getDetailNews(params.slug);
+        return {
+            title: `${meta?.data?.title || 'News'} - ${process.env.MALL_NAME}`,
+            description: meta?.data?.meta_description || '',
+            icons: {
+                icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+            },
+        };
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`Metadata fetch error for news ${params.slug}:`, error);
+        return {
+            title: `News - ${process.env.MALL_NAME}`,
+            description: '',
+            icons: {
+                icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+            },
+        };
+    }
 }
 
 // Return a list of `params` to populate the [slug] dynamic segment

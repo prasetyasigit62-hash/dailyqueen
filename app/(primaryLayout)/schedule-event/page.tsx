@@ -14,15 +14,19 @@ export const metadata = {
     },
 };
 
-// eslint-disable-next-line no-unused-vars
-export default function Schedule({ params }: { params: { mall: infoMallInterface; slug: string } }) {
-    const [
-        allEvents,
-        // populerNews,
-        // allNews,
-        dataBanner,
-    ] = React.use(Promise.all([getEvents(), getBanner()]));
-    // let sideBarNews = populerNews;
+export default async function Schedule({ params }: { params: { mall: infoMallInterface; slug: string } }) {
+    let allEvents: any;
+    let dataBanner: any;
+
+    try {
+        [allEvents, dataBanner] = await Promise.all([getEvents(), getBanner()]);
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Schedule page fetch error:', error);
+        allEvents = { data: [] };
+        dataBanner = { data: [] };
+    }
+
     const { data: banner } = dataBanner;
     // if (populerNews.data.length === 0) {
     //     sideBarNews = React.use(getLatestNews());

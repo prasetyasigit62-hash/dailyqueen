@@ -19,12 +19,29 @@ export const metadata = {
 };
 
 // eslint-disable-next-line no-unused-vars
-export default function News({ params }: { params: { mall: infoMallInterface; slug: string } }) {
-    const [populerNews, allNews, dataBanner] = React.use(Promise.all([getPopulerNews(), getNews(), getBanner()]));
+export default async function News({ params }: { params: { mall: infoMallInterface; slug: string } }) {
+    let populerNews: any;
+    let allNews: any;
+    let dataBanner: any;
+
+    try {
+        [populerNews, allNews, dataBanner] = await Promise.all([getPopulerNews(), getNews(), getBanner()]);
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('News page fetch error:', error);
+        populerNews = { data: [] };
+        allNews = { data: [] };
+        dataBanner = { data: [] };
+    }
+
     let sideBarNews = populerNews;
     const { data: banner } = dataBanner;
     if (populerNews.data.length === 0) {
-        sideBarNews = React.use(getLatestNews());
+        try {
+            sideBarNews = await getLatestNews();
+        } catch (error) {
+            sideBarNews = { data: [] };
+        }
     }
 
     return (
