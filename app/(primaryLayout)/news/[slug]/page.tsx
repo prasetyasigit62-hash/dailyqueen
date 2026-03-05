@@ -57,12 +57,7 @@ export default async function DetailNews({ params }: { params: { mall: infoMallI
     let dataBanner: any;
 
     try {
-        [detailNews, populerNews, allNews, dataBanner] = await Promise.all([
-            getDetailNews(params.slug),
-            getPopulerNews(),
-            getNews(),
-            getBanner(),
-        ]);
+        [detailNews, populerNews, allNews, dataBanner] = await Promise.all([getDetailNews(params.slug), getPopulerNews(), getNews(), getBanner()]);
     } catch (error) {
         // eslint-disable-next-line no-console
         console.error(`Error loading data for news ${params.slug}:`, error);

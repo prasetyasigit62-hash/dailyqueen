@@ -41,8 +41,8 @@ export default async function AlternativeLayout({
         color = `#${infoMall.data.secondary_color}`;
     }
 
-    // eslint-disable-next-line no-param-reassign
     if (infoMall && infoMall.data) {
+        // eslint-disable-next-line no-param-reassign
         params.mall = infoMall.data;
     }
 

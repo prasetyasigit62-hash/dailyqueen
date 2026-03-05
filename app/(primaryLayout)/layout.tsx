@@ -43,8 +43,8 @@ export default async function RootLayout({
         color = `#${infoMall.data.primary_color}`;
     }
 
-    // eslint-disable-next-line no-param-reassign
     if (infoMall && infoMall.data) {
+        // eslint-disable-next-line no-param-reassign
         params.mall = infoMall.data;
     }
     const tanggalSekarang = new Date();
