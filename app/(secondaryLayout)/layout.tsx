@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default function AlternativeLayout({
+export default async function AlternativeLayout({
     children,
     params,
 }: {
@@ -32,29 +32,19 @@ export default function AlternativeLayout({
         mall: mall;
     };
 }) {
-    let infoMall: any;
-    try {
-        infoMall = React.use(getInfoMall());
-    } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Secondary Layout fetch error:', error);
-        infoMall = {
-            data: {
-                id: Number(process.env.MALL_ID) || 3,
-                nama_mall: process.env.MALL_NAME || 'Lawu Plaza',
-                secondary_color: '0d3c4c',
-            },
-        };
-    }
+    const infoMall = await getInfoMall();
 
     let color = '';
-    if (!infoMall.data.secondary_color) {
+    if (!infoMall || !infoMall.data || infoMall.data.secondary_color === '') {
         color = '#0d3c4c';
     } else {
         color = `#${infoMall.data.secondary_color}`;
     }
+
     // eslint-disable-next-line no-param-reassign
-    params.mall = infoMall.data;
+    if (infoMall && infoMall.data) {
+        params.mall = infoMall.data;
+    }
 
     return (
         <html lang="en">

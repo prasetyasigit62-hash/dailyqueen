@@ -50,16 +50,19 @@ export async function generateStaticParams() {
 
 // Multiple versions of this page will be statically generated
 // using the `params` returned by `generateStaticParams`
-export default function DetailNews({ params }: { params: { mall: infoMallInterface; slug: string } }) {
+export default async function DetailNews({ params }: { params: { mall: infoMallInterface; slug: string } }) {
     let detailNews: any;
     let populerNews: any;
     let allNews: any;
     let dataBanner: any;
 
     try {
-        [detailNews, populerNews, allNews, dataBanner] = React.use(
-            Promise.all([getDetailNews(params.slug), getPopulerNews(), getNews(), getBanner()])
-        );
+        [detailNews, populerNews, allNews, dataBanner] = await Promise.all([
+            getDetailNews(params.slug),
+            getPopulerNews(),
+            getNews(),
+            getBanner(),
+        ]);
     } catch (error) {
         // eslint-disable-next-line no-console
         console.error(`Error loading data for news ${params.slug}:`, error);
@@ -70,7 +73,7 @@ export default function DetailNews({ params }: { params: { mall: infoMallInterfa
     let sideBarNews = populerNews;
     const { data: banner } = dataBanner;
     if (populerNews.data.length === 0) {
-        sideBarNews = React.use(getLatestNews());
+        sideBarNews = await getLatestNews();
     }
     return (
         <div className="lg:pt-[7.9rem] pt-16 pb-5">

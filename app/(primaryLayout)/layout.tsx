@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
     params,
 }: {
@@ -34,31 +34,19 @@ export default function RootLayout({
         mall: mall;
     };
 }) {
-    let infoMall: any;
-    try {
-        infoMall = React.use(getInfoMall());
-    } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Layout fetch error:', error);
-        infoMall = {
-            data: {
-                id: Number(process.env.MALL_ID) || 3,
-                nama_mall: process.env.MALL_NAME || 'Lawu Plaza',
-                meta_description: `${process.env.MALL_NAME || 'Lawu Plaza'} Madiun`,
-                primary_color: '29328d',
-                secondary_color: '0d3c4c',
-            },
-        };
-    }
+    const infoMall = await getInfoMall();
 
     let color = '';
-    if (!infoMall.data.primary_color) {
+    if (!infoMall || !infoMall.data || infoMall.data.primary_color === '') {
         color = '#29328d';
     } else {
         color = `#${infoMall.data.primary_color}`;
     }
+
     // eslint-disable-next-line no-param-reassign
-    params.mall = infoMall.data;
+    if (infoMall && infoMall.data) {
+        params.mall = infoMall.data;
+    }
     const tanggalSekarang = new Date();
     const tanggalTarget = new Date(`${process.env.RELEASE_DATE}`);
     const isReleased = tanggalSekarang <= tanggalTarget;
