@@ -119,7 +119,7 @@ function CustomFooter(props: propsColor) {
                     <div className="font-bold flex md:justify-end justify-center">Developed by :</div>
                     <div className="flex md:justify-end justify-center mb-5">
                         <div className="w-[300px] h-auto">
-                            <Image alt="appstore" src="/logo_srland.png" width="0" height="0" sizes="100vw" className="w-full h-auto" />
+                            <Image alt="appstore" src="/logo_srgroup_2026.png" width="0" height="0" sizes="100vw" className="w-full h-auto" />
                         </div>
                     </div>
 
