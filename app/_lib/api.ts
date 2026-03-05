@@ -19,12 +19,10 @@ const fetchWithRetry = async (url: string, options: any = {}, attempt: number = 
 
         clearTimeout(timeoutId);
 
-        if (!response.ok) {
-            // Handle Rate Limiting (429) - wait longer
             if (response.status === 429 && attempt < retries - 1) {
                 // Quiet warning for 429
                 if (attempt === 0) console.warn(`[API] Rate limit hit for ${url}. Retrying...`);
-                
+
                 await new Promise((resolve) => {
                     setTimeout(resolve, (attempt + 1) * 3000);
                 });

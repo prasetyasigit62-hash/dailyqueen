@@ -51,8 +51,11 @@ export async function generateStaticParams() {
 // Multiple versions of this page will be statically generated
 // using the `params` returned by `generateStaticParams`
 export default function DetailNews({ params }: { params: { mall: infoMallInterface; slug: string } }) {
-    let detailNews, populerNews, allNews, dataBanner;
-    
+    let detailNews: any;
+    let populerNews: any;
+    let allNews: any;
+    let dataBanner: any;
+
     try {
         [detailNews, populerNews, allNews, dataBanner] = React.use(
             Promise.all([getDetailNews(params.slug), getPopulerNews(), getNews(), getBanner()])
@@ -63,8 +66,8 @@ export default function DetailNews({ params }: { params: { mall: infoMallInterfa
         // Fallback or handle nulls in rendering
         return <div className="pt-32 pb-10 text-center">Data news tidak dapat dimuat saat ini.</div>;
     }
-    
-    let sideBarNews = populerNews;
+
+    const sideBarNews = populerNews;
     const { data: banner } = dataBanner;
     if (populerNews.data.length === 0) {
         sideBarNews = React.use(getLatestNews());
