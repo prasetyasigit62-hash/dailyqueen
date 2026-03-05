@@ -61,7 +61,7 @@ export default async function getInfoMall() {
         }
 
         const infoMall = await res.json();
-        
+
         // Ensure data exists in the response
         if (!infoMall || !infoMall.data) {
             return defaultData;

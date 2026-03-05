@@ -36,6 +36,7 @@ export default function AlternativeLayout({
     try {
         infoMall = React.use(getInfoMall());
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Secondary Layout fetch error:', error);
         infoMall = {
             data: {

@@ -38,6 +38,7 @@ export default function RootLayout({
     try {
         infoMall = React.use(getInfoMall());
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Layout fetch error:', error);
         infoMall = {
             data: {
