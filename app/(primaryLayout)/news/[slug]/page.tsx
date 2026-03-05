@@ -67,7 +67,7 @@ export default function DetailNews({ params }: { params: { mall: infoMallInterfa
         return <div className="pt-32 pb-10 text-center">Data news tidak dapat dimuat saat ini.</div>;
     }
 
-    const sideBarNews = populerNews;
+    let sideBarNews = populerNews;
     const { data: banner } = dataBanner;
     if (populerNews.data.length === 0) {
         sideBarNews = React.use(getLatestNews());
