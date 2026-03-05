@@ -12,11 +12,6 @@ interface newsType {
 }
 
 export default async function sitemap() {
-    const { data } = await getNews(20);
-    const news = data.map(({ slug }: newsType) => ({
-        url: `${process.env.DOMAIN_URL}/news/${slug}`,
-        lastModified: new Date().toISOString(),
-    }));
     const routes = [
         '',
         '/news',
@@ -33,43 +28,17 @@ export default async function sitemap() {
         lastModified: new Date().toISOString(),
     }));
 
-    return [...routes, ...news];
-    // return [
-    //     {
-    //         url: 'https://queencity.id',
-    //         lastModified: new Date(),
-    //     },
-    //     {
-    //         url: 'https://queencity.id/news',
-    //         lastModified: new Date(),
-    //     },
-    //     {
-    //         url: 'https://queencity.id/schedule-event',
-    //         lastModified: new Date(),
-    //     },
-    //     {
-    //         url: 'https://queencity.id/about-us',
-    //         lastModified: new Date(),
-    //     },
-    //     {
-    //         url: 'https://queencity.id/contact-us',
-    //         lastModified: new Date(),
-    //     },
-    //     {
-    //         url: 'https://queencity.id/loyalty',
-    //         lastModified: new Date(),
-    //     },
-    //     {
-    //         url: 'https://queencity.id/loyalty/about',
-    //         lastModified: new Date(),
-    //     },
-    //     {
-    //         url: 'https://queencity.id/loyalty/terms-and-conditions',
-    //         lastModified: new Date(),
-    //     },
-    //     {
-    //         url: 'https://queencity.id/loyalty/point-redemption',
-    //         lastModified: new Date(),
-    //     },
-    // ];
+    try {
+        const response = await getNews(20);
+        const data = response?.data || [];
+        const news = data.map(({ slug }: newsType) => ({
+            url: `${process.env.DOMAIN_URL}/news/${slug}`,
+            lastModified: new Date().toISOString(),
+        }));
+        return [...routes, ...news];
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Sitemap news fetch failed:', error);
+        return routes;
+    }
 }
