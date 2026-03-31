@@ -32,9 +32,9 @@ function getTimestampInSeconds() {
 export default async function getInfoMall() {
     const defaultData = {
         data: {
-            id: Number(process.env.MALL_ID) || 3,
-            nama_mall: process.env.MALL_NAME || 'Lawu Plaza',
-            meta_description: `${process.env.MALL_NAME || 'Lawu Plaza'} Madiun`,
+            id: Number(process.env.MALL_ID) || 2,
+            nama_mall: process.env.MALL_NAME || 'Kediri Mall',
+            meta_description: `${process.env.MALL_NAME || 'Kediri Mall'} Kediri`,
             alamat: '',
             telepon: '',
             email: '',

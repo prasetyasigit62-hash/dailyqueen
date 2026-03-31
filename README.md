@@ -23,9 +23,9 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 Rename .env.example to be .env.local and change the value. The Mall ID is
 
 - 1 : Queen City Mall Semarang
-- 2 : Pacific Mall Tegal
-- 3 : Kediri Mall
-- 4 : Lawu Plaza
+- 2 : Kediri Mall
+- 3 : Lawu Plaza
+- 4 : Pacific Mall Tegal
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
