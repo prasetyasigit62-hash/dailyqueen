@@ -1,10 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
+        unoptimized: true,
         remotePatterns: [
             {
                 protocol: 'http',
                 hostname: '192.168.5.12',
+                port: '',
+            },
+            {
+                protocol: 'https',
+                hostname: 'mysrland.id',
                 port: '',
             },
         ],
