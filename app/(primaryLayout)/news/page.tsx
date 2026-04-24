@@ -10,6 +10,8 @@ import HeroImage from '../_section/heroImage';
 import ListNews from './_section/ListNews';
 import TopThree from './_section/TopThree';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: `News - ${process.env.MALL_NAME}`,
     icons: {

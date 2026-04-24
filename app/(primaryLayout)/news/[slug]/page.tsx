@@ -23,6 +23,8 @@ interface newsType {
     created_at: string;
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     try {
         const meta = await getDetailNews(params.slug);
