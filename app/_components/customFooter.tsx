@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import appstore from '@/public/app_store.png';
 import playstore from '@/public/play_store.png';
@@ -13,9 +14,13 @@ function CustomFooter(props: propsColor) {
     // eslint-disable-next-line camelcase
     const { color, logo_footer, mall_hours, facebook, instagram, twitter, tiktok, whatsapp, youtube, email, play_store, app_store } = props;
     const [background, setBackground] = useState(color);
+    const pathname = usePathname();
     useEffect(() => {
         setBackground(color);
     }, [color, background]);
+
+    if (pathname === '/maps') return null;
+
     return (
         <section id="footer" className="grid grid-cols-1 md:grid-cols-2 gap-4 md:py-6 pt-6" style={{ backgroundColor: background }}>
             <div className="text-white text-center">

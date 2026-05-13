@@ -1,0 +1,1672 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lantai 1 — Floor Plan · Queen City</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap"
+    rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      background: #f4f5f8;
+      color: #0c1a3a;
+      font-family: "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      color: inherit;
+    }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+      padding: 40px 56px 60px;
+      background: radial-gradient(circle at 80% 0%, rgba(176, 132, 70, .06), transparent 50%), #f4f5f8;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin: 0 auto 28px;
+      max-width: 1600px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .25em;
+      color: #b08446;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: #b08446;
+    }
+
+    .title {
+      font-family: "Playfair Display", serif;
+      font-size: 48px;
+      font-weight: 400;
+      letter-spacing: -.02em;
+      line-height: 1;
+    }
+
+    .title em {
+      font-style: italic;
+      color: #b08446;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-size: 16px;
+      color: #6b7388;
+      max-width: 540px;
+    }
+
+    .header-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid rgba(12, 26, 58, .1);
+      box-shadow: 0 4px 14px rgba(12, 26, 58, .05);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2db15c;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(.85);
+      }
+    }
+
+    .floor-toggle {
+      display: inline-flex;
+      padding: 4px;
+      border-radius: 999px;
+      background: #0c1a3a;
+      box-shadow: 0 8px 22px rgba(12, 26, 58, .2);
+    }
+
+    .floor-toggle button {
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .6);
+      letter-spacing: .03em;
+      transition: color .35s, background .45s cubic-bezier(.7, 0, .2, 1);
+    }
+
+    .floor-toggle button.active {
+      background: #b08446;
+      color: #0c1a3a;
+    }
+
+    .stage {
+      position: relative;
+      max-width: 1600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 30px 80px rgba(12, 26, 58, .08);
+    }
+
+    .stage.with-panel {
+      display: block;
+    }
+
+    /* Map container — uses the original sketch as background */
+    .map-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1648/954;
+      border-radius: 18px;
+      background: #ffffff;
+      cursor: grab;
+      transform-origin: left center;
+      will-change: transform;
+      transition: transform .58s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .stage.with-panel .map-wrap {
+      transform: translate3d(-10px, 0, 0) scale(.895);
+    }
+
+    .map-wrap.grabbing {
+      cursor: grabbing;
+    }
+
+    .map-inner {
+      position: absolute;
+      inset: 0;
+      transform-origin: center center;
+      transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .map-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* ───── 3D REVEAL ANIMATION (when scrolled into view) ─────
+   Phase 1 (0-1s): flat sketch image visible
+   Phase 2 (1-3s): SVG "building tops" rise up — buildings extrude height
+   Phase 3 (3-5.5s): camera pan (transform tilt) — flying view
+   Phase 4 (5s onward): light sweep continuously crossing from left to right
+*/
+    .map-inner {
+      perspective: 1800px;
+      perspective-origin: 50% 70%;
+    }
+
+    .map-stage {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transform: rotateX(0deg) scale(1);
+      transition: transform 2.6s cubic-bezier(.4, .0, .2, 1);
+    }
+
+    .map-stage.flying {
+      transform: rotateX(28deg) scale(1.02) translateY(-2%);
+    }
+
+    /* Building extrusion stack — drawn by SVG, stacked layers grow */
+    .extrude-stack {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity .8s ease;
+    }
+
+    .extrude-stack.show {
+      opacity: 1;
+    }
+
+    .extrude-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Light sweep — diagonal shining bar passing across */
+    .light-sweep {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 5;
+      mix-blend-mode: screen;
+      opacity: 0;
+      transition: opacity .8s ease;
+    }
+
+    .light-sweep.show {
+      opacity: 1;
+    }
+
+    .light-sweep::before {
+      content: "";
+      position: absolute;
+      top: -10%;
+      left: -30%;
+      width: 30%;
+      height: 130%;
+      background: linear-gradient(100deg,
+          transparent 0%,
+          rgba(255, 255, 255, .0) 30%,
+          rgba(255, 240, 200, .5) 50%,
+          rgba(255, 255, 255, .0) 70%,
+          transparent 100%);
+      filter: blur(6px);
+      transform: skewX(-22deg);
+      animation: sweep-across 4.5s cubic-bezier(.4, 0, .2, 1) infinite;
+    }
+
+    @keyframes sweep-across {
+      0% {
+        left: -30%;
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      85% {
+        opacity: 1;
+      }
+
+      100% {
+        left: 130%;
+        opacity: 0;
+      }
+    }
+
+    /* Replay button */
+    .replay-anim {
+      position: absolute;
+      left: 36px;
+      top: 36px;
+      z-index: 12;
+      background: rgba(255, 255, 255, .95);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #0c1a3a;
+      border: 1px solid rgba(12, 26, 58, .1);
+      box-shadow: 0 4px 14px rgba(12, 26, 58, .08);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .25s;
+    }
+
+    .replay-anim:hover {
+      background: #b08446;
+      transform: translateY(-1px);
+    }
+
+    /* SVG overlay for hotspots & path */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .overlay .tenant-spot {
+      --pulse-delay: 0s;
+      transition: opacity .35s ease, transform .45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .overlay .tenant-aura,
+    .overlay .tenant-fill,
+    .overlay .tenant-rim {
+      pointer-events: none;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .overlay .tenant-aura {
+      fill: #ffffff;
+      opacity: 0;
+      filter: url(#tenantInnerGlow);
+      transition: opacity .35s ease;
+    }
+
+    .overlay .tenant-fill {
+      fill: #ffffff;
+      opacity: 0.2;
+      transition: fill .35s ease;
+    }
+
+    .overlay .tenant-rim {
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 1.5;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      opacity: 0.6;
+      transition: stroke .35s ease;
+    }
+
+    .overlay .tenant-spot:hover {
+      transform: translateY(-2.5px) scale(1.015);
+    }
+
+    .overlay .tenant-spot.active {
+      transform: translateY(-2.5px) scale(1.015);
+    }
+
+    .overlay .tenant-spot:hover:not(.active) .tenant-aura {
+      opacity: 0.45;
+    }
+
+    .overlay .tenant-spot.active .tenant-aura {
+      opacity: 0.52;
+    }
+
+    .overlay .tenant-spot:hover:not(.active) .tenant-fill {
+      fill: rgba(80, 184, 255, 0.45);
+      animation: hover-fill-pulse 1.6s ease-in-out infinite;
+    }
+
+    .overlay .tenant-spot.active .tenant-fill {
+      fill: rgba(114, 177, 255, 0.045);
+      opacity: 0.34;
+    }
+
+    .overlay .tenant-spot:hover:not(.active) .tenant-rim {
+      stroke: rgba(80, 184, 255, 0.85);
+      animation: hover-pulse 1.6s ease-in-out infinite;
+    }
+
+    .overlay .tenant-spot.active .tenant-rim {
+      animation: tenant-rim-glow 2.8s ease-in-out infinite;
+      opacity: 0.92;
+      stroke: rgba(80, 184, 255, 0.98);
+      stroke-width: 2.8;
+      filter:
+        drop-shadow(0 0 3px rgba(69, 173, 255, .82))
+        drop-shadow(0 0 9px rgba(69, 173, 255, .38));
+    }
+
+    .overlay .tenant-runner {
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 3.5;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      pointer-events: none;
+      opacity: 1;
+      filter:
+        drop-shadow(0 0 4px #ffffff)
+        drop-shadow(0 0 12px rgba(69, 173, 255, 0.95))
+        drop-shadow(0 0 22px rgba(69, 173, 255, 0.75));
+    }
+
+    .overlay .hit {
+      pointer-events: all;
+      cursor: pointer;
+      fill: rgba(255, 255, 255, 0.01);
+      /* Agar klik tetap terbaca */
+      stroke: transparent;
+      stroke-width: 18;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      transition: fill .3s, opacity .3s;
+    }
+
+    .overlay .hit:hover {
+      fill: rgba(255, 255, 255, 0.05);
+    }
+
+    .overlay .tenant-spot.active .hit {
+      fill: rgba(33, 150, 243, 0.04);
+    }
+
+    .overlay.has-hover .tenant-spot:not(.is-hovered):not(.active) {
+      opacity: 0.15;
+    }
+
+    @keyframes hover-fill-pulse {
+      0%,
+      100% {
+        opacity: 0.15;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes hover-pulse {
+      0%,
+      100% {
+        opacity: 0.75;
+        stroke-width: 2.2;
+        filter: drop-shadow(0 0 4px rgba(69, 173, 255, 0.5));
+      }
+
+      50% {
+        opacity: 1;
+        stroke-width: 3.2;
+        filter: drop-shadow(0 0 10px rgba(69, 173, 255, 0.85));
+      }
+    }
+
+    @keyframes tenant-rim-glow {
+      0%,
+      100% {
+        opacity: 0.78;
+        stroke-width: 2.45;
+        filter:
+          drop-shadow(0 0 3px rgba(69, 173, 255, .68))
+          drop-shadow(0 0 8px rgba(69, 173, 255, .3));
+      }
+
+      50% {
+        opacity: 1;
+        stroke-width: 3.25;
+        filter:
+          drop-shadow(0 0 5px rgba(69, 173, 255, .9))
+          drop-shadow(0 0 12px rgba(69, 173, 255, .48));
+      }
+    }
+
+    /* Route animation */
+    .route-guide {
+      fill: none;
+      stroke: rgba(255, 77, 79, 0.18);
+      stroke-width: 14;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 6px 18px rgba(255, 77, 79, 0.18));
+    }
+
+    .path-line {
+      fill: none;
+      stroke: #ff4d4f;
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 12px rgba(255, 77, 79, 0.4));
+    }
+
+    .path-flow {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.95);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 18 28;
+      filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
+      opacity: 0;
+    }
+
+    .path-flow.live {
+      opacity: 1;
+      animation: route-flow 1.15s linear infinite;
+    }
+
+    .path-dot {
+      display: none;
+    }
+
+    @keyframes route-flow {
+      to {
+        stroke-dashoffset: -46;
+      }
+    }
+
+    .route-head {
+      fill: #ff4d4f;
+      stroke: #ffffff;
+      stroke-width: 2.5;
+      filter: drop-shadow(0 0 10px rgba(255, 77, 79, 0.45));
+    }
+
+    .route-head-glow {
+      fill: rgba(255, 77, 79, 0.18);
+    }
+
+    .dest-marker {
+      fill: none;
+      stroke: #ff4d4f;
+      stroke-width: 4;
+      transform-origin: center;
+      transform-box: fill-box;
+      animation: dest-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dest-pulse {
+
+      0%,
+      100% {
+        stroke-opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        stroke-opacity: 0.4;
+        transform: scale(1.2);
+      }
+    }
+
+    .pin-icon-anim {
+      filter: drop-shadow(0 6px 10px rgba(255, 77, 79, 0.4));
+      animation: pin-float 2s ease-in-out infinite;
+    }
+
+    @keyframes pin-float {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    .person-figure {
+      filter: drop-shadow(0 4px 6px rgba(45, 177, 92, 0.4));
+      animation: person-bounce 2.2s ease-in-out infinite;
+    }
+
+    .person-shadow {
+      transform-origin: center;
+      animation: shadow-pulse 2.2s ease-in-out infinite;
+    }
+
+    .arm-wave {
+      transform-origin: 5.25px -3.25px;
+      animation: arm-wave 2.2s ease-in-out infinite;
+    }
+
+    @keyframes person-bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes shadow-pulse {
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.4;
+      }
+      50% {
+        transform: scale(0.6);
+        opacity: 0.15;
+      }
+    }
+
+    @keyframes arm-wave {
+      0%, 100% { transform: rotate(10deg); }
+      15%, 35% { transform: rotate(-130deg); }
+      25%, 45% { transform: rotate(-90deg); }
+      60% { transform: rotate(10deg); }
+    }
+
+    .entrance-ring {
+      fill: none;
+      stroke: #2db15c;
+      stroke-width: 3;
+      animation: dest-pulse 2s ease-in-out infinite;
+    }
+
+    /* Controls */
+    .controls {
+      position: absolute;
+      right: 36px;
+      bottom: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .controls button {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid rgba(12, 26, 58, .1);
+      box-shadow: 0 6px 16px rgba(12, 26, 58, .08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #0c1a3a;
+      transition: all .25s;
+    }
+
+    .controls button:hover {
+      background: #0c1a3a;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .hint {
+      position: absolute;
+      left: 36px;
+      bottom: 36px;
+      z-index: 10;
+      background: rgba(255, 255, 255, .95);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: #5b6478;
+      border: 1px solid rgba(12, 26, 58, .08);
+      box-shadow: 0 4px 14px rgba(12, 26, 58, .05);
+    }
+
+    .hint kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #f0f2f6;
+      font-family: "Inter", sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      margin: 0 2px;
+    }
+
+    .info-panel {
+      display: block;
+      visibility: hidden;
+      position: absolute;
+      right: 8px;
+      top: 20px;
+      width: 236px;
+      margin: 0;
+      padding: 16px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .84));
+      backdrop-filter: blur(18px) saturate(1.15);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+      border-radius: 22px;
+      box-shadow: 0 18px 44px rgba(12, 26, 58, .12);
+      border: 1px solid rgba(255, 255, 255, .7);
+      transform: translateY(12px) scale(.985);
+      transform-origin: right center;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 24;
+      will-change: transform, opacity;
+      transition: transform .4s cubic-bezier(.22, 1, .36, 1), opacity .3s ease, visibility 0s linear .4s;
+    }
+
+    .stage.with-panel .info-panel {
+      visibility: visible;
+      transition: transform .4s cubic-bezier(.22, 1, .36, 1), opacity .3s ease, visibility 0s linear 0s;
+    }
+
+    .info-panel.show {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .info-panel.panel-top {
+      top: 20px;
+      bottom: auto;
+    }
+
+    .info-panel.panel-bottom {
+      top: 20px;
+      right: 8px;
+      bottom: auto;
+    }
+
+    .info-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f4f4f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: background .25s;
+    }
+
+    .info-close:hover {
+      background: #0c1a3a;
+      color: #fff;
+    }
+
+    .info-cat {
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: .22em;
+      color: #b08446;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .info-name {
+      font-family: "Playfair Display", serif;
+      font-size: 19px;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -.01em;
+    }
+
+    .info-desc {
+      margin-top: 8px;
+      font-size: 10.5px;
+      line-height: 1.45;
+      color: #5b6478;
+    }
+
+    .info-meta {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(12, 26, 58, .08);
+    }
+
+    .info-meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 10px;
+    }
+
+    .info-meta-row span:first-child {
+      color: #8b94a8;
+    }
+
+    .info-meta-row span:last-child {
+      color: #0c1a3a;
+      font-weight: 600;
+    }
+
+    .info-cta {
+      margin-top: 12px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .info-cta button {
+      flex: 1;
+      padding: 8px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+      transition: all .3s;
+    }
+
+    .info-cta .primary {
+      background: #0c1a3a;
+      color: #fff;
+    }
+
+    .info-cta .primary:hover {
+      background: #b08446;
+      color: #0c1a3a;
+      transform: translateY(-1px);
+    }
+
+    .info-cta .secondary {
+      background: transparent;
+      color: #0c1a3a;
+      border: 1px solid rgba(12, 26, 58, .15);
+    }
+
+    .info-cta .secondary:hover {
+      background: #f4f4f7;
+    }
+
+    .tenant-strip {
+      max-width: 1600px;
+      margin: 0 auto 24px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+
+    .tenant-chip {
+      flex-shrink: 0;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid rgba(12, 26, 58, .1);
+      font-size: 12px;
+      font-weight: 500;
+      transition: all .3s;
+    }
+
+    .tenant-chip:hover,
+    .tenant-chip.active {
+      background: #0c1a3a;
+      color: #fff;
+      border-color: #0c1a3a;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        padding: 28px 16px 50px;
+      }
+
+      .title {
+        font-size: 32px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: start;
+        gap: 16px;
+      }
+
+      .header-meta {
+        align-items: start;
+      }
+
+      .stage {
+        padding: 12px;
+      }
+
+      .info-panel {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        top: auto;
+        width: auto;
+        max-width: none;
+      }
+
+      .info-panel.panel-top,
+      .info-panel.panel-bottom {
+        right: 12px;
+        left: 12px;
+        bottom: 12px;
+        top: auto;
+      }
+
+      .stage.with-panel .map-wrap {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+    <div class="header">
+      <div>
+        <div class="eyebrow">Floor Directory · 1F</div>
+        <h1 class="title"><em>Lantai 1</em> — Fashion, Tech &amp; Dining</h1>
+        <p class="subtitle">Klik tenant untuk melihat detail dan rute jalan dari pintu masuk.</p>
+      </div>
+      <div class="header-meta">
+        <div class="live-pill"><span class="live-dot"></span><span>Mall buka · 10:00 — 22:00</span></div>
+        <div class="floor-toggle">
+          <button>GF</button><button class="active">1F</button><button>2F</button><button>3F</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tenant-strip" id="tenantStrip"></div>
+
+    <div class="stage">
+      <div class="map-wrap" id="mapWrap">
+        <button class="replay-anim" id="replayAnim">↻ Replay Animation</button>
+        <div class="map-inner" id="mapInner">
+          <div class="map-stage" id="mapStage">
+            <img class="map-img" src="Maps.PNG" alt="Floor plan" />
+
+            <!-- Light sweep effect -->
+            <div class="light-sweep" id="lightSweep"></div>
+
+            <!-- SVG overlay matches the ORIGINAL image's coordinate system -->
+            <svg class="overlay" id="overlay" viewBox="0 0 1648 954" preserveAspectRatio="none">
+              <defs>
+                <filter id="tenantInnerGlow" x="-20%" y="-20%" width="140%" height="140%"
+                  color-interpolation-filters="sRGB">
+                  <feMorphology in="SourceAlpha" operator="erode" radius="10" result="shapeInset"></feMorphology>
+                  <feGaussianBlur in="shapeInset" stdDeviation="12" result="shapeSoft"></feGaussianBlur>
+                  <feFlood flood-color="#8fc3ff" flood-opacity="1" result="glowColor"></feFlood>
+                  <feComposite in="glowColor" in2="shapeSoft" operator="in" result="glowInside"></feComposite>
+                  <feComposite in="glowInside" in2="SourceAlpha" operator="in" result="finalGlow"></feComposite>
+                </filter>
+              </defs>
+
+              <!-- Tenant hotspots with shape-following glow -->
+              <g id="hits">
+                <g class="tenant-spot" data-id="lilbamboe" style="--pulse-delay:0s;">
+                  <path class="tenant-aura" d="M348.012 102.06L111.012 129.56L106.012 358.06L353.512 335.56L348.012 102.06Z" />
+                  <path class="tenant-fill" d="M348.012 102.06L111.012 129.56L106.012 358.06L353.512 335.56L348.012 102.06Z" />
+                  <path class="tenant-rim" d="M348.012 102.06L111.012 129.56L106.012 358.06L353.512 335.56L348.012 102.06Z" />
+                  <path class="hit" data-id="lilbamboe" d="M348.012 102.06L111.012 129.56L106.012 358.06L353.512 335.56L348.012 102.06Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="gionsushi" style="--pulse-delay:.25s;">
+                  <path class="tenant-aura" d="M852 63.039L366 104.539V336.539H455L502 341.039L575 350.539L634 366.539L646 371.039V355.539L741.5 341.039L883 310.039L852 63.039Z" />
+                  <path class="tenant-fill" d="M852 63.039L366 104.539V336.539H455L502 341.039L575 350.539L634 366.539L646 371.039V355.539L741.5 341.039L883 310.039L852 63.039Z" />
+                  <path class="tenant-rim" d="M852 63.039L366 104.539V336.539H455L502 341.039L575 350.539L634 366.539L646 371.039V355.539L741.5 341.039L883 310.039L852 63.039Z" />
+                  <path class="hit" data-id="gionsushi" d="M852 63.039L366 104.539V336.539H455L502 341.039L575 350.539L634 366.539L646 371.039V355.539L741.5 341.039L883 310.039L852 63.039Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="koithe" style="--pulse-delay:.5s;">
+                  <path class="tenant-aura" d="M1061.05 48.531L870.054 61.531L880.554 156.531L896.054 308.031L1091.05 256.531V239.531L1069.55 115.531L1061.05 48.531Z" />
+                  <path class="tenant-fill" d="M1061.05 48.531L870.054 61.531L880.554 156.531L896.054 308.031L1091.05 256.531V239.531L1069.55 115.531L1061.05 48.531Z" />
+                  <path class="tenant-rim" d="M1061.05 48.531L870.054 61.531L880.554 156.531L896.054 308.031L1091.05 256.531V239.531L1069.55 115.531L1061.05 48.531Z" />
+                  <path class="hit" data-id="koithe" d="M1061.05 48.531L870.054 61.531L880.554 156.531L896.054 308.031L1091.05 256.531V239.531L1069.55 115.531L1061.05 48.531Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="ilfresco" style="--pulse-delay:.75s;">
+                  <path class="tenant-aura"
+                    d="M1171.06 38.513L1075.56 47.513L1084.56 116.513H1090.06L1095.06 140.513V146.013H1090.06L1088.06 164.513L1103.06 253.013L1151.06 237.013L1179.06 225.013L1191.06 215.513L1210.56 174.013V144.013L1186.06 47.513L1171.06 38.513Z" />
+                  <path class="tenant-fill"
+                    d="M1171.06 38.513L1075.56 47.513L1084.56 116.513H1090.06L1095.06 140.513V146.013H1090.06L1088.06 164.513L1103.06 253.013L1151.06 237.013L1179.06 225.013L1191.06 215.513L1210.56 174.013V144.013L1186.06 47.513L1171.06 38.513Z" />
+                  <path class="tenant-rim"
+                    d="M1171.06 38.513L1075.56 47.513L1084.56 116.513H1090.06L1095.06 140.513V146.013H1090.06L1088.06 164.513L1103.06 253.013L1151.06 237.013L1179.06 225.013L1191.06 215.513L1210.56 174.013V144.013L1186.06 47.513L1171.06 38.513Z" />
+                  <path class="hit" data-id="ilfresco"
+                    d="M1171.06 38.513L1075.56 47.513L1084.56 116.513H1090.06L1095.06 140.513V146.013H1090.06L1088.06 164.513L1103.06 253.013L1151.06 237.013L1179.06 225.013L1191.06 215.513L1210.56 174.013V144.013L1186.06 47.513L1171.06 38.513Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="boost" style="--pulse-delay:1s;">
+                  <path class="tenant-aura" d="M1347 42.5L1320.5 50.5L1277 92.5V145.5L1292.5 173.5L1310 187.5L1338 203L1372.5 210.5H1410L1447 187.5L1459.5 173.5L1467.5 137V109L1447 70.5L1410 50.5L1372 42.5H1347Z" />
+                  <path class="tenant-fill" d="M1347 42.5L1320.5 50.5L1277 92.5V145.5L1292.5 173.5L1310 187.5L1338 203L1372.5 210.5H1410L1447 187.5L1459.5 173.5L1467.5 137V109L1447 70.5L1410 50.5L1372 42.5H1347Z" />
+                  <path class="tenant-rim" d="M1347 42.5L1320.5 50.5L1277 92.5V145.5L1292.5 173.5L1310 187.5L1338 203L1372.5 210.5H1410L1447 187.5L1459.5 173.5L1467.5 137V109L1447 70.5L1410 50.5L1372 42.5H1347Z" />
+                  <path class="hit" data-id="boost" d="M1347 42.5L1320.5 50.5L1277 92.5V145.5L1292.5 173.5L1310 187.5L1338 203L1372.5 210.5H1410L1447 187.5L1459.5 173.5L1467.5 137V109L1447 70.5L1410 50.5L1372 42.5H1347Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="kicks" style="--pulse-delay:1.25s;">
+                  <path class="tenant-aura" d="M183.225 622.215L106.947 597.667L86.506 817.101L91.99 837.641L167.271 846.659L253.022 850.667V778.023H246.042L249.532 745.459H253.022L258.506 635.241L183.225 622.215Z" />
+                  <path class="tenant-fill" d="M183.225 622.215L106.947 597.667L86.506 817.101L91.99 837.641L167.271 846.659L253.022 850.667V778.023H246.042L249.532 745.459H253.022L258.506 635.241L183.225 622.215Z" />
+                  <path class="tenant-rim" d="M183.225 622.215L106.947 597.667L86.506 817.101L91.99 837.641L167.271 846.659L253.022 850.667V778.023H246.042L249.532 745.459H253.022L258.506 635.241L183.225 622.215Z" />
+                  <path class="hit" data-id="kicks" d="M183.225 622.215L106.947 597.667L86.506 817.101L91.99 837.641L167.271 846.659L253.022 850.667V778.023H246.042L249.532 745.459H253.022L258.506 635.241L183.225 622.215Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="converse" style="--pulse-delay:1.5s;">
+                  <path class="tenant-aura" d="M466.024 639.5H281.024L271.024 856H416.024V797.5H466.024V639.5Z" />
+                  <path class="tenant-fill" d="M466.024 639.5H281.024L271.024 856H416.024V797.5H466.024V639.5Z" />
+                  <path class="tenant-rim" d="M466.024 639.5H281.024L271.024 856H416.024V797.5H466.024V639.5Z" />
+                  <path class="hit" data-id="converse" d="M466.024 639.5H281.024L271.024 856H416.024V797.5H466.024V639.5Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="crocs" style="--pulse-delay:1.75s;">
+                  <path class="tenant-aura" d="M676.026 604.283C656.026 613.949 591.926 634.383 495.526 638.783L485.526 848.283L685.026 839.783L676.026 604.283Z" />
+                  <path class="tenant-fill" d="M676.026 604.283C656.026 613.949 591.926 634.383 495.526 638.783L485.526 848.283L685.026 839.783L676.026 604.283Z" />
+                  <path class="tenant-rim" d="M676.026 604.283C656.026 613.949 591.926 634.383 495.526 638.783L485.526 848.283L685.026 839.783L676.026 604.283Z" />
+                  <path class="hit" data-id="crocs" d="M676.026 604.283C656.026 613.949 591.926 634.383 495.526 638.783L485.526 848.283L685.026 839.783L676.026 604.283Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="skechers" style="--pulse-delay:2s;">
+                  <path class="tenant-aura" d="M895.5 526.69L702 594.19V835.19L913 819.69L895.5 526.69Z" />
+                  <path class="tenant-fill" d="M895.5 526.69L702 594.19V835.19L913 819.69L895.5 526.69Z" />
+                  <path class="tenant-rim" d="M895.5 526.69L702 594.19V835.19L913 819.69L895.5 526.69Z" />
+                  <path class="hit" data-id="skechers" d="M895.5 526.69L702 594.19V835.19L913 819.69L895.5 526.69Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="digiplus" style="--pulse-delay:2.25s;">
+                  <path class="tenant-aura" d="M1085.5 460.7L920.5 519.7L934.5 818.2L1105.5 799.2L1085.5 460.7Z" />
+                  <path class="tenant-fill" d="M1085.5 460.7L920.5 519.7L934.5 818.2L1105.5 799.2L1085.5 460.7Z" />
+                  <path class="tenant-rim" d="M1085.5 460.7L920.5 519.7L934.5 818.2L1105.5 799.2L1085.5 460.7Z" />
+                  <path class="hit" data-id="digiplus" d="M1091 453L913 516L928 826L1113 806L1091 453Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="baleno" style="--pulse-delay:2.5s;">
+                  <path class="tenant-aura" d="M1321 361.5L1103.5 454.5L1117.5 796.5L1428 766L1438 369L1321 361.5Z" />
+                  <path class="tenant-fill" d="M1321 361.5L1103.5 454.5L1117.5 796.5L1428 766L1438 369L1321 361.5Z" />
+                  <path class="tenant-rim" d="M1321 361.5L1103.5 454.5L1117.5 796.5L1428 766L1438 369L1321 361.5Z" />
+                  <path class="hit" data-id="baleno" d="M1321 361.5L1103.5 454.5L1117.5 796.5L1428 766L1438 369L1321 361.5Z" />
+                </g>
+              </g>
+
+              <!-- Path line + dots + destination marker (built dynamically) -->
+              <g id="pathGroup"></g>
+
+              <!-- Entrance marker (near Lift Lobby) -->
+              <g id="entranceGroup" transform="translate(1366, 304)">
+                <circle class="entrance-ring" cx="0" cy="0" r="22" />
+                <g class="person-anim" transform="translate(0, -2)">
+                  <!-- Shadow -->
+                  <ellipse class="person-shadow" cx="0" cy="14" rx="7" ry="2" fill="#2db15c" />
+                  <!-- Person Figure -->
+                  <g class="person-figure">
+                    <!-- Head -->
+                    <circle cx="0" cy="-11" r="3.5" fill="#2db15c" />
+                    <!-- Body & Legs -->
+                    <rect x="-3.5" y="-5.5" width="7" height="10" rx="3" fill="#2db15c" />
+                    <rect x="-2.5" y="3" width="2.5" height="9" rx="1.2" fill="#2db15c" />
+                    <rect x="0" y="3" width="2.5" height="9" rx="1.2" fill="#2db15c" />
+                    <!-- Left Arm -->
+                    <rect x="-6.5" y="-4.5" width="2.5" height="8" rx="1.2" fill="#2db15c" transform="rotate(15, -5.25, -3.25)" />
+                    <!-- Right Arm (Waving) -->
+                    <g class="arm-wave">
+                      <rect x="4" y="-4.5" width="2.5" height="8" rx="1.2" fill="#2db15c" />
+                    </g>
+                  </g>
+                </g>
+                <text x="0" y="32" text-anchor="middle"
+                  style="font: 700 13px Inter; fill: #2db15c; letter-spacing: .12em;">
+                  ENTRANCE
+                </text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="hint"><kbd>Click</kbd> tenant · <kbd>Scroll</kbd> zoom · <kbd>Drag</kbd> pan</div>
+
+        <div class="controls">
+          <button id="zoomIn" title="Zoom in">+</button>
+          <button id="zoomOut" title="Zoom out">−</button>
+          <button id="resetView" title="Reset view" style="font-size:14px;">⟲</button>
+        </div>
+      </div>
+
+      <div class="info-panel" id="infoPanel">
+        <button class="info-close" id="closeInfo">×</button>
+        <div class="info-cat" id="infoCat">Category</div>
+        <div class="info-name" id="infoName">Tenant Name</div>
+        <p class="info-desc" id="infoDesc">Description...</p>
+        <div class="info-meta">
+          <div class="info-meta-row"><span>Lokasi</span><span id="infoLoc">Lantai 1</span></div>
+          <div class="info-meta-row"><span>Jam Buka</span><span>10:00 — 22:00</span></div>
+          <div class="info-meta-row"><span>Jarak Jalan</span><span id="infoDist">—</span></div>
+          <div class="info-meta-row"><span>Status</span><span style="color:#2db15c;">● Open Now</span></div>
+        </div>
+        <div class="info-cta">
+          <button class="primary" id="navigateBtn">Show Route</button>
+          <button class="secondary">View Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TENANTS = {
+      lilbamboe: {
+        name: "Lil Bamboe", cat: "F&B · Asian Cuisine", door: [240, 320],
+        desc: "Modern bamboo-themed Asian restaurant with fresh hand-rolled dim sum and signature noodle bowls.", loc: "1F · Unit 101"
+      },
+      gionsushi: {
+        name: "Gion Sushi", cat: "F&B · Japanese", door: [600, 320],
+        desc: "Authentic Tokyo-style sushi bar with omakase chef counter and premium imported seafood.", loc: "1F · Unit 102"
+      },
+      koithe: {
+        name: "Koi Thé", cat: "Drinks · Bubble Tea", door: [990, 250],
+        desc: "Premium Taiwanese bubble tea with hand-shaken brews and signature Golden Bubble pearls.", loc: "1F · Unit 103"
+      },
+      ilfresco: {
+        name: "Il Fresco", cat: "F&B · Italian", door: [1148, 230],
+        desc: "Fresh Italian gelato, espresso, and panini — crafted daily with imported ingredients.", loc: "1F · Unit 104"
+      },
+      boost: {
+        name: "Boost Juice", cat: "Drinks · Smoothie", door: [1370, 150],
+        desc: "Cold-pressed juice and smoothie bar — clean, energizing blends for any time of day.", loc: "1F · Unit 105"
+      },
+      kicks: {
+        name: "Kicks", cat: "Shoes · Streetwear", door: [165, 660],
+        desc: "Curated sneaker boutique stocking limited-drop releases and contemporary streetwear.", loc: "1F · Unit 110"
+      },
+      converse: {
+        name: "Converse", cat: "Shoes · Casual", door: [368, 660],
+        desc: "The official Converse store — Chuck Taylor classics, Run Star Hike, and seasonal collabs.", loc: "1F · Unit 111"
+      },
+      crocs: {
+        name: "Crocs", cat: "Shoes · Casual", door: [568, 660],
+        desc: "Comfort-first footwear with the full Crocs Jibbitz™ customisation bar in store.", loc: "1F · Unit 112"
+      },
+      skechers: {
+        name: "Skechers", cat: "Shoes · Sport", door: [787, 600],
+        desc: "Performance and lifestyle footwear — including the new GO WALK Arch Fit collection.", loc: "1F · Unit 113"
+      },
+      digiplus: {
+        name: "Digiplus", cat: "Tech · Electronics", door: [1018, 555],
+        desc: "Authorized retailer for Apple, Samsung, and Xiaomi — plus accessories and trade-in service.", loc: "1F · Unit 114"
+      },
+      baleno: {
+        name: "Baleno", cat: "Fashion · Casual", door: [1318, 555],
+        desc: "Casual everyday fashion for the whole family — premium cotton tees, denim, and seasonal essentials.", loc: "1F · Unit 115"
+      },
+    };
+
+    // Koordinat Lobby Masuk di sebelah Kanan
+    const ENTRANCE = [1366, 304];
+
+    const ROUTE_POINTS = {
+      boost: [
+        [1328, 330],
+        [1340, 265],
+        [1370, 150]
+      ],
+      ilfresco: [
+        [1328, 360],
+        [1148, 390],
+        [1148, 230]
+      ],
+      koithe: [
+        [1328, 360],
+        [990, 390],
+        [990, 250]
+      ],
+      gionsushi: [
+        [1328, 360],
+        [600, 390],
+        [600, 320]
+      ],
+      lilbamboe: [
+        [1328, 360],
+        [240, 390],
+        [240, 320]
+      ],
+      baleno: [
+        [1328, 360],
+        [1318, 430],
+        [1318, 555]
+      ],
+      digiplus: [
+        [1328, 360],
+        [1018, 455],
+        [1018, 555]
+      ],
+      skechers: [
+        [1328, 360],
+        [787, 455],
+        [787, 600]
+      ],
+      crocs: [
+        [1328, 360],
+        [568, 455],
+        [568, 660]
+      ],
+      converse: [
+        [1328, 360],
+        [368, 455],
+        [368, 660]
+      ],
+      kicks: [
+        [1328, 360],
+        [165, 455],
+        [165, 660]
+      ]
+    };
+
+    const overlay = document.getElementById("overlay");
+    const pathGroup = document.getElementById("pathGroup");
+    const panel = document.getElementById("infoPanel");
+    const stageShell = document.querySelector(".stage");
+    const sweep = document.getElementById("lightSweep");
+    const hits = overlay.querySelectorAll(".hit");
+
+    hits.forEach(h => {
+      const spot = h.closest(".tenant-spot");
+      h.addEventListener("mouseenter", () => {
+        overlay.classList.add("has-hover");
+        if (spot) spot.classList.add("is-hovered");
+      });
+      h.addEventListener("mouseleave", () => {
+        overlay.classList.remove("has-hover");
+        if (spot) spot.classList.remove("is-hovered");
+      });
+      h.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectTenant(h.dataset.id);
+      });
+    });
+
+    let selectedId = null;
+    let routeAnimationToken = 0;
+    let panelDockTimer = 0;
+    let panelShowRaf = 0;
+    let panelShowTimer = 0;
+
+    function openInfoPanel() {
+      if (!stageShell) {
+        panel.classList.add("show");
+        return;
+      }
+
+      const alreadyDocked = stageShell.classList.contains("with-panel");
+      window.clearTimeout(panelDockTimer);
+      window.clearTimeout(panelShowTimer);
+      window.cancelAnimationFrame(panelShowRaf);
+      stageShell.classList.add("with-panel");
+
+      if (alreadyDocked) {
+        panel.classList.add("show");
+        return;
+      }
+
+      panelShowRaf = window.requestAnimationFrame(() => {
+        panelShowTimer = window.setTimeout(() => {
+          panel.classList.add("show");
+        }, 110);
+      });
+    }
+
+    function closeInfoPanel() {
+      panel.classList.remove("show");
+      window.cancelAnimationFrame(panelShowRaf);
+      window.clearTimeout(panelShowTimer);
+      window.clearTimeout(panelDockTimer);
+      panelDockTimer = window.setTimeout(() => {
+        if (!selectedId && stageShell) stageShell.classList.remove("with-panel");
+      }, 420);
+    }
+
+    function clearTenantRunners() {
+      document.querySelectorAll(".tenant-runner").forEach(runner => {
+        runner.getAnimations().forEach(animation => animation.cancel());
+        runner.remove();
+      });
+    }
+
+    function startTenantRunner(spot, rim) {
+      const runner = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      const len = rim.getTotalLength();
+      const segment = Math.max(70, Math.min(150, len * 0.22));
+
+      runner.setAttribute("class", "tenant-runner");
+      runner.setAttribute("d", rim.getAttribute("d"));
+      runner.style.strokeDasharray = `${segment} ${len}`;
+      runner.style.strokeDashoffset = "0";
+      spot.appendChild(runner);
+
+      runner.animate(
+        [
+          { strokeDashoffset: "0" },
+          { strokeDashoffset: `${-len}` }
+        ],
+        {
+          duration: 5200,
+          iterations: Infinity,
+          easing: "linear"
+        }
+      );
+    }
+
+    function selectTenant(id) {
+      const t = TENANTS[id];
+      if (!t) return;
+      selectedId = id;
+      panel.classList.remove("panel-top", "panel-bottom");
+      panel.classList.add(t.door[1] <= 430 ? "panel-bottom" : "panel-top");
+      openInfoPanel();
+
+      document.getElementById("infoCat").textContent = t.cat;
+      document.getElementById("infoName").textContent = t.name;
+      document.getElementById("infoDesc").textContent = t.desc;
+      document.getElementById("infoLoc").textContent = t.loc;
+
+      clearTenantRunners();
+      document.querySelectorAll(".tenant-spot").forEach(spot => {
+        const rim = spot.querySelector(".tenant-rim");
+        const hit = spot.querySelector(".hit");
+        const isActive = spot.dataset.id === id;
+        spot.classList.toggle("active", isActive);
+        if (!rim || !hit) return;
+
+        hit.classList.toggle("active", isActive);
+        if (isActive) {
+          const len = rim.getTotalLength();
+          rim.style.strokeDasharray = `${len}`;
+          rim.style.strokeDashoffset = `${len}`;
+          rim.getBoundingClientRect();
+          rim.style.transition = "stroke-dashoffset 3.8s ease-in-out, stroke .45s ease";
+          rim.style.strokeDashoffset = "0";
+          window.setTimeout(() => {
+            if (!spot.classList.contains("active")) return;
+            rim.style.transition = "stroke .45s ease";
+            rim.style.removeProperty("stroke-dasharray");
+            rim.style.removeProperty("stroke-dashoffset");
+            if (!spot.querySelector(".tenant-runner")) startTenantRunner(spot, rim);
+          }, 3900);
+        } else {
+          rim.style.transition = "stroke .35s ease";
+          rim.style.removeProperty("stroke-dasharray");
+          rim.style.removeProperty("stroke-dashoffset");
+        }
+      });
+      document.querySelectorAll(".tenant-chip").forEach(c => {
+        if (c.dataset.id === id) c.classList.add("active");
+        else c.classList.remove("active");
+      });
+
+      drawPath(id);
+    }
+
+    document.getElementById("closeInfo").onclick = () => {
+      closeInfoPanel();
+      panel.classList.remove("panel-top", "panel-bottom");
+      selectedId = null;
+      clearTenantRunners();
+      document.querySelectorAll(".tenant-spot").forEach(spot => {
+        const hit = spot.querySelector(".hit");
+        const rim = spot.querySelector(".tenant-rim");
+        spot.classList.remove("active", "is-hovered");
+        if (hit) hit.classList.remove("active");
+        if (rim) {
+          rim.style.transition = "stroke .35s ease";
+          rim.style.removeProperty("stroke-dasharray");
+          rim.style.removeProperty("stroke-dashoffset");
+        }
+      });
+      overlay.classList.remove("has-hover");
+      document.querySelectorAll(".tenant-chip").forEach(c => c.classList.remove("active"));
+      clearPath();
+    };
+
+    document.getElementById("navigateBtn").onclick = () => {
+      if (selectedId) drawPath(selectedId);
+    };
+
+    // ─── PATH DRAWING ────────────────────────────────────────
+    // Build a path from entrance through corridor waypoints to door
+    function clearPath() {
+      routeAnimationToken += 1;
+      pathGroup.replaceChildren();
+    }
+
+    function buildRoutePoints(id) {
+      const tenant = TENANTS[id];
+      if (!tenant) return [];
+      const route = ROUTE_POINTS[id] || [];
+      const last = route[route.length - 1];
+      const alreadyEndsAtDoor = last && last[0] === tenant.door[0] && last[1] === tenant.door[1];
+      return [ENTRANCE, ...route, ...(alreadyEndsAtDoor ? [] : [tenant.door])];
+    }
+
+    function buildSegmentPath(points) {
+      if (points.length < 2) return "";
+      let d = `M ${points[0][0]} ${points[0][1]}`;
+      for (let i = 1; i < points.length; i++) {
+        d += ` L ${points[i][0]} ${points[i][1]}`;
+      }
+      return d;
+    }
+
+    function measureRoute(points) {
+      let dist = 0;
+      for (let i = 1; i < points.length; i++) {
+        const dx = points[i][0] - points[i - 1][0];
+        const dy = points[i][1] - points[i - 1][1];
+        dist += Math.sqrt(dx * dx + dy * dy);
+      }
+      return dist;
+    }
+
+    function drawPath(id) {
+      const tenant = TENANTS[id];
+      if (!tenant) return;
+
+      clearPath();
+      const token = routeAnimationToken;
+      const points = buildRoutePoints(id);
+      const d = buildSegmentPath(points);
+      const door = tenant.door;
+      const guidePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      guidePath.setAttribute("class", "route-guide");
+      guidePath.setAttribute("d", d);
+      pathGroup.appendChild(guidePath);
+
+      const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      pathEl.setAttribute("class", "path-line");
+      pathEl.setAttribute("d", d);
+      pathGroup.appendChild(pathEl);
+
+      const flowPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      flowPath.setAttribute("class", "path-flow");
+      flowPath.setAttribute("d", d);
+      pathGroup.appendChild(flowPath);
+
+      const routeHead = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      routeHead.innerHTML = `
+    <circle class="route-head-glow" cx="0" cy="0" r="14"></circle>
+    <path class="route-head" d="M -8 -8 L 12 0 L -8 8 L -2 0 Z"></path>
+  `;
+      routeHead.style.opacity = "0";
+      pathGroup.appendChild(routeHead);
+
+      const headMotion = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
+      headMotion.setAttribute("dur", "2.8s");
+      headMotion.setAttribute("repeatCount", "indefinite");
+      headMotion.setAttribute("rotate", "auto");
+      headMotion.setAttribute("path", d);
+      headMotion.setAttribute("begin", "indefinite");
+      routeHead.appendChild(headMotion);
+
+      // Approximate distance for info panel
+      let dist = 0;
+      for (let i = 1; i < points.length; i++) {
+        const dx = points[i][0] - points[i - 1][0];
+        const dy = points[i][1] - points[i - 1][1];
+        dist += Math.sqrt(dx * dx + dy * dy);
+      }
+      // Convert px to meters (rough: 1533px ≈ 100m)
+      const meters = Math.round(dist / 1533 * 100);
+      document.getElementById("infoDist").textContent = `≈ ${meters} m`;
+
+      // Marching dots along path
+      const totalLen = pathEl.getTotalLength();
+      for (let i = 0; i < 6; i++) {
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("class", "path-dot");
+        dot.setAttribute("r", "5");
+        pathGroup.appendChild(dot);
+
+        const animate = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
+        animate.setAttribute("dur", "3.5s");
+        animate.setAttribute("repeatCount", "indefinite");
+        animate.setAttribute("begin", `${i * 0.55}s`);
+        animate.setAttribute("path", d);
+        dot.appendChild(animate);
+      }
+
+      // Destination ring marker
+      const ring = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      ring.setAttribute("class", "dest-marker");
+      ring.setAttribute("cx", door[0]);
+      ring.setAttribute("cy", door[1]);
+      ring.setAttribute("r", "20");
+      pathGroup.appendChild(ring);
+
+      const ring2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      ring2.setAttribute("class", "dest-marker");
+      ring2.setAttribute("cx", door[0]);
+      ring2.setAttribute("cy", door[1]);
+      ring2.setAttribute("r", "30");
+      ring2.style.animationDelay = "0.3s";
+      pathGroup.appendChild(ring2);
+
+      // Pinpoint icon marker
+      const pinWrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      pinWrapper.style.opacity = "0";
+      pinWrapper.style.transform = `translate(${door[0]}px, ${door[1] - 20}px) scale(0.5)`;
+      pinWrapper.style.transition = "opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
+
+      const pinIcon = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      pinIcon.setAttribute("class", "pin-icon-anim");
+      pinIcon.innerHTML = `
+        <path d="M 0 -36 A 14 14 0 0 1 14 -22 Q 14 -8 0 0 Q -14 -8 -14 -22 A 14 14 0 0 1 0 -36 Z" fill="#ff4d4f" stroke="#ffffff" stroke-width="2.5"></path>
+        <circle cx="0" cy="-22" r="5" fill="#ffffff"></circle>
+      `;
+      pinWrapper.appendChild(pinIcon);
+      pathGroup.appendChild(pinWrapper);
+
+      const revealMs = 1150;
+      [pathEl, flowPath].forEach((el) => {
+        el.style.strokeDasharray = `${totalLen}`;
+        el.style.strokeDashoffset = `${totalLen}`;
+        el.style.transition = `stroke-dashoffset ${revealMs}ms cubic-bezier(.22,1,.36,1)`;
+      });
+
+      requestAnimationFrame(() => {
+        pathEl.style.strokeDashoffset = "0";
+        flowPath.style.strokeDashoffset = "0";
+      });
+
+      window.setTimeout(() => {
+        if (token !== routeAnimationToken) return;
+        flowPath.style.transition = "";
+        flowPath.style.strokeDasharray = "";
+        flowPath.style.strokeDashoffset = "0";
+        flowPath.classList.add("live");
+        routeHead.style.opacity = "1";
+        headMotion.beginElement();
+
+        // Animate pinpoint drop-in
+        pinWrapper.style.opacity = "1";
+        pinWrapper.style.transform = `translate(${door[0]}px, ${door[1]}px) scale(1)`;
+      }, revealMs + 40);
+    }
+
+    // ─── ZOOM & PAN ───────────────────────────────────────────
+    const mapWrap = document.getElementById("mapWrap");
+    const mapInner = document.getElementById("mapInner");
+    let scale = 1, panX = 0, panY = 0;
+
+    function applyTransform() {
+      mapInner.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    }
+
+    document.getElementById("zoomIn").onclick = () => { scale = Math.min(2.5, scale + 0.2); applyTransform(); };
+    document.getElementById("zoomOut").onclick = () => { scale = Math.max(0.7, scale - 0.2); applyTransform(); };
+    document.getElementById("resetView").onclick = () => { scale = 1; panX = 0; panY = 0; applyTransform(); };
+
+    // Scroll to zoom
+    mapWrap.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      scale = Math.max(0.7, Math.min(2.5, scale - e.deltaY * 0.001));
+      mapInner.style.transition = "none";
+      applyTransform();
+      setTimeout(() => mapInner.style.transition = "", 50);
+    }, { passive: false });
+
+    // Drag to pan
+    let dragging = false, lastX = 0, lastY = 0, downX = 0, downY = 0;
+    mapWrap.addEventListener("pointerdown", (e) => {
+      if (e.target.closest && e.target.closest(".hit")) return;
+      dragging = true;
+      lastX = e.clientX; lastY = e.clientY;
+      downX = e.clientX; downY = e.clientY;
+      mapWrap.classList.add("grabbing");
+      mapInner.style.transition = "none";
+    });
+    window.addEventListener("pointerup", () => {
+      dragging = false;
+      mapWrap.classList.remove("grabbing");
+      mapInner.style.transition = "";
+    });
+    window.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      panX += e.clientX - lastX;
+      panY += e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      applyTransform();
+    });
+
+    // ─── TENANT STRIP ─────────────────────────────────────────
+    const stripEl = document.getElementById("tenantStrip");
+    Object.entries(TENANTS).forEach(([id, t]) => {
+      const chip = document.createElement("button");
+      chip.className = "tenant-chip";
+      chip.textContent = t.name;
+      chip.dataset.id = id;
+      chip.onclick = () => selectTenant(id);
+      stripEl.appendChild(chip);
+    });
+
+    // ─── FLOOR TOGGLE ─────────────────────────────────────────
+    document.querySelectorAll(".floor-toggle button").forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll(".floor-toggle button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      };
+    });
+
+    // ─── REVEAL ANIMATION (extrude → fly → light sweep) ──────
+    const stage = document.getElementById("mapStage");
+
+    function playReveal() {
+      // Reset
+      stage.classList.remove("flying");
+      sweep.classList.remove("show");
+
+      // Phase 1: camera tilts back (flying isometric view)
+      setTimeout(() => stage.classList.add("flying"), 500);
+
+      // Phase 2: light sweep starts
+      setTimeout(() => sweep.classList.add("show"), 2000);
+    }
+
+    // Trigger when map scrolls into view
+    const mapObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !mapWrap.dataset.played) {
+          mapWrap.dataset.played = "1";
+          playReveal();
+        }
+      });
+    }, { threshold: 0.3 });
+    mapObserver.observe(mapWrap);
+
+    // Replay button
+    document.getElementById("replayAnim").onclick = () => {
+      delete mapWrap.dataset.played;
+      playReveal();
+      setTimeout(() => mapWrap.dataset.played = "1", 100);
+    };
+
+    // Demo: auto-select first tenant after a moment to show path animation
+    setTimeout(() => {
+      // selectTenant("baleno");
+      // Auto-play safety trigger if IntersectionObserver failed
+      if (!mapWrap.dataset.played) {
+        mapWrap.dataset.played = "1";
+        playReveal();
+      }
+    }, 800);
+  </script>
+</body>
+
+</html>

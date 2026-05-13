@@ -5,6 +5,16 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'http',
+                hostname: '127.0.0.1',
+                port: '8000',
+            },
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+                port: '8000',
+            },
+            {
+                protocol: 'http',
                 hostname: '192.168.5.12',
                 port: '',
             },
@@ -13,8 +23,13 @@ const nextConfig = {
                 hostname: 'mysrland.id',
                 port: '',
             },
+            {
+                protocol: 'https',
+                hostname: 'images.unsplash.com',
+                port: '',
+            },
         ],
-        domains: ['image.pngaaa.com', 'muradevelopment.site', 'queencitysemarang.cloud', 'placehold.co', 'mysrland.id'],
+        domains: ['image.pngaaa.com', 'muradevelopment.site', 'queencitysemarang.cloud', 'placehold.co', 'mysrland.id', '127.0.0.1', 'localhost', 'images.unsplash.com'],
     },
     webpack: (config) => {
         config.externals.push({

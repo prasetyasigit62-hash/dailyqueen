@@ -116,6 +116,11 @@ function mobileNavbar(props: mobileNavbarProps) {
                             </a>
                         </li>
                         <li className="border-b pb-3">
+                            <a href="/maps" className="text-[#29328d] hover:text-indigo-500 font-bold text-sm">
+                                Maps
+                            </a>
+                        </li>
+                        <li className="border-b pb-3">
                             <a href="/contact-us" className="text-[#29328d] hover:text-indigo-500 font-bold text-sm">
                                 Contact Us
                             </a>

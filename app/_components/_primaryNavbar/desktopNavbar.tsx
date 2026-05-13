@@ -145,6 +145,11 @@ function Navbar(props: navbarProps) {
                         </a>
                     </li>
                     <li className="mx-4 text-lg py-3">
+                        <a href="/maps" className="text-[#29328d] hover:text-orange-400">
+                            Maps
+                        </a>
+                    </li>
+                    <li className="mx-4 text-lg py-3">
                         <a href="/contact-us" className="text-[#29328d] hover:text-orange-400">
                             Contact Us
                         </a>

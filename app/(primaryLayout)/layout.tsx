@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import React, { Suspense } from 'react';
 import PrimaryNavbar from '@/app/_components/_primaryNavbar';
 import CustomFooter from '@/app/_components/customFooter';
+import ScrollRestorationReset from '@/app/_components/scrollRestorationReset';
 import '@/app/globals.css';
 import GoogleAnalytics from '@/components/analytic';
 import Maintenance from '@/components/maintenance';
@@ -59,6 +60,7 @@ export default async function RootLayout({
                 ) : (
                     <Suspense>
                         {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS ? <GoogleAnalytics ga_id={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS} /> : null}
+                        <ScrollRestorationReset />
                         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                         <PrimaryNavbar {...infoMall.data} />
                         <React.Suspense fallback={<PrimaryLoading />}>{children}</React.Suspense>

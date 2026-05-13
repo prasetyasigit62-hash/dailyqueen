@@ -12,11 +12,11 @@ function Navbar(props: infoMallInterface) {
     const { logo, app_store, play_store } = props;
     return (
         <>
-            <header className="xl:hidden block fixed top-0 bg-white z-30 w-full">
+            <header className="block fixed top-0 bg-white z-30 w-full lg:hidden">
                 {/* eslint-disable-next-line camelcase */}
                 <MobileNavbar logo={logo} appstore={app_store} playstore={play_store} />
             </header>
-            <header className="xl:block hidden fixed top-0 bg-white z-30 w-full">
+            <header className="hidden fixed top-0 bg-white z-30 w-full lg:block">
                 <DesktopNavbar logo={logo} />
             </header>
         </>
