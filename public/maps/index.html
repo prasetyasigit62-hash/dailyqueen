@@ -3012,26 +3012,18 @@
       applyTransform();
       renderTenantStrip();
 
-      if (options.replayReveal) {
-        const replayCurrentFloor = () => {
-          mapWrap.dataset.played = "1";
-          if (options.focusMap) {
-            window.setTimeout(playReveal, 1050);
-          } else {
-            playReveal();
-          }
-        };
-        if (mapImage.complete) {
-          window.requestAnimationFrame(replayCurrentFloor);
-        } else {
-          mapImage.addEventListener("load", replayCurrentFloor, { once: true });
-        }
-      } else {
-        stage.classList.remove("reveal-prep", "flying");
-        sweep.classList.remove("show");
-        revealTimers.forEach(timer => window.clearTimeout(timer));
-        revealTimers = [];
+      const replayCurrentFloor = () => {
         mapWrap.dataset.played = "1";
+        if (options.focusMap) {
+          window.setTimeout(playReveal, 1050);
+        } else {
+          playReveal();
+        }
+      };
+      if (mapImage.complete) {
+        window.requestAnimationFrame(replayCurrentFloor);
+      } else {
+        mapImage.addEventListener("load", replayCurrentFloor, { once: true });
       }
 
       if (options.focusMap) {
@@ -3053,8 +3045,14 @@
       revealTimers.forEach(timer => window.clearTimeout(timer));
       revealTimers = [];
 
-      stage.classList.remove("flying");
+      // Reset state INSTANT (no transition) untuk hindari kedip
+      const prevTransition = stage.style.transition;
+      stage.style.transition = "none";
+      stage.classList.remove("flying", "reveal-prep");
       sweep.classList.remove("show");
+      stage.getBoundingClientRect();
+      stage.style.transition = prevTransition;
+
       stage.classList.add("reveal-prep");
       stage.getBoundingClientRect();
 
