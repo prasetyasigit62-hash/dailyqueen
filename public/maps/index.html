@@ -2904,19 +2904,17 @@
     function renderTenantStrip() {
       const config = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["gf"];
       stripEl.replaceChildren();
-      const entries = Object.entries(TENANTS);
-      entries.forEach(([id, t]) => {
-        const tenantName = t.name || "";
-        const chipLabel = tenantName || t.code || id;
+      const namedEntries = Object.entries(TENANTS).filter(([, t]) => t.name && t.name.trim());
+      namedEntries.forEach(([id, t]) => {
+        const tenantName = t.name;
         const hasHotspot = !config.hotspotIds || config.hotspotIds.includes(id);
         const chip = document.createElement("button");
         chip.className = "tenant-chip";
-        if (!config.hasTenantHotspots || !tenantName || !hasHotspot) chip.classList.add("tenant-chip--static");
-        if (!tenantName) chip.classList.add("tenant-chip--empty");
-        chip.textContent = chipLabel;
+        if (!config.hasTenantHotspots || !hasHotspot) chip.classList.add("tenant-chip--static");
+        chip.textContent = tenantName;
         chip.dataset.id = id;
-        chip.title = tenantName && t.code ? `${t.code} · ${tenantName}` : `${t.code || id} · Tenant belum tersedia`;
-        if (config.hasTenantHotspots && tenantName && hasHotspot) {
+        chip.title = t.code ? `${t.code} · ${tenantName}` : tenantName;
+        if (config.hasTenantHotspots && hasHotspot) {
           chip.onclick = () => {
             selectTenant(id);
             focusTenantOnMap(id);
@@ -2925,7 +2923,7 @@
         stripEl.appendChild(chip);
       });
 
-      const count = entries.length;
+      const count = namedEntries.length;
       if (stripCountEl) stripCountEl.textContent = count > 0 ? `${count} tenant` : "";
       if (stripWrapEl) stripWrapEl.hidden = count === 0;
     }
