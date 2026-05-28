@@ -1112,14 +1112,14 @@
   <div class="page">
     <div class="header">
       <div>
-        <div class="eyebrow" id="floorEyebrow">Floor Directory · 1F</div>
-        <h1 class="title" id="floorTitle"><em>Lantai 1</em> — Fashion, Tech &amp; Dining</h1>
+        <div class="eyebrow" id="floorEyebrow">Floor Directory · GF</div>
+        <h1 class="title" id="floorTitle"><em>Ground Floor</em> — Main Lobby &amp; Promenade</h1>
         <p class="subtitle" id="floorSubtitle">Klik tenant untuk melihat detail dan rute jalan dari pintu masuk.</p>
       </div>
       <div class="header-meta">
         <div class="live-pill"><span class="live-dot"></span><span>Mall buka · 10:00 — 22:00</span></div>
         <div class="floor-toggle">
-          <button data-floor="gf">GF</button><button data-floor="1f" class="active">1F</button><button data-floor="2f">2F</button><button data-floor="3f">3F</button><button data-floor="4f">4F</button>
+          <button data-floor="gf" class="active">GF</button><button data-floor="1f">1F</button><button data-floor="2f">2F</button><button data-floor="3f">3F</button><button data-floor="4f">4F</button>
         </div>
       </div>
     </div>
@@ -1131,7 +1131,7 @@
         <button class="replay-anim" id="replayAnim">↻ Replay Animation</button>
         <div class="map-inner" id="mapInner" style="transform: translate(0px, 0px) scale(0.333333);">
           <div class="map-stage" id="mapStage">
-            <img class="map-img map-img--crisp" id="mapImage" src="1st FLOOR.webp" alt="Lantai 1 floor plan" />
+            <img class="map-img map-img--crisp" id="mapImage" src="GF FLOOR.webp" alt="Ground Floor floor plan" />
 
             <!-- Light sweep effect -->
             <div class="light-sweep" id="lightSweep"></div>
@@ -2254,8 +2254,8 @@
           <div class="info-meta-row"><span>Status</span><span style="color:#2db15c;">● Open Now</span></div>
         </div>
         <div class="info-cta">
-          <button class="primary" id="navigateBtn">Show Route</button>
-          <button class="secondary">View Details</button>
+          <button class="primary" id="navigateBtn" style="display:none;">Show Route</button>
+          <button class="secondary" style="flex:1;">View Details</button>
         </div>
       </div>
     </div>
@@ -2805,7 +2805,7 @@
     const mapInner = document.getElementById("mapInner");
     let scale = 1, panX = 0, panY = 0;
     let renderScale = 1;
-    let activeFloorId = "1f";
+    let activeFloorId = "gf";
     let revealTimers = [];
 
     function applyTransform() {
