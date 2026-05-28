@@ -3314,7 +3314,7 @@
       floorEyebrow.textContent = config.eyebrow;
       floorTitle.innerHTML = config.title;
       floorSubtitle.textContent = config.subtitle;
-      mapImage.src = config.image;
+      mapImage.src = config.image + '?v=' + Date.now();
       mapImage.alt = config.imageAlt;
       mapImage.classList.toggle("map-img--crisp", Boolean(config.crispImage));
       mapWrap.style.setProperty("--map-aspect-ratio", config.aspectRatio);
