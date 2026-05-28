@@ -2334,7 +2334,8 @@
         FLOOR_CONFIG['1f'].tenants = TENANTS_1F;
         FLOOR_CONFIG['2f'].tenants = TENANTS_2F;
         FLOOR_CONFIG['3f'].tenants = TENANTS_3F;
-        TENANTS = TENANTS_1F;
+        const currentConfig = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG.gf;
+        TENANTS = currentConfig.tenants || {};
         renderTenantStrip();
       }
     }
