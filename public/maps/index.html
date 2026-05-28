@@ -171,7 +171,7 @@
     /* Map container — uses the original sketch as background */
     .map-wrap {
       --map-aspect-ratio: 1448/1086;
-      --map-render-scale: 3;
+      --map-render-scale: 1;
       position: relative;
       width: 100%;
       aspect-ratio: var(--map-aspect-ratio);
@@ -214,13 +214,12 @@
       user-select: none;
       pointer-events: none;
       backface-visibility: hidden;
-      image-rendering: -webkit-optimize-contrast;
+      image-rendering: high-quality;
       transform: translateZ(0);
     }
 
     .map-img.map-img--crisp {
-      filter: contrast(1.08) saturate(1.04);
-      image-rendering: auto;
+      image-rendering: high-quality;
     }
 
     .map-wrap.map-wrap--static {
@@ -263,10 +262,7 @@
     }
 
     .map-wrap.map-wrap--static .map-img.map-img--crisp {
-      filter:
-        contrast(1.09)
-        saturate(1.04)
-        drop-shadow(0 16px 10px rgba(7, 22, 44, .14));
+      filter: contrast(1.09) saturate(1.04);
     }
 
     /* ───── 3D REVEAL ANIMATION (when scrolled into view) ─────
@@ -289,13 +285,11 @@
       backface-visibility: hidden;
       transition:
         transform 3.6s cubic-bezier(.18, .78, .18, 1),
-        opacity 1.2s ease,
-        filter 1.6s ease;
+        opacity 1.2s ease;
     }
 
     .map-stage.reveal-prep {
       opacity: .74;
-      filter: blur(.8px) brightness(1.04);
       transform: rotateX(0deg) scale(.965) translateY(2.4%);
     }
 
@@ -446,6 +440,7 @@
       transform-box: fill-box;
       transform-origin: center;
       contain: layout style;
+      transition: transform .18s ease, opacity .18s ease;
     }
 
     .overlay .tenant-aura,
@@ -454,6 +449,7 @@
       pointer-events: none;
       transform-box: fill-box;
       transform-origin: center;
+      transition: opacity .2s ease;
     }
 
     .overlay .tenant-aura {
@@ -488,7 +484,8 @@
     }
 
     .overlay .tenant-spot.active .tenant-aura {
-      opacity: 0.52;
+      will-change: opacity;
+      animation: active-aura-pulse 2.4s ease-in-out infinite;
     }
 
     .overlay .tenant-spot:hover:not(.active) .tenant-fill {
@@ -503,13 +500,17 @@
 
     .overlay .tenant-spot:hover:not(.active) .tenant-rim {
       stroke: rgba(80, 184, 255, 0.85);
-      stroke-width: 2px;
+      opacity: 0.85;
     }
 
     .overlay .tenant-spot.active .tenant-rim {
-      opacity: 0.92;
       stroke: rgba(80, 184, 255, 0.98);
-      stroke-width: 2.5;
+      opacity: 0.92;
+    }
+
+    @keyframes active-aura-pulse {
+      0%, 100% { opacity: 0.38; }
+      50% { opacity: 0.62; }
     }
 
     .overlay .tenant-runner {
