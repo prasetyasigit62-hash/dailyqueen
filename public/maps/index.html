@@ -2388,7 +2388,10 @@
       }
 
       try {
-        const apiRes = await fetch('/api/maps-tenants');
+        const apiRes = await fetch('/api/maps-tenants?_=' + Date.now(), {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
         if (apiRes.ok) {
           const api = await apiRes.json();
           mergeApiData(TENANTS_GF, api);

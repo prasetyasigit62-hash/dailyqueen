@@ -8,8 +8,8 @@ type TenantInfo = { id: number; name: string; cat: string; floor: string };
 export async function GET() {
     try {
         const res = await fetchWithRetry(
-            `${process.env.HOST_API}/api/guest/mallDirectory/${process.env.MALL_ID}`,
-            { next: { revalidate: 300 } }
+            `${process.env.HOST_API}/api/guest/mallDirectory/${process.env.MALL_ID}?_=${Date.now()}`,
+            { cache: 'no-store' }
         );
 
         if (!res.ok) {
@@ -64,7 +64,9 @@ export async function GET() {
 
         return NextResponse.json({ byId, byName }, {
             headers: {
-                'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0',
                 'Access-Control-Allow-Origin': '*',
             },
         });
