@@ -180,7 +180,6 @@
       cursor: grab;
       overflow: hidden;
       transform-origin: left center;
-      will-change: transform;
       transition: transform .58s cubic-bezier(.22, 1, .36, 1);
     }
 
@@ -284,12 +283,10 @@
     .map-stage {
       position: absolute;
       inset: 0;
-      transform-style: preserve-3d;
       transform: rotateX(0deg) scale(1);
       opacity: 1;
       filter: none;
       backface-visibility: hidden;
-      will-change: transform, opacity;
       transition:
         transform 3.6s cubic-bezier(.18, .78, .18, 1),
         opacity 1.2s ease,
@@ -373,9 +370,8 @@
           rgba(255, 240, 200, .5) 50%,
           rgba(255, 255, 255, .0) 70%,
           transparent 100%);
-      filter: blur(6px);
       transform: skewX(-22deg);
-      animation: sweep-across 6.8s cubic-bezier(.4, 0, .2, 1) infinite;
+      animation: sweep-across 1.8s cubic-bezier(.4, 0, .2, 1) 1 forwards;
     }
 
     .map-wrap.map-wrap--static .light-sweep::before {
@@ -387,9 +383,8 @@
           rgba(180, 214, 255, .22) 58%,
           rgba(255, 255, 255, .0) 74%,
           transparent 100%);
-      filter: blur(4px);
-      animation-duration: 9.6s;
-      animation-iteration-count: infinite;
+      animation-duration: 2.2s;
+      animation-iteration-count: 1;
     }
 
     @keyframes sweep-across {
@@ -448,9 +443,9 @@
 
     .overlay .tenant-spot {
       --pulse-delay: 0s;
-      transition: opacity .35s ease, transform .45s cubic-bezier(0.34, 1.56, 0.64, 1);
       transform-box: fill-box;
       transform-origin: center;
+      contain: layout style;
     }
 
     .overlay .tenant-aura,
@@ -464,14 +459,11 @@
     .overlay .tenant-aura {
       fill: #ffffff;
       opacity: 0;
-      filter: url(#tenantInnerGlow);
-      transition: opacity .35s ease;
     }
 
     .overlay .tenant-fill {
       fill: #ffffff;
       opacity: 0.2;
-      transition: fill .35s ease;
     }
 
     .overlay .tenant-rim {
@@ -481,15 +473,14 @@
       stroke-linejoin: round;
       stroke-linecap: round;
       opacity: 0.6;
-      transition: stroke .35s ease;
     }
 
     .overlay .tenant-spot:hover {
-      transform: translateY(-2.5px) scale(1.015);
+      transform: translateY(-2px) scale(1.012);
     }
 
     .overlay .tenant-spot.active {
-      transform: translateY(-2.5px) scale(1.015);
+      transform: translateY(-2px) scale(1.012);
     }
 
     .overlay .tenant-spot:hover:not(.active) .tenant-aura {
@@ -501,28 +492,24 @@
     }
 
     .overlay .tenant-spot:hover:not(.active) .tenant-fill {
-      fill: rgba(80, 184, 255, 0.45);
-      animation: hover-fill-pulse 1.6s ease-in-out infinite;
+      fill: rgba(80, 184, 255, 0.5);
+      opacity: 0.7;
     }
 
     .overlay .tenant-spot.active .tenant-fill {
-      fill: rgba(114, 177, 255, 0.045);
-      opacity: 0.34;
+      fill: rgba(48, 171, 255, .5);
+      opacity: 0.75;
     }
 
     .overlay .tenant-spot:hover:not(.active) .tenant-rim {
       stroke: rgba(80, 184, 255, 0.85);
-      animation: hover-pulse 1.6s ease-in-out infinite;
+      stroke-width: 2px;
     }
 
     .overlay .tenant-spot.active .tenant-rim {
-      animation: tenant-rim-glow 2.8s ease-in-out infinite;
       opacity: 0.92;
       stroke: rgba(80, 184, 255, 0.98);
-      stroke-width: 2.8;
-      filter:
-        drop-shadow(0 0 3px rgba(69, 173, 255, .82))
-        drop-shadow(0 0 9px rgba(69, 173, 255, .38));
+      stroke-width: 2.5;
     }
 
     .overlay .tenant-runner {
@@ -580,21 +567,18 @@
     }
 
     .map-wrap.map-wrap--static .tenant-spot:hover:not(.active) .tenant-fill {
-      fill: rgba(48, 171, 255, .48);
-      opacity: .82;
-      animation: gf-tenant-breathe 2.25s ease-in-out infinite;
+      fill: rgba(48, 171, 255, .55);
+      opacity: .85;
     }
 
     .map-wrap.map-wrap--static .tenant-spot:hover:not(.active) .tenant-rim,
     .map-wrap.map-wrap--static .tenant-spot.active .tenant-rim {
       opacity: .95;
-      animation: none;
     }
 
     .map-wrap.map-wrap--static .tenant-spot.active .tenant-fill {
-      fill: rgba(48, 171, 255, .46);
-      opacity: .78;
-      animation: gf-tenant-breathe 2.4s ease-in-out infinite;
+      fill: rgba(48, 171, 255, .52);
+      opacity: .82;
     }
 
     .map-wrap.map-wrap--static:not(.map-wrap--tenant-hotspots) #hits,
@@ -2334,7 +2318,7 @@
         hotspotIds: ["gf-pro1", "gf-pro2", "gf-29a", "gf-29b", "gf-pro3a", "gf-pro3b", "gf-pro4a", "gf-pro4b", "gf-pro5", "gf-22", "gf-05", "gf-05a", "gf-03", "gf-15", "gf-04", "gf-06", "gf-07", "gf-09", "gf-11", "gf-30b", "gf-31", "gf-32", "gf-atpm1", "gf-atpm2", "gf-atpm3", "gf-atpm4", "gf-atpm5", "gf-02a", "gf-spm01", "gf-spm02", "gf-spm03", "gf-spm04", "gf-spm05", "gf-spma1", "gf-01", "gf-14", "gf-12", "gf-28", "gf-21", "gf-20", "gf-19", "gf-18b", "gf-18a", "gf-17b", "gf-17a", "gf-16a", "gf-16"],
         showEntrance: false,
         crispImage: true,
-        renderScale: 3,
+        renderScale: 1,
         tenants: TENANTS_GF
       },
       "1f": {
@@ -2350,7 +2334,7 @@
         hotspotIds: ["l1-a3", "l1-11", "l1-9810", "l1-08", "l1-07", "l1-06", "l1-05", "l1-22a", "l1-22b", "l1-24", "l1-29", "l1-27", "l1-04", "l1-03a", "l1-03", "l1-a1", "l1-21", "l1-20", "l1-19", "l1-18", "l1-28", "l1-2b", "l1-26", "l1-16-17", "l1-15", "l1-14", "l1-13", "l1-12", "l1-12a", "l1-23"],
         showEntrance: false,
         crispImage: true,
-        renderScale: 3,
+        renderScale: 1,
         tenants: TENANTS_1F
       },
       "2f": {
@@ -2366,7 +2350,7 @@
         hotspotIds: ["l2-22a", "l2-22b", "l2-23a", "l2-23b", "l2-24-25-26", "l2-27", "l2-32", "l2-42", "l2-28", "l2-29", "l2-29b", "l2-30", "l2-a2", "l2-a1", "l2-a48", "l2-a44", "l2-02", "l2-02a", "l2-fp25", "l2-fp26", "l2-fp27", "l2-09", "l2-10", "l2-11", "l2-12", "l2-13-14", "l2-46", "l2-39", "l2-40", "l2-15", "l2-16", "l2-17", "l2-18a", "l2-18b", "l2-18c", "l2-19", "l2-20-21", "l2-fp24", "l2-fp23", "l2-fp22", "l2-fp21", "l2-fp01", "l2-fp03", "l2-fp05", "l2-fp02", "l2-fp04", "l2-fp07", "l2-fp06", "l2-fp0s", "l2-fp09", "l2-fp12", "l2-fp08", "l2-fp10"],
         showEntrance: false,
         crispImage: true,
-        renderScale: 3,
+        renderScale: 1,
         tenants: TENANTS_2F
       },
       "3f": {
@@ -2382,7 +2366,7 @@
         hotspotIds: ["l3-a1", "l3-05", "l3-0607", "l3-08", "l3-09", "l3-31", "l3-h11", "l3-10b", "l3-10a", "l3-12", "l3-h17", "l3-03", "l3-h16", "l3-01", "l3-02", "l3-h15b", "l3-h15a", "l3-h14", "l3-h13", "l3-h12", "l3-h10", "l3-h09"],
         showEntrance: false,
         crispImage: true,
-        renderScale: 3,
+        renderScale: 1,
         tenants: TENANTS_3F
       }
     };
