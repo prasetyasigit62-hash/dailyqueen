@@ -1,173 +1,1270 @@
 {
   "gf": {
-    "gf-01": { "code": "GF-01", "floor": "GF" },
-    "gf-02a": { "code": "GF-02A", "floor": "GF" },
-    "gf-03": { "code": "GF-03", "floor": "GF" },
-    "gf-04": { "code": "GF-04", "floor": "GF" },
-    "gf-05": { "code": "GF-05", "floor": "GF" },
-    "gf-05a": { "code": "GF-05A", "floor": "GF" },
-    "gf-05b": { "code": "GF-05B", "floor": "GF" },
-    "gf-06": { "code": "GF-06", "floor": "GF" },
-    "gf-07": { "code": "GF-07", "floor": "GF" },
-    "gf-08": { "code": "GF-08", "floor": "GF" },
-    "gf-09": { "code": "GF-09", "floor": "GF" },
-    "gf-10": { "code": "GF-10", "floor": "GF" },
-    "gf-11": { "code": "GF-11", "floor": "GF" },
-    "gf-12": { "code": "GF-12", "floor": "GF" },
-    "gf-13": { "code": "GF-13", "floor": "GF" },
-    "gf-14": { "code": "GF-14", "floor": "GF" },
-    "gf-15": { "code": "GF-15", "floor": "GF" },
-    "gf-16": { "code": "GF-16", "floor": "GF" },
-    "gf-16a": { "code": "GF-16 A", "floor": "GF" },
-    "gf-17a": { "code": "GF-17 A", "floor": "GF" },
-    "gf-17b": { "code": "GF-17 B", "floor": "GF" },
-    "gf-18a": { "code": "GF-18 A", "floor": "GF" },
-    "gf-18b": { "code": "GF-18 B", "floor": "GF" },
-    "gf-19": { "code": "GF-19", "floor": "GF" },
-    "gf-20": { "code": "GF-20", "floor": "GF" },
-    "gf-21": { "code": "GF-21", "floor": "GF" },
-    "gf-22": { "code": "GF-22", "floor": "GF" },
-    "gf-23": { "code": "GF-23", "floor": "GF" },
-    "gf-24": { "code": "GF-24", "floor": "GF" },
-    "gf-25": { "code": "GF-25", "floor": "GF" },
-    "gf-26": { "code": "GF-26", "floor": "GF" },
-    "gf-27": { "code": "GF-27", "floor": "GF" },
-    "gf-28": { "code": "GF-28", "floor": "GF" },
-    "gf-29a": { "code": "GF-29A", "floor": "GF" },
-    "gf-29b": { "code": "GF-29B", "floor": "GF" },
-    "gf-29": { "code": "GF-29", "floor": "GF" },
-    "gf-30": { "code": "GF-30", "floor": "GF" },
-    "gf-30b": { "code": "GF-30B", "floor": "GF" },
-    "gf-31": { "code": "GF-31", "floor": "GF" },
-    "gf-32": { "code": "GF-32", "floor": "GF" },
-    "gf-pro1": { "code": "GF - PRO 1", "floor": "GF" },
-    "gf-pro2": { "code": "GF - PRO 2", "floor": "GF" },
-    "gf-pro3a": { "code": "GF - PRO 3A", "floor": "GF" },
-    "gf-pro3b": { "code": "GF - PRO 3B", "floor": "GF" },
-    "gf-pro4a": { "code": "GF - PRO 4A", "floor": "GF" },
-    "gf-pro4b": { "code": "GF - PRO 4B", "floor": "GF" },
-    "gf-pro5": { "code": "GF - PRO 5", "floor": "GF" },
-    "gf-spm01": { "code": "GF - SPM 01", "floor": "GF" },
-    "gf-spm02": { "code": "GF - SPM 02", "floor": "GF" },
-    "gf-spm03": { "code": "GF - SPM 03", "floor": "GF" },
-    "gf-spm04": { "code": "GF - SPM 04", "floor": "GF" },
-    "gf-spm05": { "code": "GF - SPM 05", "floor": "GF" },
-    "gf-spma1": { "code": "GF - SPMA1", "floor": "GF" },
-    "gf-atpm1": { "code": "ATPM-1", "floor": "GF" },
-    "gf-atpm2": { "code": "ATPM-2", "floor": "GF" },
-    "gf-atpm3": { "code": "ATPM-3", "floor": "GF" },
-    "gf-atpm4": { "code": "ATPM-4", "floor": "GF" },
-    "gf-atpm5": { "code": "ATPM-5", "floor": "GF" }
+    "gf-01": {
+      "code": "GF-01",
+      "name": "FRANK & CO",
+      "cat": ""
+    },
+    "gf-02a": {
+      "code": "GF-02A",
+      "name": "SAMSUNG",
+      "cat": ""
+    },
+    "gf-03": {
+      "code": "GF-03",
+      "name": "IBOX",
+      "cat": ""
+    },
+    "gf-04": {
+      "code": "GF-04",
+      "name": "MELISSA CLUBE",
+      "cat": ""
+    },
+    "gf-05": {
+      "code": "GF-05",
+      "name": "",
+      "cat": ""
+    },
+    "gf-05a": {
+      "code": "GF-05A",
+      "name": "YOGURT REPUBLIC",
+      "cat": ""
+    },
+    "gf-05b": {
+      "code": "GF-05B",
+      "name": "CHEON",
+      "cat": ""
+    },
+    "gf-06": {
+      "code": "GF-06",
+      "name": "KOI THE",
+      "cat": ""
+    },
+    "gf-07": {
+      "code": "GF-07",
+      "name": "GION SUSHI",
+      "cat": ""
+    },
+    "gf-08": {
+      "code": "GF-08",
+      "name": "GION SUSHI",
+      "cat": ""
+    },
+    "gf-09": {
+      "code": "GF-09",
+      "name": "BAKOEL BAMBOE",
+      "cat": ""
+    },
+    "gf-10": {
+      "code": "GF-10",
+      "name": "BAKOEL BAMBOE",
+      "cat": ""
+    },
+    "gf-11": {
+      "code": "GF-11",
+      "name": "ANTARA KATA",
+      "cat": ""
+    },
+    "gf-12": {
+      "code": "GF-12",
+      "name": "THE PALACE",
+      "cat": ""
+    },
+    "gf-13": {
+      "code": "GF-13",
+      "name": "THE PALACE",
+      "cat": ""
+    },
+    "gf-14": {
+      "code": "GF-14",
+      "name": "TOBY'S ESTATE",
+      "cat": ""
+    },
+    "gf-15": {
+      "code": "GF-15",
+      "name": "BOOST",
+      "cat": ""
+    },
+    "gf-16": {
+      "code": "GF-16",
+      "name": "CROCO BY MS",
+      "cat": ""
+    },
+    "gf-16a": {
+      "code": "GF-16 A",
+      "name": "ALDO",
+      "cat": ""
+    },
+    "gf-17a": {
+      "code": "GF-17 A",
+      "name": "STEVE MADDEN",
+      "cat": ""
+    },
+    "gf-17b": {
+      "code": "GF-17 B",
+      "name": "CLARKS",
+      "cat": ""
+    },
+    "gf-18a": {
+      "code": "GF-18 A",
+      "name": "CONVERSE",
+      "cat": ""
+    },
+    "gf-18b": {
+      "code": "GF-18 B",
+      "name": "CROCS",
+      "cat": ""
+    },
+    "gf-19": {
+      "code": "GF-19",
+      "name": "SKECHERS",
+      "cat": ""
+    },
+    "gf-20": {
+      "code": "GF-20",
+      "name": "DIGIPLUS",
+      "cat": ""
+    },
+    "gf-21": {
+      "code": "GF-21",
+      "name": "BALENO",
+      "cat": ""
+    },
+    "gf-22": {
+      "code": "GF-22",
+      "name": "RELX",
+      "cat": ""
+    },
+    "gf-23": {
+      "code": "GF-23",
+      "name": "",
+      "cat": ""
+    },
+    "gf-24": {
+      "code": "GF-24",
+      "name": "",
+      "cat": ""
+    },
+    "gf-25": {
+      "code": "GF-25",
+      "name": "",
+      "cat": ""
+    },
+    "gf-26": {
+      "code": "GF-26",
+      "name": "",
+      "cat": ""
+    },
+    "gf-27": {
+      "code": "GF-27",
+      "name": "",
+      "cat": ""
+    },
+    "gf-28": {
+      "code": "GF-28",
+      "name": "",
+      "cat": ""
+    },
+    "gf-29a": {
+      "code": "GF-29A",
+      "name": "",
+      "cat": ""
+    },
+    "gf-29b": {
+      "code": "GF-29B",
+      "name": "",
+      "cat": ""
+    },
+    "gf-29": {
+      "code": "GF-29",
+      "name": "",
+      "cat": ""
+    },
+    "gf-30": {
+      "code": "GF-30",
+      "name": "",
+      "cat": ""
+    },
+    "gf-30b": {
+      "code": "GF-30B",
+      "name": "",
+      "cat": ""
+    },
+    "gf-31": {
+      "code": "GF-31",
+      "name": "",
+      "cat": ""
+    },
+    "gf-32": {
+      "code": "GF-32",
+      "name": "",
+      "cat": ""
+    },
+    "gf-pro1": {
+      "code": "GF - PRO 1",
+      "name": "U-BEATZ",
+      "cat": ""
+    },
+    "gf-pro2": {
+      "code": "GF - PRO 2",
+      "name": "RAMEN 1",
+      "cat": ""
+    },
+    "gf-pro3a": {
+      "code": "GF - PRO 3A",
+      "name": "PEPPERLUNCH",
+      "cat": ""
+    },
+    "gf-pro3b": {
+      "code": "GF - PRO 3B",
+      "name": "ES TELER 77",
+      "cat": ""
+    },
+    "gf-pro4a": {
+      "code": "GF - PRO 4A",
+      "name": "BLOOMERY",
+      "cat": ""
+    },
+    "gf-pro4b": {
+      "code": "GF - PRO 4B",
+      "name": "ALCHEMY",
+      "cat": ""
+    },
+    "gf-pro5": {
+      "code": "GF - PRO 5",
+      "name": "",
+      "cat": ""
+    },
+    "gf-spm01": {
+      "code": "GF - SPM 01",
+      "name": "WATSONS",
+      "cat": ""
+    },
+    "gf-spm02": {
+      "code": "GF - SPM 02",
+      "name": "ITOYA",
+      "cat": ""
+    },
+    "gf-spm03": {
+      "code": "GF - SPM 03",
+      "name": "",
+      "cat": ""
+    },
+    "gf-spm04": {
+      "code": "GF - SPM 04",
+      "name": "",
+      "cat": ""
+    },
+    "gf-spm05": {
+      "code": "GF - SPM 05",
+      "name": "",
+      "cat": ""
+    },
+    "gf-spma1": {
+      "code": "GF - SPMA1",
+      "name": "HERO",
+      "cat": ""
+    },
+    "gf-spmexth": {
+      "code": "GF - SPM EXTH",
+      "name": "",
+      "cat": ""
+    },
+    "gf-sl01": {
+      "code": "GF-SL01",
+      "name": "HMNS",
+      "cat": ""
+    },
+    "gf-atpm1": {
+      "code": "ATPM-1",
+      "name": "SECRET GARDEN",
+      "cat": ""
+    },
+    "gf-atpm2": {
+      "code": "ATPM-2",
+      "name": "SEMBADA GOLD",
+      "cat": ""
+    },
+    "gf-atpm3": {
+      "code": "ATPM-3",
+      "name": "",
+      "cat": ""
+    },
+    "gf-atpm4": {
+      "code": "ATPM-4",
+      "name": "BOTANICAL ESSENTIALS",
+      "cat": ""
+    },
+    "gf-atpm5": {
+      "code": "ATPM-5",
+      "name": "CRUSITA",
+      "cat": ""
+    }
   },
   "1f": {
-    "l1-a3":     { "code": "L1-A3",    "door": [181, 776],  "floor": "1F" },
-    "l1-11":     { "code": "L1-11",    "door": [310, 646],  "floor": "1F" },
-    "l1-9810":   { "code": "L1-9810",  "door": [422, 628],  "floor": "1F" },
-    "l1-08":     { "code": "L1-08",    "door": [520, 620],  "floor": "1F" },
-    "l1-07":     { "code": "L1-07",    "door": [590, 649],  "floor": "1F" },
-    "l1-06":     { "code": "L1-06",    "door": [666, 618],  "floor": "1F" },
-    "l1-05":     { "code": "L1-05",    "door": [683, 554],  "floor": "1F" },
-    "l1-22a":    { "code": "L1-22A",   "door": [574, 735],  "floor": "1F" },
-    "l1-22b":    { "code": "L1-22B",   "door": [579, 790],  "floor": "1F" },
-    "l1-24":     { "code": "L1-24",    "door": [654, 723],  "floor": "1F" },
-    "l1-29":     { "code": "L1-29",    "door": [711, 694],  "floor": "1F" },
-    "l1-27":     { "code": "L1-27",    "door": [771, 659],  "floor": "1F" },
-    "l1-04":     { "code": "L1-04",    "door": [798, 548],  "floor": "1F" },
-    "l1-03a":    { "code": "L1-03A",   "door": [846, 483],  "floor": "1F" },
-    "l1-03":     { "code": "L1-03",    "door": [822, 428],  "floor": "1F" },
-    "l1-a1":     { "code": "L1-A1",    "door": [1043, 257], "floor": "1F" },
-    "l1-21":     { "code": "L1-21",    "door": [1235, 476], "floor": "1F" },
-    "l1-20":     { "code": "L1-20",    "door": [1059, 570], "floor": "1F" },
-    "l1-19":     { "code": "L1-19",    "door": [995, 588],  "floor": "1F" },
-    "l1-18":     { "code": "L1-18",    "door": [947, 632],  "floor": "1F" },
-    "l1-28":     { "code": "L1-28",    "door": [897, 703],  "floor": "1F" },
-    "l1-16-17":  { "code": "L1-16&17", "door": [790, 846],  "floor": "1F" },
-    "l1-15":     { "code": "L1-15",    "door": [673, 870],  "floor": "1F" },
-    "l1-14":     { "code": "L1-14",    "door": [605, 891],  "floor": "1F" },
-    "l1-13":     { "code": "L1-13",    "door": [536, 922],  "floor": "1F" },
-    "l1-12":     { "code": "L1-12",    "door": [461, 935],  "floor": "1F" },
-    "l1-12a":    { "code": "L1-12A",   "door": [384, 903],  "floor": "1F" },
-    "l1-23":     { "code": "L1-23",    "door": [1081, 467], "floor": "1F" },
-    "l1-2b":     { "code": "L1-2B",    "door": [858, 578],  "floor": "1F" },
-    "l1-26":     { "code": "L1-26",    "door": [915, 524],  "floor": "1F" }
+    "l1-a3": {
+      "code": "L1-A3",
+      "name": "OH! SOME",
+      "cat": "Lantai 1",
+      "door": [
+        181,
+        776
+      ]
+    },
+    "l1-11": {
+      "code": "L1-11",
+      "name": "SALON RUDY HADISUWARNO",
+      "cat": "Lantai 1",
+      "door": [
+        310,
+        646
+      ]
+    },
+    "l1-9810": {
+      "code": "L1-9810",
+      "name": "BAGS CITY",
+      "cat": "Lantai 1",
+      "door": [
+        422,
+        628
+      ]
+    },
+    "l1-08": {
+      "code": "L1-08",
+      "name": "BEATRICE CLOTHING",
+      "cat": "Lantai 1",
+      "door": [
+        520,
+        620
+      ]
+    },
+    "l1-07": {
+      "code": "L1-07",
+      "name": "OPTIK SEIS",
+      "cat": "Lantai 1",
+      "door": [
+        590,
+        649
+      ]
+    },
+    "l1-06": {
+      "code": "L1-06",
+      "name": "ARABELLE - HASYA HIJAB",
+      "cat": "Lantai 1",
+      "door": [
+        666,
+        618
+      ]
+    },
+    "l1-05": {
+      "code": "L1-05",
+      "name": "SKIN +",
+      "cat": "Lantai 1",
+      "door": [
+        683,
+        554
+      ]
+    },
+    "l1-22a": {
+      "code": "L1-22A",
+      "name": "PRETTY PASTEL",
+      "cat": "Lantai 1",
+      "door": [
+        574,
+        735
+      ]
+    },
+    "l1-22b": {
+      "code": "L1-22B",
+      "name": "MANDALIKA",
+      "cat": "Lantai 1",
+      "door": [
+        579,
+        790
+      ]
+    },
+    "l1-24": {
+      "code": "L1-24",
+      "name": "SIMPLICITY",
+      "cat": "Lantai 1",
+      "door": [
+        654,
+        723
+      ]
+    },
+    "l1-29": {
+      "code": "L1-29",
+      "name": "HASSYA",
+      "cat": "Lantai 1",
+      "door": [
+        711,
+        694
+      ]
+    },
+    "l1-27": {
+      "code": "L1-27",
+      "name": "ROOTKYS",
+      "cat": "Lantai 1",
+      "door": [
+        771,
+        659
+      ]
+    },
+    "l1-04": {
+      "code": "L1-04",
+      "name": "OPTIK MELAWAI",
+      "cat": "Lantai 1",
+      "door": [
+        798,
+        548
+      ]
+    },
+    "l1-03a": {
+      "code": "L1-03A",
+      "name": "UBS",
+      "cat": "Lantai 1",
+      "door": [
+        846,
+        483
+      ]
+    },
+    "l1-03": {
+      "code": "L1-03",
+      "name": "ONEDA",
+      "cat": "Lantai 1",
+      "door": [
+        822,
+        428
+      ]
+    },
+    "l1-a1": {
+      "code": "L1-A1",
+      "name": "UNIQLO",
+      "cat": "Lantai 1",
+      "door": [
+        1043,
+        257
+      ]
+    },
+    "l1-21": {
+      "code": "L1-21",
+      "name": "COLORBOX",
+      "cat": "Lantai 1",
+      "door": [
+        1235,
+        476
+      ]
+    },
+    "l1-20": {
+      "code": "L1-20",
+      "name": "TRISET WATCHOUT",
+      "cat": "Lantai 1",
+      "door": [
+        1059,
+        570
+      ]
+    },
+    "l1-19": {
+      "code": "L1-19",
+      "name": "MOC",
+      "cat": "Lantai 1",
+      "door": [
+        995,
+        588
+      ]
+    },
+    "l1-18": {
+      "code": "L1-18",
+      "name": "HARDWARE",
+      "cat": "Lantai 1",
+      "door": [
+        947,
+        632
+      ]
+    },
+    "l1-28": {
+      "code": "L1-28",
+      "name": "JETE",
+      "cat": "Lantai 1",
+      "door": [
+        897,
+        703
+      ]
+    },
+    "l1-16-17": {
+      "code": "L1-16&17",
+      "name": "SPORTS STATION",
+      "cat": "Lantai 1",
+      "door": [
+        790,
+        846
+      ]
+    },
+    "l1-15": {
+      "code": "L1-15",
+      "name": "PUMA",
+      "cat": "Lantai 1",
+      "door": [
+        673,
+        870
+      ]
+    },
+    "l1-14": {
+      "code": "L1-14",
+      "name": "AVE SALON",
+      "cat": "Lantai 1",
+      "door": [
+        605,
+        891
+      ]
+    },
+    "l1-13": {
+      "code": "L1-13",
+      "name": "THIS IS APRIL",
+      "cat": "Lantai 1",
+      "door": [
+        536,
+        922
+      ]
+    },
+    "l1-12": {
+      "code": "L1-12",
+      "name": "GUARDIAN",
+      "cat": "Lantai 1",
+      "door": [
+        461,
+        935
+      ]
+    },
+    "l1-12a": {
+      "code": "L1-12A",
+      "name": "ZOOM WATCH",
+      "cat": "Lantai 1",
+      "door": [
+        384,
+        903
+      ]
+    },
+    "l1-23": {
+      "code": "L1-23",
+      "name": "SATURDAY",
+      "cat": "Lantai 1",
+      "door": [
+        1081,
+        467
+      ]
+    },
+    "l1-2b": {
+      "code": "L1-2B",
+      "name": "L1-2B",
+      "cat": "Lantai 1",
+      "door": [
+        858,
+        578
+      ]
+    },
+    "l1-26": {
+      "code": "L1-26",
+      "name": "DESTIN HOUSE",
+      "cat": "Lantai 1",
+      "door": [
+        915,
+        524
+      ]
+    }
   },
   "2f": {
-    "l2-22a":      { "code": "L2-22A",      "door": [480, 950],  "floor": "2F" },
-    "l2-22b":      { "code": "L2-22B",      "door": [520, 947],  "floor": "2F" },
-    "l2-23a":      { "code": "L2-23A",      "door": [560, 946],  "floor": "2F" },
-    "l2-23b":      { "code": "L2-23B",      "door": [600, 944],  "floor": "2F" },
-    "l2-24-25-26": { "code": "L2-24,25,26", "door": [773, 916],  "floor": "2F" },
-    "l2-27":       { "code": "L2-27",       "door": [881, 812],  "floor": "2F" },
-    "l2-32":       { "code": "L2-32",       "door": [756, 761],  "floor": "2F" },
-    "l2-42":       { "code": "L2-42",       "door": [941, 713],  "floor": "2F" },
-    "l2-28":       { "code": "L2-28",       "door": [995, 643],  "floor": "2F" },
-    "l2-29":       { "code": "L2-29",       "door": [1083, 622], "floor": "2F" },
-    "l2-29b":      { "code": "L2-29B",      "door": [1167, 607], "floor": "2F" },
-    "l2-30":       { "code": "L2-30",       "door": [1177, 547], "floor": "2F" },
-    "l2-a2":       { "code": "L2-A2",       "door": [1298, 561], "floor": "2F" },
-    "l2-a1":       { "code": "L2-A1",       "door": [1146, 196], "floor": "2F" },
-    "l2-a48":      { "code": "L2-A48",      "door": [986, 295],  "floor": "2F" },
-    "l2-a44":      { "code": "L2-A44",      "door": [961, 313],  "floor": "2F" },
-    "l2-02":       { "code": "L2-02",       "door": [923, 251],  "floor": "2F" },
-    "l2-02a":      { "code": "L2-02A",      "door": [883, 250],  "floor": "2F" },
-    "l2-fp25":     { "code": "L2-FP25",     "door": [756, 132],  "floor": "2F" },
-    "l2-fp26":     { "code": "L2-FP26",     "door": [771, 206],  "floor": "2F" },
-    "l2-fp27":     { "code": "L2-FP27",     "door": [765, 472],  "floor": "2F" },
-    "l2-09":       { "code": "L2-09",       "door": [883, 361],  "floor": "2F" },
-    "l2-10":       { "code": "L2-10",       "door": [881, 473],  "floor": "2F" },
-    "l2-11":       { "code": "L2-11",       "door": [872, 538],  "floor": "2F" },
-    "l2-12":       { "code": "L2-12",       "door": [831, 612],  "floor": "2F" },
-    "l2-13-14":    { "code": "L2-13&14",    "door": [731, 635],  "floor": "2F" },
-    "l2-46":       { "code": "L2-46",       "door": [870, 642],  "floor": "2F" },
-    "l2-39":       { "code": "L2-39",       "door": [915, 592],  "floor": "2F" },
-    "l2-40":       { "code": "L2-40",       "door": [958, 551],  "floor": "2F" },
-    "l2-15":       { "code": "L2-15",       "door": [634, 667],  "floor": "2F" },
-    "l2-16":       { "code": "L2-16",       "door": [567, 659],  "floor": "2F" },
-    "l2-17":       { "code": "L2-17",       "door": [504, 659],  "floor": "2F" },
-    "l2-18a":      { "code": "L2-18A",      "door": [452, 665],  "floor": "2F" },
-    "l2-18b":      { "code": "L2-18B",      "door": [408, 672],  "floor": "2F" },
-    "l2-18c":      { "code": "L2-18C",      "door": [336, 675],  "floor": "2F" },
-    "l2-19":       { "code": "L2-19",       "door": [174, 777],  "floor": "2F" },
-    "l2-20-21":    { "code": "L2-20&21",    "door": [296, 923],  "floor": "2F" },
-    "l2-fp24":     { "code": "L2-FP24",     "door": [672, 112],  "floor": "2F" },
-    "l2-fp23":     { "code": "L2-FP23",     "door": [526, 151],  "floor": "2F" },
-    "l2-fp22":     { "code": "L2-FP22",     "door": [526, 182],  "floor": "2F" },
-    "l2-fp21":     { "code": "L2-FP21",     "door": [526, 217],  "floor": "2F" },
-    "l2-fp01":     { "code": "L2-FP01",     "door": [562, 267],  "floor": "2F" },
-    "l2-fp03":     { "code": "L2-FP03",     "door": [562, 298],  "floor": "2F" },
-    "l2-fp05":     { "code": "L2-FP05",     "door": [562, 333],  "floor": "2F" },
-    "l2-fp02":     { "code": "L2-FP02",     "door": [650, 266],  "floor": "2F" },
-    "l2-fp04":     { "code": "L2-FP04",     "door": [650, 299],  "floor": "2F" },
-    "l2-fp07":     { "code": "L2-FP07",     "door": [649, 333],  "floor": "2F" },
-    "l2-fp06":     { "code": "L2-FP06",     "door": [522, 441],  "floor": "2F" },
-    "l2-fp0s":     { "code": "L2-FP0S",     "door": [522, 476],  "floor": "2F" },
-    "l2-fp09":     { "code": "L2-FP09",     "door": [741, 268],  "floor": "2F" },
-    "l2-fp12":     { "code": "L2-FP12",     "door": [740, 333],  "floor": "2F" },
-    "l2-fp08":     { "code": "L2-FP08",     "door": [523, 377],  "floor": "2F" },
-    "l2-fp10":     { "code": "L2-FP10",     "door": [741, 298],  "floor": "2F" }
+    "l2-22a": {
+      "code": "L2-22A",
+      "name": "SOL",
+      "cat": "Lantai 2",
+      "door": [
+        480,
+        950
+      ]
+    },
+    "l2-22b": {
+      "code": "L2-22B",
+      "name": "MINOSHE",
+      "cat": "Lantai 2",
+      "door": [
+        520,
+        947
+      ]
+    },
+    "l2-23a": {
+      "code": "L2-23A",
+      "name": "PANLAND WOO",
+      "cat": "Lantai 2",
+      "door": [
+        560,
+        946
+      ]
+    },
+    "l2-23b": {
+      "code": "L2-23B",
+      "name": "HAPPY DENTAL",
+      "cat": "Lantai 2",
+      "door": [
+        600,
+        944
+      ]
+    },
+    "l2-24-25-26": {
+      "code": "L2-24,25,26",
+      "name": "MINISO",
+      "cat": "Lantai 2",
+      "door": [
+        773,
+        916
+      ]
+    },
+    "l2-27": {
+      "code": "L2-27",
+      "name": "VIVO",
+      "cat": "Lantai 2",
+      "door": [
+        881,
+        812
+      ]
+    },
+    "l2-32": {
+      "code": "L2-32",
+      "name": "OPPO",
+      "cat": "Lantai 2",
+      "door": [
+        756,
+        761
+      ]
+    },
+    "l2-42": {
+      "code": "L2-42",
+      "name": "BFIT",
+      "cat": "Lantai 2",
+      "door": [
+        941,
+        713
+      ]
+    },
+    "l2-28": {
+      "code": "L2-28",
+      "name": "XIAOMI",
+      "cat": "Lantai 2",
+      "door": [
+        995,
+        643
+      ]
+    },
+    "l2-29": {
+      "code": "L2-29",
+      "name": "MY STYLE",
+      "cat": "Lantai 2",
+      "door": [
+        1083,
+        622
+      ]
+    },
+    "l2-29b": {
+      "code": "L2-29B",
+      "name": "L2-29B",
+      "cat": "Lantai 2",
+      "door": [
+        1167,
+        607
+      ]
+    },
+    "l2-30": {
+      "code": "L2-30",
+      "name": "KIDDY CUTS",
+      "cat": "Lantai 2",
+      "door": [
+        1177,
+        547
+      ]
+    },
+    "l2-a2": {
+      "code": "L2-A2",
+      "name": "KIDZLANDIA",
+      "cat": "Lantai 2",
+      "door": [
+        1298,
+        561
+      ]
+    },
+    "l2-a1": {
+      "code": "L2-A1",
+      "name": "FUN WORLD",
+      "cat": "Lantai 2",
+      "door": [
+        1146,
+        196
+      ]
+    },
+    "l2-a48": {
+      "code": "L2-A48",
+      "name": "L2-A48",
+      "cat": "Lantai 2",
+      "door": [
+        986,
+        295
+      ]
+    },
+    "l2-a44": {
+      "code": "L2-A44",
+      "name": "L2-A44",
+      "cat": "Lantai 2",
+      "door": [
+        961,
+        313
+      ]
+    },
+    "l2-02": {
+      "code": "L2-02",
+      "name": "DOOR FRIES",
+      "cat": "Lantai 2",
+      "door": [
+        923,
+        251
+      ]
+    },
+    "l2-02a": {
+      "code": "L2-02A",
+      "name": "SHIHLIN",
+      "cat": "Lantai 2",
+      "door": [
+        883,
+        250
+      ]
+    },
+    "l2-fp25": {
+      "code": "L2-FP25",
+      "name": "OO BAKSO HERITAGE",
+      "cat": "Lantai 2",
+      "door": [
+        756,
+        132
+      ]
+    },
+    "l2-fp26": {
+      "code": "L2-FP26",
+      "name": "SHIGERU",
+      "cat": "Lantai 2",
+      "door": [
+        771,
+        206
+      ]
+    },
+    "l2-fp27": {
+      "code": "L2-FP27",
+      "name": "SUSHIKUN",
+      "cat": "Lantai 2",
+      "door": [
+        765,
+        472
+      ]
+    },
+    "l2-09": {
+      "code": "L2-09",
+      "name": "KIMUKATSU",
+      "cat": "Lantai 2",
+      "door": [
+        883,
+        361
+      ]
+    },
+    "l2-10": {
+      "code": "L2-10",
+      "name": "MARUGAME UDON",
+      "cat": "Lantai 2",
+      "door": [
+        881,
+        473
+      ]
+    },
+    "l2-11": {
+      "code": "L2-11",
+      "name": "DR SPECS",
+      "cat": "Lantai 2",
+      "door": [
+        872,
+        538
+      ]
+    },
+    "l2-12": {
+      "code": "L2-12",
+      "name": "CAVALLO",
+      "cat": "Lantai 2",
+      "door": [
+        831,
+        612
+      ]
+    },
+    "l2-13-14": {
+      "code": "L2-13&14",
+      "name": "PALADIO",
+      "cat": "Lantai 2",
+      "door": [
+        731,
+        635
+      ]
+    },
+    "l2-46": {
+      "code": "L2-46",
+      "name": "POKEMON",
+      "cat": "Lantai 2",
+      "door": [
+        870,
+        642
+      ]
+    },
+    "l2-39": {
+      "code": "L2-39",
+      "name": "JACO",
+      "cat": "Lantai 2",
+      "door": [
+        915,
+        592
+      ]
+    },
+    "l2-40": {
+      "code": "L2-40",
+      "name": "PLAYWORKS",
+      "cat": "Lantai 2",
+      "door": [
+        958,
+        551
+      ]
+    },
+    "l2-15": {
+      "code": "L2-15",
+      "name": "WACOAL",
+      "cat": "Lantai 2",
+      "door": [
+        634,
+        667
+      ]
+    },
+    "l2-16": {
+      "code": "L2-16",
+      "name": "SCOOP",
+      "cat": "Lantai 2",
+      "door": [
+        567,
+        659
+      ]
+    },
+    "l2-17": {
+      "code": "L2-17",
+      "name": "BONJOUR",
+      "cat": "Lantai 2",
+      "door": [
+        504,
+        659
+      ]
+    },
+    "l2-18a": {
+      "code": "L2-18A",
+      "name": "PHOTOIS",
+      "cat": "Lantai 2",
+      "door": [
+        452,
+        665
+      ]
+    },
+    "l2-18b": {
+      "code": "L2-18B",
+      "name": "WAXHAUSE",
+      "cat": "Lantai 2",
+      "door": [
+        408,
+        672
+      ]
+    },
+    "l2-18c": {
+      "code": "L2-18C",
+      "name": "NUSANTARA TOUR",
+      "cat": "Lantai 2",
+      "door": [
+        336,
+        675
+      ]
+    },
+    "l2-19": {
+      "code": "L2-19",
+      "name": "ANYTIME FITNESS",
+      "cat": "Lantai 2",
+      "door": [
+        174,
+        777
+      ]
+    },
+    "l2-20-21": {
+      "code": "L2-20&21",
+      "name": "OHARANG",
+      "cat": "Lantai 2",
+      "door": [
+        296,
+        923
+      ]
+    },
+    "l2-fp24": {
+      "code": "L2-FP24",
+      "name": "DIMDIMSUM",
+      "cat": "Lantai 2",
+      "door": [
+        672,
+        112
+      ]
+    },
+    "l2-fp23": {
+      "code": "L2-FP23",
+      "name": "SOLO STEAK",
+      "cat": "Lantai 2",
+      "door": [
+        526,
+        151
+      ]
+    },
+    "l2-fp22": {
+      "code": "L2-FP22",
+      "name": "SOLO STEAK",
+      "cat": "Lantai 2",
+      "door": [
+        526,
+        182
+      ]
+    },
+    "l2-fp21": {
+      "code": "L2-FP21",
+      "name": "KOI TEPPANYAKI",
+      "cat": "Lantai 2",
+      "door": [
+        526,
+        217
+      ]
+    },
+    "l2-fp01": {
+      "code": "L2-FP01",
+      "name": "PENMO",
+      "cat": "Lantai 2",
+      "door": [
+        562,
+        267
+      ]
+    },
+    "l2-fp03": {
+      "code": "L2-FP03",
+      "name": "CFC",
+      "cat": "Lantai 2",
+      "door": [
+        562,
+        298
+      ]
+    },
+    "l2-fp05": {
+      "code": "L2-FP05",
+      "name": "PENYETAN COK",
+      "cat": "Lantai 2",
+      "door": [
+        562,
+        333
+      ]
+    },
+    "l2-fp02": {
+      "code": "L2-FP02",
+      "name": "MASTER HOTPOT",
+      "cat": "Lantai 2",
+      "door": [
+        650,
+        266
+      ]
+    },
+    "l2-fp04": {
+      "code": "L2-FP04",
+      "name": "CFC",
+      "cat": "Lantai 2",
+      "door": [
+        650,
+        299
+      ]
+    },
+    "l2-fp07": {
+      "code": "L2-FP07",
+      "name": "PEMPEK FARINA",
+      "cat": "Lantai 2",
+      "door": [
+        649,
+        333
+      ]
+    },
+    "l2-fp06": {
+      "code": "L2-FP06",
+      "name": "BEBEK SEMANGAT",
+      "cat": "Lantai 2",
+      "door": [
+        522,
+        441
+      ]
+    },
+    "l2-fp0s": {
+      "code": "L2-FP0S",
+      "name": "L2-FP0S",
+      "cat": "Lantai 2",
+      "door": [
+        522,
+        476
+      ]
+    },
+    "l2-fp09": {
+      "code": "L2-FP09",
+      "name": "MALADANG",
+      "cat": "Lantai 2",
+      "door": [
+        741,
+        268
+      ]
+    },
+    "l2-fp12": {
+      "code": "L2-FP12",
+      "name": "CINERY",
+      "cat": "Lantai 2",
+      "door": [
+        740,
+        333
+      ]
+    },
+    "l2-fp08": {
+      "code": "L2-FP08",
+      "name": "HORAI COCONUT",
+      "cat": "Lantai 2",
+      "door": [
+        523,
+        377
+      ]
+    },
+    "l2-fp10": {
+      "code": "L2-FP10",
+      "name": "TEH JAWA",
+      "cat": "Lantai 2",
+      "door": [
+        741,
+        298
+      ]
+    }
   },
   "3f": {
-    "l3-a1":   { "code": "L3-A1",    "door": [367, 784],  "floor": "3F" },
-    "l3-05":   { "code": "L3-05",    "door": [686, 910],  "floor": "3F" },
-    "l3-0607": { "code": "L3-06&07", "door": [785, 941],  "floor": "3F" },
-    "l3-08":   { "code": "L3-08",    "door": [866, 921],  "floor": "3F" },
-    "l3-09":   { "code": "L3-09",    "door": [945, 904],  "floor": "3F" },
-    "l3-31":   { "code": "L3-31",    "door": [990, 682],  "floor": "3F" },
-    "l3-h11":  { "code": "L3-H11",   "door": [800, 672],  "floor": "3F" },
-    "l3-10b":  { "code": "L3-10B",   "door": [916, 693],  "floor": "3F" },
-    "l3-10a":  { "code": "L3-10A",   "door": [887, 687],  "floor": "3F" },
-    "l3-12":   { "code": "L3-12",    "door": [724, 658],  "floor": "3F" },
-    "l3-h17":  { "code": "L3-H17",   "door": [653, 572],  "floor": "3F" },
-    "l3-03":   { "code": "L3-03",    "door": [870, 530],  "floor": "3F" },
-    "l3-h16":  { "code": "L3-H16",   "door": [700, 505],  "floor": "3F" },
-    "l3-01":   { "code": "L3-01",    "door": [1058, 580], "floor": "3F" },
-    "l3-02":   { "code": "L3-02",    "door": [950, 480],  "floor": "3F" },
-    "l3-h15b": { "code": "L3-H15B",  "door": [638, 475],  "floor": "3F" },
-    "l3-h15a": { "code": "L3-H15A",  "door": [594, 476],  "floor": "3F" },
-    "l3-h14":  { "code": "L3-H14",   "door": [554, 477],  "floor": "3F" },
-    "l3-h13":  { "code": "L3-H13",   "door": [513, 478],  "floor": "3F" },
-    "l3-h12":  { "code": "L3-H12",   "door": [474, 479],  "floor": "3F" },
-    "l3-h10":  { "code": "L3-H10",   "door": [401, 480],  "floor": "3F" },
-    "l3-h09":  { "code": "L3-H09",   "door": [368, 481],  "floor": "3F" }
+    "l3-a1": {
+      "code": "L3-A1",
+      "name": "CINEMA XXI",
+      "cat": "Lantai 3",
+      "door": [
+        367,
+        784
+      ]
+    },
+    "l3-05": {
+      "code": "L3-05",
+      "name": "TOM SUSHI",
+      "cat": "Lantai 3",
+      "door": [
+        686,
+        910
+      ]
+    },
+    "l3-0607": {
+      "code": "L3-06&07",
+      "name": "TAWAN",
+      "cat": "Lantai 3",
+      "door": [
+        785,
+        941
+      ]
+    },
+    "l3-08": {
+      "code": "L3-08",
+      "name": "TEH JAWA RESTO",
+      "cat": "Lantai 3",
+      "door": [
+        866,
+        921
+      ]
+    },
+    "l3-09": {
+      "code": "L3-09",
+      "name": "SOLARIA",
+      "cat": "Lantai 3",
+      "door": [
+        945,
+        904
+      ]
+    },
+    "l3-31": {
+      "code": "L3-31",
+      "name": "SOUR SALLY",
+      "cat": "Lantai 3",
+      "door": [
+        990,
+        682
+      ]
+    },
+    "l3-h11": {
+      "code": "L3-H11",
+      "name": "PAWON LANGGENG",
+      "cat": "Lantai 3",
+      "door": [
+        800,
+        672
+      ]
+    },
+    "l3-10b": {
+      "code": "L3-10B",
+      "name": "SHAKE SHAKE",
+      "cat": "Lantai 3",
+      "door": [
+        916,
+        693
+      ]
+    },
+    "l3-10a": {
+      "code": "L3-10A",
+      "name": "D'CREPES",
+      "cat": "Lantai 3",
+      "door": [
+        887,
+        687
+      ]
+    },
+    "l3-12": {
+      "code": "L3-12",
+      "name": "TREAT",
+      "cat": "Lantai 3",
+      "door": [
+        724,
+        658
+      ]
+    },
+    "l3-h17": {
+      "code": "L3-H17",
+      "name": "MONTATO X DUMDUM",
+      "cat": "Lantai 3",
+      "door": [
+        653,
+        572
+      ]
+    },
+    "l3-03": {
+      "code": "L3-03",
+      "name": "ISTANA MIE & ES",
+      "cat": "Lantai 3",
+      "door": [
+        870,
+        530
+      ]
+    },
+    "l3-h16": {
+      "code": "L3-H16",
+      "name": "SANCHA",
+      "cat": "Lantai 3",
+      "door": [
+        700,
+        505
+      ]
+    },
+    "l3-01": {
+      "code": "L3-01",
+      "name": "INDOMOBIL",
+      "cat": "Lantai 3",
+      "door": [
+        1058,
+        580
+      ]
+    },
+    "l3-02": {
+      "code": "L3-02",
+      "name": "TONG TJI",
+      "cat": "Lantai 3",
+      "door": [
+        950,
+        480
+      ]
+    },
+    "l3-h15b": {
+      "code": "L3-H15B",
+      "name": "KYSO",
+      "cat": "Lantai 3",
+      "door": [
+        638,
+        475
+      ]
+    },
+    "l3-h15a": {
+      "code": "L3-H15A",
+      "name": "JUSTFLUFF",
+      "cat": "Lantai 3",
+      "door": [
+        594,
+        476
+      ]
+    },
+    "l3-h14": {
+      "code": "L3-H14",
+      "name": "BABAHKUNG",
+      "cat": "Lantai 3",
+      "door": [
+        554,
+        477
+      ]
+    },
+    "l3-h13": {
+      "code": "L3-H13",
+      "name": "TRIXIE",
+      "cat": "Lantai 3",
+      "door": [
+        513,
+        478
+      ]
+    },
+    "l3-h12": {
+      "code": "L3-H12",
+      "name": "KATOEN",
+      "cat": "Lantai 3",
+      "door": [
+        474,
+        479
+      ]
+    },
+    "l3-h10": {
+      "code": "L3-H10",
+      "name": "GENDHIZ",
+      "cat": "Lantai 3",
+      "door": [
+        401,
+        480
+      ]
+    },
+    "l3-h09": {
+      "code": "L3-H09",
+      "name": "GENDHIZ",
+      "cat": "Lantai 3",
+      "door": [
+        368,
+        481
+      ]
+    },
+    "1f": {
+      "code": "",
+      "name": "",
+      "cat": ""
+    },
+    "2f": {
+      "code": "",
+      "name": "",
+      "cat": ""
+    },
+    "3f": {
+      "code": "",
+      "name": "",
+      "cat": ""
+    }
   }
 }

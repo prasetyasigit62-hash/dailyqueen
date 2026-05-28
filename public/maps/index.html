@@ -2277,26 +2277,19 @@
   </div>
 
   <script>
-    // ─── TENANT DATA — loaded async from API + static map coords ─────────────
-    // MAP_DATA: koordinat door per lantai (statis, dari file JSON)
-    // API_NAMES: nama tenant dari database (dinamis, dari /api/maps-tenants)
+    // ─── TENANT DATA — loaded async from tenants-map-data.json ──────────────
     let MAP_DATA = { gf: {}, "1f": {}, "2f": {}, "3f": {} };
     let TENANTS_GF = {}, TENANTS_1F = {}, TENANTS_2F = {}, TENANTS_3F = {};
 
-    function buildTenants(mapFloor, apiNames) {
+    function buildTenants(mapFloor) {
       const result = {};
       Object.entries(mapFloor).forEach(([id, meta]) => {
-        const api = apiNames[id] || apiNames[meta.code?.toLowerCase().replace(/\s+/g, '-')] || {};
-        const floorLabel = meta.floor === 'GF' ? 'Ground Floor'
-          : meta.floor === '1F' ? 'Lantai 1'
-          : meta.floor === '2F' ? 'Lantai 2'
-          : 'Lantai 3';
         result[id] = {
           code: meta.code,
-          name: api.name || '',
-          cat: api.cat || floorLabel,
+          name: meta.name || '',
+          cat: meta.cat || '',
           door: meta.door || [0, 0],
-          desc: api.desc || (api.name ? `${api.name} berada di ${floorLabel} Queen City Mall.` : ''),
+          desc: meta.name ? `${meta.name} berada di Queen City Mall.` : '',
           loc: `${meta.floor} · ${meta.code}`,
         };
       });
@@ -2305,21 +2298,15 @@
 
     async function loadTenantData() {
       try {
-        const [mapRes, apiRes] = await Promise.all([
-          fetch('/maps/tenants-map-data.json'),
-          fetch('/api/maps-tenants'),
-        ]);
+        const mapRes = await fetch('/maps/tenants-map-data.json');
         MAP_DATA = mapRes.ok ? await mapRes.json() : MAP_DATA;
-        const apiNames = apiRes.ok ? await apiRes.json() : {};
-        TENANTS_GF  = buildTenants(MAP_DATA.gf,  apiNames);
-        TENANTS_1F  = buildTenants(MAP_DATA['1f'], apiNames);
-        TENANTS_2F  = buildTenants(MAP_DATA['2f'], apiNames);
-        TENANTS_3F  = buildTenants(MAP_DATA['3f'], apiNames);
+        TENANTS_GF  = buildTenants(MAP_DATA.gf);
+        TENANTS_1F  = buildTenants(MAP_DATA['1f']);
+        TENANTS_2F  = buildTenants(MAP_DATA['2f']);
+        TENANTS_3F  = buildTenants(MAP_DATA['3f']);
       } catch (e) {
-        // fallback: tetap pakai TENANTS kosong, map masih bisa tampil
         console.warn('[Maps] Tenant data load failed, using empty fallback', e);
       }
-      // Update FLOOR_CONFIG references after data loaded
       if (typeof FLOOR_CONFIG !== 'undefined') {
         FLOOR_CONFIG.gf.tenants  = TENANTS_GF;
         FLOOR_CONFIG['1f'].tenants = TENANTS_1F;
