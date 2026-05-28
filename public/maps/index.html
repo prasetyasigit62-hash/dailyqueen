@@ -2916,7 +2916,10 @@
         chip.dataset.id = id;
         chip.title = tenantName && t.code ? `${t.code} · ${tenantName}` : `${t.code || id} · Tenant belum tersedia`;
         if (config.hasTenantHotspots && tenantName && hasHotspot) {
-          chip.onclick = () => selectTenant(id);
+          chip.onclick = () => {
+            selectTenant(id);
+            focusTenantOnMap(id);
+          };
         }
         stripEl.appendChild(chip);
       });
@@ -2933,6 +2936,20 @@
       const top = stageShell.getBoundingClientRect().top + window.scrollY + 72;
       window.scrollTo({
         top: Math.max(0, top),
+        behavior: "smooth"
+      });
+    }
+
+    function focusTenantOnMap(id) {
+      const spot = document.querySelector(`.tenant-spot[data-id="${id}"]`);
+      if (!spot) {
+        focusMapDisplay();
+        return;
+      }
+      const rect = spot.getBoundingClientRect();
+      const targetY = rect.top + window.scrollY - (window.innerHeight / 2) + (rect.height / 2);
+      window.scrollTo({
+        top: Math.max(0, targetY),
         behavior: "smooth"
       });
     }
