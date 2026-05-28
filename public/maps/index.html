@@ -2476,6 +2476,7 @@
     const panel = document.getElementById("infoPanel");
     const stageShell = document.querySelector(".stage");
     const sweep = document.getElementById("lightSweep");
+    const stage = document.getElementById("mapStage");
     const mapImage = document.getElementById("mapImage");
     const mapHint = document.getElementById("mapHint");
     const floorEyebrow = document.getElementById("floorEyebrow");
@@ -3011,19 +3012,26 @@
       applyTransform();
       renderTenantStrip();
 
-      const replayCurrentFloor = () => {
-        mapWrap.dataset.played = "1";
-        if (options.focusMap) {
-          window.setTimeout(playReveal, 1050);
+      if (options.replayReveal) {
+        const replayCurrentFloor = () => {
+          mapWrap.dataset.played = "1";
+          if (options.focusMap) {
+            window.setTimeout(playReveal, 1050);
+          } else {
+            playReveal();
+          }
+        };
+        if (mapImage.complete) {
+          window.requestAnimationFrame(replayCurrentFloor);
         } else {
-          playReveal();
+          mapImage.addEventListener("load", replayCurrentFloor, { once: true });
         }
-      };
-
-      if (mapImage.complete) {
-        window.requestAnimationFrame(replayCurrentFloor);
       } else {
-        mapImage.addEventListener("load", replayCurrentFloor, { once: true });
+        stage.classList.remove("reveal-prep", "flying");
+        sweep.classList.remove("show");
+        revealTimers.forEach(timer => window.clearTimeout(timer));
+        revealTimers = [];
+        mapWrap.dataset.played = "1";
       }
 
       if (options.focusMap) {
@@ -3040,8 +3048,6 @@
     });
 
     // ─── REVEAL ANIMATION (extrude → fly → light sweep) ──────
-    const stage = document.getElementById("mapStage");
-
     function playReveal() {
       const isStaticFloor = mapWrap.classList.contains("map-wrap--static");
       revealTimers.forEach(timer => window.clearTimeout(timer));
