@@ -1045,7 +1045,13 @@
       flex-wrap: wrap;
       gap: 7px;
       padding: 14px 16px 14px;
-      max-height: 138px;
+      max-height: 90px;
+      overflow: hidden;
+      transition: max-height .35s ease;
+    }
+
+    .tenant-strip.expanded {
+      max-height: 600px;
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: rgba(12,26,58,.12) transparent;
@@ -1053,6 +1059,31 @@
 
     .tenant-strip::-webkit-scrollbar { width: 4px; }
     .tenant-strip::-webkit-scrollbar-thumb { background: rgba(12,26,58,.15); border-radius: 4px; }
+
+    .tenant-strip-footer {
+      display: none;
+      justify-content: center;
+      padding: 6px 0 12px;
+      border-top: 1px solid rgba(12, 26, 58, .04);
+    }
+
+    .tenant-strip-footer.show {
+      display: flex;
+    }
+
+    .tenant-strip-toggle {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: #b08446;
+      padding: 6px 14px;
+      border-radius: 999px;
+      transition: background .2s, color .2s;
+    }
+
+    .tenant-strip-toggle:hover {
+      background: rgba(176, 132, 70, .1);
+    }
 
     .tenant-chip {
       flex-shrink: 0;
@@ -1161,6 +1192,9 @@
         <span class="tenant-strip-count" id="tenantStripCount"></span>
       </div>
       <div class="tenant-strip" id="tenantStrip"></div>
+      <div class="tenant-strip-footer" id="tenantStripFooter">
+        <button class="tenant-strip-toggle" id="tenantStripToggle">Show more</button>
+      </div>
     </div>
 
     <div class="stage">
@@ -2903,11 +2937,24 @@
     const stripEl = document.getElementById("tenantStrip");
     const stripWrapEl = document.getElementById("tenantStripWrap");
     const stripCountEl = document.getElementById("tenantStripCount");
+    const COLLAPSED_LIMIT = 18;
     function renderTenantStrip() {
       const config = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["gf"];
       stripEl.replaceChildren();
+      stripEl.classList.remove("expanded");
+      if (stripToggleEl) stripToggleEl.textContent = "Show more";
+
       const namedEntries = Object.entries(TENANTS).filter(([, t]) => t.name && t.name.trim());
-      namedEntries.forEach(([id, t]) => {
+      const seen = new Set();
+      const uniqueEntries = [];
+      namedEntries.forEach(entry => {
+        const key = entry[1].name.trim().toUpperCase();
+        if (seen.has(key)) return;
+        seen.add(key);
+        uniqueEntries.push(entry);
+      });
+
+      uniqueEntries.forEach(([id, t]) => {
         const tenantName = t.name;
         const hasHotspot = !config.hotspotIds || config.hotspotIds.includes(id);
         const chip = document.createElement("button");
@@ -2925,9 +2972,19 @@
         stripEl.appendChild(chip);
       });
 
-      const count = namedEntries.length;
+      const count = uniqueEntries.length;
       if (stripCountEl) stripCountEl.textContent = count > 0 ? `${count} tenant` : "";
       if (stripWrapEl) stripWrapEl.hidden = count === 0;
+      if (stripFooterEl) stripFooterEl.classList.toggle("show", count > COLLAPSED_LIMIT);
+    }
+
+    const stripFooterEl = document.getElementById("tenantStripFooter");
+    const stripToggleEl = document.getElementById("tenantStripToggle");
+    if (stripToggleEl) {
+      stripToggleEl.onclick = () => {
+        const expanded = stripEl.classList.toggle("expanded");
+        stripToggleEl.textContent = expanded ? "Show less" : "Show more";
+      };
     }
 
     // ─── FLOOR TOGGLE ─────────────────────────────────────────
