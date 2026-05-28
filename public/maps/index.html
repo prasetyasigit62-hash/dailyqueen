@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="id">
 
 <head>
@@ -2277,540 +2277,59 @@
   </div>
 
   <script>
-    const TENANTS_1F = {
-      "l1-a3": {
-        code: "L1-A3", name: "OH! SOME", cat: "Lantai 1", door: [181, 776],
-        desc: "Tenant L1-A3 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-A3"
-      },
-      "l1-11": {
-        code: "L1-11", name: "SALON RUDY HADISUWARNO", cat: "Lantai 1", door: [310, 646],
-        desc: "Tenant L1-11 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-11"
-      },
-      "l1-9810": {
-        code: "L1-9810", name: "BAGS CITY", cat: "Lantai 1", door: [422, 628],
-        desc: "Tenant L1-9810 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-9810"
-      },
-      "l1-08": {
-        code: "L1-08", name: "BEATRICE CLOTHING", cat: "Lantai 1", door: [520, 620],
-        desc: "Tenant L1-08 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-08"
-      },
-      "l1-07": {
-        code: "L1-07", name: "OPTIK SEIS", cat: "Lantai 1", door: [590, 649],
-        desc: "Tenant L1-07 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-07"
-      },
-      "l1-06": {
-        code: "L1-06", name: "ARABELLE - HASYA HIJAB", cat: "Lantai 1", door: [666, 618],
-        desc: "Tenant L1-06 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-06"
-      },
-      "l1-05": {
-        code: "L1-05", name: "SKIN +", cat: "Lantai 1", door: [683, 554],
-        desc: "Tenant L1-05 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-05"
-      },
-      "l1-22a": {
-        code: "L1-22A", name: "PRETTY PASTEL", cat: "Lantai 1", door: [574, 735],
-        desc: "Tenant L1-22A berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-22A"
-      },
-      "l1-22b": {
-        code: "L1-22B", name: "MANDALIKA", cat: "Lantai 1", door: [579, 790],
-        desc: "Tenant L1-22B berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-22B"
-      },
-      "l1-24": {
-        code: "L1-24", name: "SIMPLICITY", cat: "Lantai 1", door: [654, 723],
-        desc: "Tenant L1-24 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-24"
-      },
-      "l1-29": {
-        code: "L1-29", name: "HASSYA", cat: "Lantai 1", door: [711, 694],
-        desc: "Tenant L1-29 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-29"
-      },
-      "l1-27": {
-        code: "L1-27", name: "ROOTKYS", cat: "Lantai 1", door: [771, 659],
-        desc: "Tenant L1-27 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-27"
-      },
-      "l1-04": {
-        code: "L1-04", name: "OPTIK MELAWAI", cat: "Lantai 1", door: [798, 548],
-        desc: "Tenant L1-04 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-04"
-      },
-      "l1-03a": {
-        code: "L1-03A", name: "UBS", cat: "Lantai 1", door: [846, 483],
-        desc: "Tenant L1-03A berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-03A"
-      },
-      "l1-03": {
-        code: "L1-03", name: "ONEDA", cat: "Lantai 1", door: [822, 428],
-        desc: "Tenant L1-03 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-03"
-      },
-      "l1-a1": {
-        code: "L1-A1", name: "UNIQLO", cat: "Lantai 1", door: [1043, 257],
-        desc: "Tenant L1-A1 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-A1"
-      },
-      "l1-21": {
-        code: "L1-21", name: "COLORBOX", cat: "Lantai 1", door: [1235, 476],
-        desc: "Tenant L1-21 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-21"
-      },
-      "l1-20": {
-        code: "L1-20", name: "TRISET WATCHOUT", cat: "Lantai 1", door: [1059, 570],
-        desc: "Tenant L1-20 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-20"
-      },
-      "l1-19": {
-        code: "L1-19", name: "MOC", cat: "Lantai 1", door: [995, 588],
-        desc: "Tenant L1-19 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-19"
-      },
-      "l1-18": {
-        code: "L1-18", name: "HARDWARE", cat: "Lantai 1", door: [947, 632],
-        desc: "Tenant L1-18 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-18"
-      },
-      "l1-28": {
-        code: "L1-28", name: "JETE", cat: "Lantai 1", door: [897, 703],
-        desc: "Tenant L1-28 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-28"
-      },
-      "l1-16-17": {
-        code: "L1-16&17", name: "SPORTS STATION", cat: "Lantai 1", door: [790, 846],
-        desc: "Tenant L1-16&17 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-16&17"
-      },
-      "l1-15": {
-        code: "L1-15", name: "PUMA", cat: "Lantai 1", door: [673, 870],
-        desc: "Tenant L1-15 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-15"
-      },
-      "l1-14": {
-        code: "L1-14", name: "AVE SALON", cat: "Lantai 1", door: [605, 891],
-        desc: "Tenant L1-14 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-14"
-      },
-      "l1-13": {
-        code: "L1-13", name: "THIS IS APRIL", cat: "Lantai 1", door: [536, 922],
-        desc: "Tenant L1-13 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-13"
-      },
-      "l1-12": {
-        code: "L1-12", name: "GUARDIAN", cat: "Lantai 1", door: [461, 935],
-        desc: "Tenant L1-12 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-12"
-      },
-      "l1-12a": {
-        code: "L1-12A", name: "ZOOM WATCH", cat: "Lantai 1", door: [384, 903],
-        desc: "Tenant L1-12A berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-12A"
-      },
-      "l1-23": {
-        code: "L1-23", name: "SATURDAY", cat: "Lantai 1", door: [1081, 467],
-        desc: "Tenant L1-23 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-23"
-      },
-      "l1-2b": {
-        code: "L1-2B", name: "L1-2B", cat: "Lantai 1", door: [858, 578],
-        desc: "Tenant L1-2B berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-2B"
-      },
-      "l1-26": {
-        code: "L1-26", name: "DESTIN HOUSE", cat: "Lantai 1", door: [915, 524],
-        desc: "Tenant DESTIN HOUSE berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-26"
-      },
-      lilbamboe: {
-        name: "Lil Bamboe", cat: "F&B · Asian Cuisine", door: [240, 320],
-        desc: "Modern bamboo-themed Asian restaurant with fresh hand-rolled dim sum and signature noodle bowls.", loc: "1F · Unit 101"
-      },
-      gionsushi: {
-        name: "Gion Sushi", cat: "F&B · Japanese", door: [600, 320],
-        desc: "Authentic Tokyo-style sushi bar with omakase chef counter and premium imported seafood.", loc: "1F · Unit 102"
-      },
-      koithe: {
-        name: "Koi Thé", cat: "Drinks · Bubble Tea", door: [990, 250],
-        desc: "Premium Taiwanese bubble tea with hand-shaken brews and signature Golden Bubble pearls.", loc: "1F · Unit 103"
-      },
-      ilfresco: {
-        name: "Il Fresco", cat: "F&B · Italian", door: [1148, 230],
-        desc: "Fresh Italian gelato, espresso, and panini — crafted daily with imported ingredients.", loc: "1F · Unit 104"
-      },
-      boost: {
-        name: "Boost Juice", cat: "Drinks · Smoothie", door: [1370, 150],
-        desc: "Cold-pressed juice and smoothie bar — clean, energizing blends for any time of day.", loc: "1F · Unit 105"
-      },
-      kicks: {
-        name: "Kicks", cat: "Shoes · Streetwear", door: [165, 660],
-        desc: "Curated sneaker boutique stocking limited-drop releases and contemporary streetwear.", loc: "1F · Unit 110"
-      },
-      converse: {
-        name: "Converse", cat: "Shoes · Casual", door: [368, 660],
-        desc: "The official Converse store — Chuck Taylor classics, Run Star Hike, and seasonal collabs.", loc: "1F · Unit 111"
-      },
-      crocs: {
-        name: "Crocs", cat: "Shoes · Casual", door: [568, 660],
-        desc: "Comfort-first footwear with the full Crocs Jibbitz™ customisation bar in store.", loc: "1F · Unit 112"
-      },
-      skechers: {
-        name: "Skechers", cat: "Shoes · Sport", door: [787, 600],
-        desc: "Performance and lifestyle footwear — including the new GO WALK Arch Fit collection.", loc: "1F · Unit 113"
-      },
-      digiplus: {
-        name: "Digiplus", cat: "Tech · Electronics", door: [1018, 555],
-        desc: "Authorized retailer for Apple, Samsung, and Xiaomi — plus accessories and trade-in service.", loc: "1F · Unit 114"
-      },
-      baleno: {
-        name: "Baleno", cat: "Fashion · Casual", door: [1318, 555],
-        desc: "Casual everyday fashion for the whole family — premium cotton tees, denim, and seasonal essentials.", loc: "1F · Unit 115"
-      },
-    };
+    // ─── TENANT DATA — loaded async from API + static map coords ─────────────
+    // MAP_DATA: koordinat door per lantai (statis, dari file JSON)
+    // API_NAMES: nama tenant dari database (dinamis, dari /api/maps-tenants)
+    let MAP_DATA = { gf: {}, "1f": {}, "2f": {}, "3f": {} };
+    let TENANTS_GF = {}, TENANTS_1F = {}, TENANTS_2F = {}, TENANTS_3F = {};
 
-    const TENANTS_GF = {
-      "gf-01": { code: "GF-01", name: "FRANK & CO", loc: "GF-01" },
-      "gf-02a": { code: "GF-02A", name: "SAMSUNG", loc: "GF-02A" },
-      "gf-03": { code: "GF-03", name: "IBOX", loc: "GF-03" },
-      "gf-04": { code: "GF-04", name: "MELISSA CLUBE", loc: "GF-04" },
-      "gf-05": { code: "GF-05", name: "", loc: "GF-05" },
-      "gf-05a": { code: "GF-05A", name: "YOGURT REPUBLIC", loc: "GF-05A" },
-      "gf-05b": { code: "GF-05B", name: "CHEON", loc: "GF-05B" },
-      "gf-06": { code: "GF-06", name: "KOI THE", loc: "GF-06" },
-      "gf-07": { code: "GF-07", name: "GION SUSHI", loc: "GF-07" },
-      "gf-08": { code: "GF-08", name: "GION SUSHI", loc: "GF-08" },
-      "gf-09": { code: "GF-09", name: "BAKOEL BAMBOE", loc: "GF-09" },
-      "gf-10": { code: "GF-10", name: "BAKOEL BAMBOE", loc: "GF-10" },
-      "gf-11": { code: "GF-11", name: "ANTARA KATA", loc: "GF-11" },
-      "gf-12": { code: "GF-12", name: "THE PALACE", loc: "GF-12" },
-      "gf-13": { code: "GF-13", name: "THE PALACE", loc: "GF-13" },
-      "gf-14": { code: "GF-14", name: "TOBY'S ESTATE", loc: "GF-14" },
-      "gf-15": { code: "GF-15", name: "BOOST", loc: "GF-15" },
-      "gf-16": { code: "GF-16", name: "CROCO BY MS", loc: "GF-16" },
-      "gf-16a": { code: "GF-16 A", name: "ALDO", loc: "GF-16 A" },
-      "gf-17a": { code: "GF-17 A", name: "STEVE MADDEN", loc: "GF-17 A" },
-      "gf-17b": { code: "GF-17 B", name: "CLARKS", loc: "GF-17 B" },
-      "gf-18a": { code: "GF-18 A", name: "CONVERSE", loc: "GF-18 A" },
-      "gf-18b": { code: "GF-18 B", name: "CROCS", loc: "GF-18 B" },
-      "gf-19": { code: "GF-19", name: "SKECHERS", loc: "GF-19" },
-      "gf-20": { code: "GF-20", name: "DIGIPLUS", loc: "GF-20" },
-      "gf-21": { code: "GF-21", name: "BALENO", loc: "GF-21" },
-      "gf-22": { code: "GF-22", name: "RELX", loc: "GF-22" },
-      "gf-23": { code: "GF-23", name: "", loc: "GF-23" },
-      "gf-24": { code: "GF-24", name: "", loc: "GF-24" },
-      "gf-25": { code: "GF-25", name: "", loc: "GF-25" },
-      "gf-26": { code: "GF-26", name: "", loc: "GF-26" },
-      "gf-27": { code: "GF-27", name: "", loc: "GF-27" },
-      "gf-28": { code: "GF-28", name: "", loc: "GF-28" },
-      "gf-29a": { code: "GF-29A", name: "", loc: "GF-29A" },
-      "gf-29b": { code: "GF-29B", name: "", loc: "GF-29B" },
-      "gf-29": { code: "GF-29", name: "", loc: "GF-29" },
-      "gf-30": { code: "GF-30", name: "", loc: "GF-30" },
-      "gf-30b": { code: "GF-30B", name: "", loc: "GF-30B" },
-      "gf-31": { code: "GF-31", name: "", loc: "GF-31" },
-      "gf-32": { code: "GF-32", name: "", loc: "GF-32" },
-      "gf-pro1": { code: "GF - PRO 1", name: "U-BEATZ", loc: "GF - PRO 1" },
-      "gf-pro2": { code: "GF - PRO 2", name: "RAMEN 1", loc: "GF - PRO 2" },
-      "gf-pro3a": { code: "GF - PRO 3A", name: "PEPPERLUNCH", loc: "GF - PRO 3A" },
-      "gf-pro3b": { code: "GF - PRO 3B", name: "ES TELER 77", loc: "GF - PRO 3B" },
-      "gf-pro4a": { code: "GF - PRO 4A", name: "BLOOMERY", loc: "GF - PRO 4A" },
-      "gf-pro4b": { code: "GF - PRO 4B", name: "ALCHEMY", loc: "GF - PRO 4B" },
-      "gf-pro5": { code: "GF - PRO 5", name: "", loc: "GF - PRO 5" },
-      "gf-spm01": { code: "GF - SPM 01", name: "WATSONS", loc: "GF - SPM 01" },
-      "gf-spm02": { code: "GF - SPM 02", name: "ITOYA", loc: "GF - SPM 02" },
-      "gf-spm03": { code: "GF - SPM 03", name: "", loc: "GF - SPM 03" },
-      "gf-spm04": { code: "GF - SPM 04", name: "", loc: "GF - SPM 04" },
-      "gf-spm05": { code: "GF - SPM 05", name: "", loc: "GF - SPM 05" },
-      "gf-spma1": { code: "GF - SPMA1", name: "HERO", loc: "GF - SPMA1" },
-      "gf-spmexth": { code: "GF - SPM EXTH", name: "", loc: "GF - SPM EXTH" },
-      "gf-sl01": { code: "GF-SL01", name: "HMNS", loc: "GF-SL01" },
-      "gf-atpm1": { code: "ATPM-1", name: "SECRET GARDEN", loc: "ATPM-1" },
-      "gf-atpm2": { code: "ATPM-2", name: "SEMBADA GOLD", loc: "ATPM-2" },
-      "gf-atpm3": { code: "ATPM-3", name: "", loc: "ATPM-3" },
-      "gf-atpm4": { code: "ATPM-4", name: "BOTANICAL ESSENTIALS", loc: "ATPM-4" },
-      "gf-atpm5": { code: "ATPM-5", name: "CRUSITA", loc: "ATPM-5" }
-    };
+    function buildTenants(mapFloor, apiNames) {
+      const result = {};
+      Object.entries(mapFloor).forEach(([id, meta]) => {
+        const api = apiNames[id] || apiNames[meta.code?.toLowerCase().replace(/\s+/g, '-')] || {};
+        const floorLabel = meta.floor === 'GF' ? 'Ground Floor'
+          : meta.floor === '1F' ? 'Lantai 1'
+          : meta.floor === '2F' ? 'Lantai 2'
+          : 'Lantai 3';
+        result[id] = {
+          code: meta.code,
+          name: api.name || '',
+          cat: api.cat || floorLabel,
+          door: meta.door || [0, 0],
+          desc: api.desc || (api.name ? `${api.name} berada di ${floorLabel} Queen City Mall.` : ''),
+          loc: `${meta.floor} · ${meta.code}`,
+        };
+      });
+      return result;
+    }
 
-    const TENANTS_2F = {
-      "l2-22a": {
-        code: "L2-22A", name: "SOL", cat: "Lantai 2", door: [480, 950],
-        desc: "SOL berada di lantai 2 Queen City Mall.", loc: "2F · L2-22A"
-      },
-      "l2-22b": {
-        code: "L2-22B", name: "MINOSHE", cat: "Lantai 2", door: [520, 947],
-        desc: "MINOSHE berada di lantai 2 Queen City Mall.", loc: "2F · L2-22B"
-      },
-      "l2-23a": {
-        code: "L2-23A", name: "PANLAND WOO", cat: "Lantai 2", door: [560, 946],
-        desc: "PANLAND WOO berada di lantai 2 Queen City Mall.", loc: "2F · L2-23A"
-      },
-      "l2-23b": {
-        code: "L2-23B", name: "HAPPY DENTAL", cat: "Lantai 2", door: [600, 944],
-        desc: "HAPPY DENTAL berada di lantai 2 Queen City Mall.", loc: "2F · L2-23B"
-      },
-      "l2-24-25-26": {
-        code: "L2-24,25,26", name: "MINISO", cat: "Lantai 2", door: [773, 916],
-        desc: "MINISO berada di lantai 2 Queen City Mall.", loc: "2F · L2-24,25,26"
-      },
-      "l2-27": {
-        code: "L2-27", name: "VIVO", cat: "Lantai 2", door: [881, 812],
-        desc: "VIVO berada di lantai 2 Queen City Mall.", loc: "2F · L2-27"
-      },
-      "l2-32": {
-        code: "L2-32", name: "OPPO", cat: "Lantai 2", door: [756, 761],
-        desc: "OPPO berada di lantai 2 Queen City Mall.", loc: "2F · L2-32"
-      },
-      "l2-42": {
-        code: "L2-42", name: "BFIT", cat: "Lantai 2", door: [941, 713],
-        desc: "BFIT berada di lantai 2 Queen City Mall.", loc: "2F · L2-42"
-      },
-      "l2-28": {
-        code: "L2-28", name: "XIAOMI", cat: "Lantai 2", door: [995, 643],
-        desc: "XIAOMI berada di lantai 2 Queen City Mall.", loc: "2F · L2-28"
-      },
-      "l2-29": {
-        code: "L2-29", name: "MY STYLE", cat: "Lantai 2", door: [1083, 622],
-        desc: "MY STYLE berada di lantai 2 Queen City Mall.", loc: "2F · L2-29"
-      },
-      "l2-29b": {
-        code: "L2-29B", name: "L2-29B", cat: "Lantai 2", door: [1167, 607],
-        desc: "Tenant L2-29B berada di lantai 2 Queen City Mall.", loc: "2F · L2-29B"
-      },
-      "l2-30": {
-        code: "L2-30", name: "KIDDY CUTS", cat: "Lantai 2", door: [1177, 547],
-        desc: "KIDDY CUTS berada di lantai 2 Queen City Mall.", loc: "2F · L2-30"
-      },
-      "l2-a2": {
-        code: "L2-A2", name: "KIDZLANDIA", cat: "Lantai 2", door: [1298, 561],
-        desc: "KIDZLANDIA berada di lantai 2 Queen City Mall.", loc: "2F · L2-A2"
-      },
-      "l2-a1": {
-        code: "L2-A1", name: "FUN WORLD", cat: "Lantai 2", door: [1146, 196],
-        desc: "FUN WORLD berada di lantai 2 Queen City Mall.", loc: "2F · L2-A1"
-      },
-      "l2-a48": {
-        code: "L2-A48", name: "L2-A48", cat: "Lantai 2", door: [986, 295],
-        desc: "Tenant L2-A48 berada di lantai 2 Queen City Mall.", loc: "2F · L2-A48"
-      },
-      "l2-a44": {
-        code: "L2-A44", name: "L2-A44", cat: "Lantai 2", door: [961, 313],
-        desc: "Tenant L2-A44 berada di lantai 2 Queen City Mall.", loc: "2F · L2-A44"
-      },
-      "l2-02": {
-        code: "L2-02", name: "DOOR FRIES", cat: "Lantai 2", door: [923, 251],
-        desc: "DOOR FRIES berada di lantai 2 Queen City Mall.", loc: "2F · L2-02"
-      },
-      "l2-02a": {
-        code: "L2-02A", name: "SHIHLIN", cat: "Lantai 2", door: [883, 250],
-        desc: "SHIHLIN berada di lantai 2 Queen City Mall.", loc: "2F · L2-02A"
-      },
-      "l2-fp25": {
-        code: "L2-FP25", name: "OO BAKSO HERITAGE", cat: "Lantai 2", door: [756, 132],
-        desc: "OO BAKSO HERITAGE berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP25"
-      },
-      "l2-fp26": {
-        code: "L2-FP26", name: "SHIGERU", cat: "Lantai 2", door: [771, 206],
-        desc: "SHIGERU berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP26"
-      },
-      "l2-fp27": {
-        code: "L2-FP27", name: "SUSHIKUN", cat: "Lantai 2", door: [765, 472],
-        desc: "SUSHIKUN berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP27"
-      },
-      "l2-09": {
-        code: "L2-09", name: "KIMUKATSU", cat: "Lantai 2", door: [883, 361],
-        desc: "KIMUKATSU berada di lantai 2 Queen City Mall.", loc: "2F · L2-09"
-      },
-      "l2-10": {
-        code: "L2-10", name: "MARUGAME UDON", cat: "Lantai 2", door: [881, 473],
-        desc: "MARUGAME UDON berada di lantai 2 Queen City Mall.", loc: "2F · L2-10"
-      },
-      "l2-11": {
-        code: "L2-11", name: "DR SPECS", cat: "Lantai 2", door: [872, 538],
-        desc: "DR SPECS berada di lantai 2 Queen City Mall.", loc: "2F · L2-11"
-      },
-      "l2-12": {
-        code: "L2-12", name: "CAVALLO", cat: "Lantai 2", door: [831, 612],
-        desc: "CAVALLO berada di lantai 2 Queen City Mall.", loc: "2F · L2-12"
-      },
-      "l2-13-14": {
-        code: "L2-13&14", name: "PALADIO", cat: "Lantai 2", door: [731, 635],
-        desc: "PALADIO berada di lantai 2 Queen City Mall.", loc: "2F · L2-13&14"
-      },
-      "l2-46": {
-        code: "L2-46", name: "POKEMON", cat: "Lantai 2", door: [870, 642],
-        desc: "POKEMON berada di lantai 2 Queen City Mall.", loc: "2F · L2-46"
-      },
-      "l2-39": {
-        code: "L2-39", name: "JACO", cat: "Lantai 2", door: [915, 592],
-        desc: "JACO berada di lantai 2 Queen City Mall.", loc: "2F · L2-39"
-      },
-      "l2-40": {
-        code: "L2-40", name: "PLAYWORKS", cat: "Lantai 2", door: [958, 551],
-        desc: "PLAYWORKS berada di lantai 2 Queen City Mall.", loc: "2F · L2-40"
-      },
-      "l2-15": {
-        code: "L2-15", name: "WACOAL", cat: "Lantai 2", door: [634, 667],
-        desc: "WACOAL berada di lantai 2 Queen City Mall.", loc: "2F · L2-15"
-      },
-      "l2-16": {
-        code: "L2-16", name: "SCOOP", cat: "Lantai 2", door: [567, 659],
-        desc: "SCOOP berada di lantai 2 Queen City Mall.", loc: "2F · L2-16"
-      },
-      "l2-17": {
-        code: "L2-17", name: "BONJOUR", cat: "Lantai 2", door: [504, 659],
-        desc: "BONJOUR berada di lantai 2 Queen City Mall.", loc: "2F · L2-17"
-      },
-      "l2-18a": {
-        code: "L2-18A", name: "PHOTOIS", cat: "Lantai 2", door: [452, 665],
-        desc: "PHOTOIS berada di lantai 2 Queen City Mall.", loc: "2F · L2-18A"
-      },
-      "l2-18b": {
-        code: "L2-18B", name: "WAXHAUSE", cat: "Lantai 2", door: [408, 672],
-        desc: "WAXHAUSE berada di lantai 2 Queen City Mall.", loc: "2F · L2-18B"
-      },
-      "l2-18c": {
-        code: "L2-18C", name: "NUSANTARA TOUR", cat: "Lantai 2", door: [336, 675],
-        desc: "NUSANTARA TOUR berada di lantai 2 Queen City Mall.", loc: "2F · L2-18C"
-      },
-      "l2-19": {
-        code: "L2-19", name: "ANYTIME FITNESS", cat: "Lantai 2", door: [174, 777],
-        desc: "ANYTIME FITNESS berada di lantai 2 Queen City Mall.", loc: "2F · L2-19"
-      },
-      "l2-20-21": {
-        code: "L2-20&21", name: "OHARANG", cat: "Lantai 2", door: [296, 923],
-        desc: "OHARANG berada di lantai 2 Queen City Mall.", loc: "2F · L2-20&21"
-      },
-      "l2-fp24": {
-        code: "L2-FP24", name: "DIMDIMSUM", cat: "Lantai 2", door: [672, 112],
-        desc: "DIMDIMSUM berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP24"
-      },
-      "l2-fp23": {
-        code: "L2-FP23", name: "SOLO STEAK", cat: "Lantai 2", door: [526, 151],
-        desc: "SOLO STEAK berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP23"
-      },
-      "l2-fp22": {
-        code: "L2-FP22", name: "SOLO STEAK", cat: "Lantai 2", door: [526, 182],
-        desc: "SOLO STEAK berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP22"
-      },
-      "l2-fp21": {
-        code: "L2-FP21", name: "KOI TEPPANYAKI", cat: "Lantai 2", door: [526, 217],
-        desc: "KOI TEPPANYAKI berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP21"
-      },
-      "l2-fp01": {
-        code: "L2-FP01", name: "PENMO", cat: "Lantai 2", door: [562, 267],
-        desc: "PENMO berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP01"
-      },
-      "l2-fp03": {
-        code: "L2-FP03", name: "CFC", cat: "Lantai 2", door: [562, 298],
-        desc: "CFC berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP03"
-      },
-      "l2-fp05": {
-        code: "L2-FP05", name: "PENYETAN COK", cat: "Lantai 2", door: [562, 333],
-        desc: "PENYETAN COK berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP05"
-      },
-      "l2-fp02": {
-        code: "L2-FP02", name: "MASTER HOTPOT", cat: "Lantai 2", door: [650, 266],
-        desc: "MASTER HOTPOT berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP02"
-      },
-      "l2-fp04": {
-        code: "L2-FP04", name: "CFC", cat: "Lantai 2", door: [650, 299],
-        desc: "CFC berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP04"
-      },
-      "l2-fp07": {
-        code: "L2-FP07", name: "PEMPEK FARINA", cat: "Lantai 2", door: [649, 333],
-        desc: "PEMPEK FARINA berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP07"
-      },
-      "l2-fp06": {
-        code: "L2-FP06", name: "BEBEK SEMANGAT", cat: "Lantai 2", door: [522, 441],
-        desc: "BEBEK SEMANGAT berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP06"
-      },
-      "l2-fp0s": {
-        code: "L2-FP0S", name: "L2-FP0S", cat: "Lantai 2", door: [522, 476],
-        desc: "Tenant L2-FP0S berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP0S"
-      },
-      "l2-fp09": {
-        code: "L2-FP09", name: "MALADANG", cat: "Lantai 2", door: [741, 268],
-        desc: "MALADANG berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP09"
-      },
-      "l2-fp12": {
-        code: "L2-FP12", name: "CINERY", cat: "Lantai 2", door: [740, 333],
-        desc: "CINERY berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP12"
-      },
-      "l2-fp08": {
-        code: "L2-FP08", name: "HORAI COCONUT", cat: "Lantai 2", door: [523, 377],
-        desc: "HORAI COCONUT berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP08"
-      },
-      "l2-fp10": {
-        code: "L2-FP10", name: "TEH JAWA", cat: "Lantai 2", door: [741, 298],
-        desc: "TEH JAWA berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP10"
-      },
-    };
-    const TENANTS_3F = {
-      "l3-a1": {
-        code: "L3-A1", name: "CINEMA XXI", cat: "Lantai 3", door: [367, 784],
-        desc: "Cinema XXI berada di lantai 3 Queen City Mall.", loc: "3F · L3-A1"
-      },
-      "l3-05": {
-        code: "L3-05", name: "TOM SUSHI", cat: "Lantai 3", door: [686, 910],
-        desc: "Tom Sushi berada di lantai 3 Queen City Mall.", loc: "3F · L3-05"
-      },
-      "l3-0607": {
-        code: "L3-06&07", name: "TAWAN", cat: "Lantai 3", door: [785, 941],
-        desc: "Tawan berada di lantai 3 Queen City Mall.", loc: "3F · L3-06&07"
-      },
-      "l3-08": {
-        code: "L3-08", name: "TEH JAWA RESTO", cat: "Lantai 3", door: [866, 921],
-        desc: "Teh Jawa Resto berada di lantai 3 Queen City Mall.", loc: "3F · L3-08"
-      },
-      "l3-09": {
-        code: "L3-09", name: "SOLARIA", cat: "Lantai 3", door: [945, 904],
-        desc: "Solaria berada di lantai 3 Queen City Mall.", loc: "3F · L3-09"
-      },
-      "l3-31": {
-        code: "L3-31", name: "SOUR SALLY", cat: "Lantai 3", door: [990, 682],
-        desc: "Sour Sally berada di lantai 3 Queen City Mall.", loc: "3F · L3-31"
-      },
-      "l3-h11": {
-        code: "L3-H11", name: "PAWON LANGGENG", cat: "Lantai 3", door: [800, 672],
-        desc: "Pawon Langgeng berada di lantai 3 Queen City Mall.", loc: "3F · L3-H11"
-      },
-      "l3-10b": {
-        code: "L3-10B", name: "SHAKE SHAKE", cat: "Lantai 3", door: [916, 693],
-        desc: "Shake Shake berada di lantai 3 Queen City Mall.", loc: "3F · L3-10B"
-      },
-      "l3-10a": {
-        code: "L3-10A", name: "D'CREPES", cat: "Lantai 3", door: [887, 687],
-        desc: "D'Crepes berada di lantai 3 Queen City Mall.", loc: "3F · L3-10A"
-      },
-      "l3-12": {
-        code: "L3-12", name: "TREAT", cat: "Lantai 3", door: [724, 658],
-        desc: "Treat berada di lantai 3 Queen City Mall.", loc: "3F · L3-12"
-      },
-      "l3-h17": {
-        code: "L3-H17", name: "MONTATO X DUMDUM", cat: "Lantai 3", door: [653, 572],
-        desc: "Montato X Dumdum berada di lantai 3 Queen City Mall.", loc: "3F · L3-H17"
-      },
-      "l3-03": {
-        code: "L3-03", name: "ISTANA MIE & ES", cat: "Lantai 3", door: [870, 530],
-        desc: "Istana Mie & Es berada di lantai 3 Queen City Mall.", loc: "3F · L3-03"
-      },
-      "l3-h16": {
-        code: "L3-H16", name: "SANCHA", cat: "Lantai 3", door: [700, 505],
-        desc: "Sancha berada di lantai 3 Queen City Mall.", loc: "3F · L3-H16"
-      },
-      "l3-01": {
-        code: "L3-01", name: "INDOMOBIL", cat: "Lantai 3", door: [1058, 580],
-        desc: "Indomobil berada di lantai 3 Queen City Mall.", loc: "3F · L3-01"
-      },
-      "l3-02": {
-        code: "L3-02", name: "TONG TJI", cat: "Lantai 3", door: [950, 480],
-        desc: "Tong Tji berada di lantai 3 Queen City Mall.", loc: "3F · L3-02"
-      },
-      "l3-h15b": {
-        code: "L3-H15B", name: "KYSO", cat: "Lantai 3", door: [638, 475],
-        desc: "Kyso berada di lantai 3 Queen City Mall.", loc: "3F · L3-H15B"
-      },
-      "l3-h15a": {
-        code: "L3-H15A", name: "JUSTFLUFF", cat: "Lantai 3", door: [594, 476],
-        desc: "Justfluff berada di lantai 3 Queen City Mall.", loc: "3F · L3-H15A"
-      },
-      "l3-h14": {
-        code: "L3-H14", name: "BABAHKUNG", cat: "Lantai 3", door: [554, 477],
-        desc: "Babahkung berada di lantai 3 Queen City Mall.", loc: "3F · L3-H14"
-      },
-      "l3-h13": {
-        code: "L3-H13", name: "TRIXIE", cat: "Lantai 3", door: [513, 478],
-        desc: "Trixie berada di lantai 3 Queen City Mall.", loc: "3F · L3-H13"
-      },
-      "l3-h12": {
-        code: "L3-H12", name: "KATOEN", cat: "Lantai 3", door: [474, 479],
-        desc: "Katoen berada di lantai 3 Queen City Mall.", loc: "3F · L3-H12"
-      },
-      "l3-h10": {
-        code: "L3-H10", name: "GENDHIZ", cat: "Lantai 3", door: [401, 480],
-        desc: "Gendhiz berada di lantai 3 Queen City Mall.", loc: "3F · L3-H10"
-      },
-      "l3-h09": {
-        code: "L3-H09", name: "GENDHIZ", cat: "Lantai 3", door: [368, 481],
-        desc: "Gendhiz berada di lantai 3 Queen City Mall.", loc: "3F · L3-H09"
-      },
-    };
+    async function loadTenantData() {
+      try {
+        const [mapRes, apiRes] = await Promise.all([
+          fetch('/maps/tenants-map-data.json'),
+          fetch('/api/maps-tenants'),
+        ]);
+        MAP_DATA = mapRes.ok ? await mapRes.json() : MAP_DATA;
+        const apiNames = apiRes.ok ? await apiRes.json() : {};
+        TENANTS_GF  = buildTenants(MAP_DATA.gf,  apiNames);
+        TENANTS_1F  = buildTenants(MAP_DATA['1f'], apiNames);
+        TENANTS_2F  = buildTenants(MAP_DATA['2f'], apiNames);
+        TENANTS_3F  = buildTenants(MAP_DATA['3f'], apiNames);
+      } catch (e) {
+        // fallback: tetap pakai TENANTS kosong, map masih bisa tampil
+        console.warn('[Maps] Tenant data load failed, using empty fallback', e);
+      }
+      // Update FLOOR_CONFIG references after data loaded
+      if (typeof FLOOR_CONFIG !== 'undefined') {
+        FLOOR_CONFIG.gf.tenants  = TENANTS_GF;
+        FLOOR_CONFIG['1f'].tenants = TENANTS_1F;
+        FLOOR_CONFIG['2f'].tenants = TENANTS_2F;
+        FLOOR_CONFIG['3f'].tenants = TENANTS_3F;
+        TENANTS = TENANTS_1F;
+        renderTenantStrip();
+      }
+    }
+
 
     let TENANTS = TENANTS_1F;
 
@@ -3520,15 +3039,16 @@
       mapWrap.dataset.played = "1";
     };
 
-    // Demo: auto-select first tenant after a moment to show path animation
+    // Auto-play safety trigger if IntersectionObserver failed
     setTimeout(() => {
-      // selectTenant("baleno");
-      // Auto-play safety trigger if IntersectionObserver failed
       if (!mapWrap.dataset.played) {
         mapWrap.dataset.played = "1";
         playReveal();
       }
     }, 800);
+
+    // Load tenant names from API async (non-blocking)
+    loadTenantData();
   </script>
 </body>
 
