@@ -1008,25 +1008,63 @@
       background: #f4f4f7;
     }
 
-    .tenant-strip {
+    .tenant-strip-wrap {
       max-width: 1600px;
       margin: 0 auto 24px;
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: thin;
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid rgba(12, 26, 58, .07);
+      box-shadow: 0 4px 18px rgba(12, 26, 58, .05);
+      overflow: hidden;
     }
+
+    .tenant-strip-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px 10px;
+      border-bottom: 1px solid rgba(12, 26, 58, .06);
+    }
+
+    .tenant-strip-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: #b08446;
+    }
+
+    .tenant-strip-count {
+      font-size: 10px;
+      font-weight: 500;
+      color: #8b94a8;
+    }
+
+    .tenant-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 14px 16px 14px;
+      max-height: 138px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(12,26,58,.12) transparent;
+    }
+
+    .tenant-strip::-webkit-scrollbar { width: 4px; }
+    .tenant-strip::-webkit-scrollbar-thumb { background: rgba(12,26,58,.15); border-radius: 4px; }
 
     .tenant-chip {
       flex-shrink: 0;
-      padding: 10px 18px;
+      padding: 6px 14px;
       border-radius: 999px;
-      background: #fff;
-      border: 1px solid rgba(12, 26, 58, .1);
-      font-size: 12px;
+      background: #f4f5f8;
+      border: 1px solid transparent;
+      font-size: 11.5px;
       font-weight: 500;
-      transition: all .3s;
+      color: #3a4460;
+      transition: background .2s, color .2s, border-color .2s, transform .15s;
+      white-space: nowrap;
     }
 
     .tenant-chip--static {
@@ -1034,30 +1072,23 @@
     }
 
     .tenant-chip--empty {
-      color: #7d8798;
-      border-style: dashed;
-      background: rgba(255, 255, 255, .64);
+      color: #9aa0b0;
+      background: transparent;
+      border: 1px dashed rgba(12, 26, 58, .15);
     }
 
-    .tenant-chip:hover,
+    .tenant-chip:not(.tenant-chip--static):hover {
+      background: #e8edf6;
+      color: #0c1a3a;
+      border-color: rgba(12, 26, 58, .15);
+      transform: translateY(-1px);
+    }
+
     .tenant-chip.active {
       background: #0c1a3a;
       color: #fff;
       border-color: #0c1a3a;
       transform: translateY(-1px);
-    }
-
-    .tenant-chip--static:hover {
-      background: #fff;
-      color: #0c1a3a;
-      border-color: rgba(12, 26, 58, .1);
-      transform: none;
-    }
-
-    .tenant-chip--static.tenant-chip--empty:hover {
-      color: #7d8798;
-      border-style: dashed;
-      background: rgba(255, 255, 255, .64);
     }
 
     @media (max-width: 900px) {
@@ -1124,7 +1155,13 @@
       </div>
     </div>
 
-    <div class="tenant-strip" id="tenantStrip"></div>
+    <div class="tenant-strip-wrap" id="tenantStripWrap">
+      <div class="tenant-strip-head">
+        <span class="tenant-strip-label">Daftar Tenant</span>
+        <span class="tenant-strip-count" id="tenantStripCount"></span>
+      </div>
+      <div class="tenant-strip" id="tenantStrip"></div>
+    </div>
 
     <div class="stage">
       <div class="map-wrap map-wrap--static" id="mapWrap">
@@ -2850,10 +2887,13 @@
 
     // ─── TENANT STRIP ─────────────────────────────────────────
     const stripEl = document.getElementById("tenantStrip");
+    const stripWrapEl = document.getElementById("tenantStripWrap");
+    const stripCountEl = document.getElementById("tenantStripCount");
     function renderTenantStrip() {
-      const config = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["1f"];
+      const config = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["gf"];
       stripEl.replaceChildren();
-      Object.entries(TENANTS).forEach(([id, t]) => {
+      const entries = Object.entries(TENANTS);
+      entries.forEach(([id, t]) => {
         const tenantName = t.name || "";
         const chipLabel = tenantName || t.code || id;
         const hasHotspot = !config.hotspotIds || config.hotspotIds.includes(id);
@@ -2870,7 +2910,9 @@
         stripEl.appendChild(chip);
       });
 
-      stripEl.hidden = Object.keys(TENANTS).length === 0;
+      const count = entries.length;
+      if (stripCountEl) stripCountEl.textContent = count > 0 ? `${count} tenant` : "";
+      if (stripWrapEl) stripWrapEl.hidden = count === 0;
     }
 
     // ─── FLOOR TOGGLE ─────────────────────────────────────────
