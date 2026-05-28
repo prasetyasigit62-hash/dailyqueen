@@ -2634,7 +2634,15 @@
       document.querySelectorAll(".tenant-chip").forEach(c => {
         if (c.dataset.id === id) {
           c.classList.add("active");
-          c.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+          const strip = document.getElementById("tenantStrip");
+          if (strip) {
+            const chipTop = c.offsetTop - strip.offsetTop;
+            const chipBottom = chipTop + c.offsetHeight;
+            const visible = strip.scrollTop + strip.clientHeight;
+            if (chipTop < strip.scrollTop || chipBottom > visible) {
+              strip.scrollTo({ top: chipTop - 8, behavior: "smooth" });
+            }
+          }
         } else {
           c.classList.remove("active");
         }
