@@ -2303,8 +2303,10 @@
     let MAP_DATA = { gf: {}, "1f": {}, "2f": {}, "3f": {} };
     let TENANTS_GF = {}, TENANTS_1F = {}, TENANTS_2F = {}, TENANTS_3F = {};
 
-    function buildTenants(mapFloor) {
+    const FLOOR_LABEL = { gf: 'Ground Floor', '1f': 'Lantai 1', '2f': 'Lantai 2', '3f': 'Lantai 3' };
+    function buildTenants(mapFloor, floorKey) {
       const result = {};
+      const floorLabel = FLOOR_LABEL[floorKey] || '';
       Object.entries(mapFloor).forEach(([id, meta]) => {
         result[id] = {
           code: meta.code,
@@ -2312,7 +2314,7 @@
           cat: meta.cat || '',
           door: meta.door || [0, 0],
           desc: meta.name ? `${meta.name} berada di Queen City Mall.` : '',
-          loc: `${meta.floor} · ${meta.code}`,
+          loc: `${floorLabel} · ${meta.code}`,
         };
       });
       return result;
@@ -2322,10 +2324,10 @@
       try {
         const mapRes = await fetch('/maps/tenants-map-data.json');
         MAP_DATA = mapRes.ok ? await mapRes.json() : MAP_DATA;
-        TENANTS_GF  = buildTenants(MAP_DATA.gf);
-        TENANTS_1F  = buildTenants(MAP_DATA['1f']);
-        TENANTS_2F  = buildTenants(MAP_DATA['2f']);
-        TENANTS_3F  = buildTenants(MAP_DATA['3f']);
+        TENANTS_GF  = buildTenants(MAP_DATA.gf, 'gf');
+        TENANTS_1F  = buildTenants(MAP_DATA['1f'], '1f');
+        TENANTS_2F  = buildTenants(MAP_DATA['2f'], '2f');
+        TENANTS_3F  = buildTenants(MAP_DATA['3f'], '3f');
       } catch (e) {
         console.warn('[Maps] Tenant data load failed, using empty fallback', e);
       }
