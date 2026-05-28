@@ -2349,9 +2349,30 @@
           door: meta.door || [0, 0],
           desc: meta.name ? `${meta.name} berada di Queen City Mall.` : '',
           loc: `${floorLabel} · ${meta.code}`,
+          apiId: meta.apiId || null,
         };
       });
       return result;
+    }
+
+    function mergeApiData(tenantMap, api) {
+      if (!api || (!api.byId && !api.byName)) return tenantMap;
+      Object.values(tenantMap).forEach(t => {
+        let live = null;
+        if (t.apiId && api.byId && api.byId[String(t.apiId)]) {
+          live = api.byId[String(t.apiId)];
+        } else if (t.name) {
+          const key = t.name.toUpperCase().replace(/\s+/g, ' ').trim();
+          if (api.byName && api.byName[key]) live = api.byName[key];
+        }
+        if (live) {
+          t.name = live.name || t.name;
+          if (live.cat) t.cat = live.cat;
+          t.desc = `${t.name} berada di Queen City Mall.`;
+          t.apiId = live.id;
+        }
+      });
+      return tenantMap;
     }
 
     async function loadTenantData() {
@@ -2365,6 +2386,20 @@
       } catch (e) {
         console.warn('[Maps] Tenant data load failed, using empty fallback', e);
       }
+
+      try {
+        const apiRes = await fetch('/api/maps-tenants');
+        if (apiRes.ok) {
+          const api = await apiRes.json();
+          mergeApiData(TENANTS_GF, api);
+          mergeApiData(TENANTS_1F, api);
+          mergeApiData(TENANTS_2F, api);
+          mergeApiData(TENANTS_3F, api);
+        }
+      } catch (e) {
+        console.warn('[Maps] API tenant merge failed, using JSON fallback', e);
+      }
+
       if (typeof FLOOR_CONFIG !== 'undefined') {
         FLOOR_CONFIG.gf.tenants  = TENANTS_GF;
         FLOOR_CONFIG['1f'].tenants = TENANTS_1F;
