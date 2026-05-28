@@ -20,14 +20,25 @@ export default function MapsPage() {
     };
 
     return (
-        <main className="h-screen overflow-hidden bg-[#f4f5f8] pt-16 lg:pt-[7.9rem]">
+        <main
+            className="overflow-hidden bg-[#f4f5f8] pt-16 lg:pt-[7.9rem]"
+            style={{ height: '100svh', minHeight: '100dvh' }}
+        >
             <iframe
                 ref={iframeRef}
                 title="Queen City Mall Maps"
                 src="/maps/index.html#mapWrap"
-                className="h-[calc(100vh-4rem)] w-full border-0 lg:h-[calc(100vh-7.9rem)]"
+                className="w-full border-0"
+                style={{ height: 'calc(100svh - 4rem)' }}
                 onLoad={focusMapArea}
             />
+            <style jsx>{`
+                @media (min-width: 1024px) {
+                    iframe {
+                        height: calc(100svh - 7.9rem) !important;
+                    }
+                }
+            `}</style>
         </main>
     );
 }

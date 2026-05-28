@@ -1124,34 +1124,130 @@
 
     @media (max-width: 900px) {
       .page {
-        padding: 28px 16px 50px;
+        padding: 20px 14px 40px;
       }
 
       .title {
-        font-size: 32px;
+        font-size: 28px;
+        line-height: 1.05;
+      }
+
+      .subtitle {
+        font-size: 13px;
+        margin-top: 6px;
       }
 
       .header {
         flex-direction: column;
         align-items: start;
-        gap: 16px;
+        gap: 14px;
+        margin-bottom: 16px;
       }
 
       .header-meta {
         align-items: start;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .live-pill {
+        padding: 6px 12px;
+        font-size: 11px;
+      }
+
+      .floor-toggle {
+        padding: 3px;
+      }
+
+      .floor-toggle button {
+        padding: 7px 12px;
+        font-size: 11px;
+      }
+
+      .tenant-strip-wrap {
+        margin-bottom: 16px;
+        border-radius: 12px;
+      }
+
+      .tenant-strip-head {
+        padding: 10px 14px 8px;
+      }
+
+      .tenant-strip-label {
+        font-size: 9px;
+        letter-spacing: .15em;
+      }
+
+      .tenant-strip-count {
+        font-size: 9px;
+      }
+
+      .tenant-strip {
+        padding: 10px 12px;
+        gap: 6px;
+        max-height: 76px;
+      }
+
+      .tenant-strip.expanded {
+        max-height: 320px;
+      }
+
+      .tenant-chip {
+        padding: 5px 11px;
+        font-size: 10.5px;
+      }
+
+      .tenant-strip-toggle {
+        font-size: 10.5px;
+        padding: 5px 12px;
       }
 
       .stage {
-        padding: 12px;
+        padding: 10px;
+        border-radius: 16px;
+      }
+
+      .map-wrap {
+        border-radius: 12px;
+      }
+
+      .replay-anim {
+        left: 14px;
+        top: 14px;
+        padding: 6px 10px;
+        font-size: 10px;
+      }
+
+      .controls {
+        right: 14px;
+        bottom: 14px;
+        gap: 6px;
+      }
+
+      .controls button {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+      }
+
+      .hint {
+        display: none;
       }
 
       .info-panel {
+        position: fixed;
         left: 12px;
         right: 12px;
         bottom: 12px;
         top: auto;
         width: auto;
         max-width: none;
+        max-height: 60vh;
+        overflow-y: auto;
+        z-index: 100;
       }
 
       .info-panel.panel-top,
@@ -1162,8 +1258,62 @@
         top: auto;
       }
 
+      .info-name {
+        font-size: 18px;
+      }
+
+      .info-desc {
+        font-size: 11px;
+      }
+
       .stage.with-panel .map-wrap {
         transform: none;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .page {
+        padding: 16px 12px 32px;
+      }
+
+      .title {
+        font-size: 24px;
+      }
+
+      .eyebrow {
+        font-size: 10px;
+        letter-spacing: .2em;
+      }
+
+      .header-meta {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .live-pill {
+        align-self: flex-start;
+      }
+
+      .floor-toggle {
+        align-self: stretch;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .floor-toggle button {
+        flex: 1;
+        padding: 8px 6px;
+        font-size: 10.5px;
+        text-align: center;
+      }
+
+      .tenant-strip {
+        max-height: 62px;
+      }
+
+      .tenant-chip {
+        padding: 5px 10px;
+        font-size: 10px;
       }
     }
   </style>
