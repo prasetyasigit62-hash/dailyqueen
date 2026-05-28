@@ -170,12 +170,15 @@
 
     /* Map container — uses the original sketch as background */
     .map-wrap {
+      --map-aspect-ratio: 1448/1086;
+      --map-render-scale: 3;
       position: relative;
       width: 100%;
-      aspect-ratio: 1648/954;
+      aspect-ratio: var(--map-aspect-ratio);
       border-radius: 18px;
       background: #ffffff;
       cursor: grab;
+      overflow: hidden;
       transform-origin: left center;
       will-change: transform;
       transition: transform .58s cubic-bezier(.22, 1, .36, 1);
@@ -192,8 +195,15 @@
     .map-inner {
       position: absolute;
       inset: 0;
+      z-index: 1;
       transform-origin: center center;
       transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .map-wrap.map-wrap--static .map-inner {
+      width: calc(100% * var(--map-render-scale));
+      height: calc(100% * var(--map-render-scale));
+      transform-origin: top left;
     }
 
     .map-img {
@@ -204,6 +214,60 @@
       display: block;
       user-select: none;
       pointer-events: none;
+      backface-visibility: hidden;
+      image-rendering: -webkit-optimize-contrast;
+      transform: translateZ(0);
+    }
+
+    .map-img.map-img--crisp {
+      filter: contrast(1.08) saturate(1.04);
+      image-rendering: auto;
+    }
+
+    .map-wrap.map-wrap--static {
+      background:
+        radial-gradient(circle at 50% 85%, rgba(58, 115, 175, .16), transparent 46%),
+        linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .92),
+        inset 0 -28px 42px rgba(38, 72, 116, .08),
+        0 28px 76px rgba(15, 33, 58, .16);
+    }
+
+    .map-wrap.map-wrap--static::before,
+    .map-wrap.map-wrap--static::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .map-wrap.map-wrap--static::before {
+      inset: auto 7% 3%;
+      height: 20%;
+      background:
+        radial-gradient(ellipse at center, rgba(10, 31, 64, .2), transparent 68%);
+      filter: none;
+      opacity: .28;
+      transform: perspective(900px) rotateX(58deg) translateY(12px);
+    }
+
+    .map-wrap.map-wrap--static::after {
+      left: 8%;
+      right: 8%;
+      bottom: 5%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(73, 133, 197, .38), transparent);
+      filter: none;
+      opacity: .62;
+      transform: none;
+    }
+
+    .map-wrap.map-wrap--static .map-img.map-img--crisp {
+      filter:
+        contrast(1.09)
+        saturate(1.04)
+        drop-shadow(0 16px 10px rgba(7, 22, 44, .14));
     }
 
     /* ───── 3D REVEAL ANIMATION (when scrolled into view) ─────
@@ -222,11 +286,40 @@
       inset: 0;
       transform-style: preserve-3d;
       transform: rotateX(0deg) scale(1);
-      transition: transform 2.6s cubic-bezier(.4, .0, .2, 1);
+      opacity: 1;
+      filter: none;
+      backface-visibility: hidden;
+      will-change: transform, opacity;
+      transition:
+        transform 3.6s cubic-bezier(.18, .78, .18, 1),
+        opacity 1.2s ease,
+        filter 1.6s ease;
+    }
+
+    .map-stage.reveal-prep {
+      opacity: .74;
+      filter: blur(.8px) brightness(1.04);
+      transform: rotateX(0deg) scale(.965) translateY(2.4%);
     }
 
     .map-stage.flying {
       transform: rotateX(28deg) scale(1.02) translateY(-2%);
+    }
+
+    .map-wrap.map-wrap--static .map-stage {
+      transition:
+        transform 9.2s cubic-bezier(.12, .68, .1, 1),
+        opacity 2.4s ease;
+    }
+
+    .map-wrap.map-wrap--static .map-stage.reveal-prep {
+      opacity: .98;
+      filter: none;
+      transform: rotateX(9deg) scale(1.006) translateY(.4%);
+    }
+
+    .map-wrap.map-wrap--static .map-stage.flying {
+      transform: rotateX(18deg) scale(1.018) translateY(-1.4%);
     }
 
     /* Building extrusion stack — drawn by SVG, stacked layers grow */
@@ -282,7 +375,21 @@
           transparent 100%);
       filter: blur(6px);
       transform: skewX(-22deg);
-      animation: sweep-across 4.5s cubic-bezier(.4, 0, .2, 1) infinite;
+      animation: sweep-across 6.8s cubic-bezier(.4, 0, .2, 1) infinite;
+    }
+
+    .map-wrap.map-wrap--static .light-sweep::before {
+      width: 22%;
+      background: linear-gradient(100deg,
+          transparent 0%,
+          rgba(255, 255, 255, .0) 24%,
+          rgba(255, 255, 255, .62) 48%,
+          rgba(180, 214, 255, .22) 58%,
+          rgba(255, 255, 255, .0) 74%,
+          transparent 100%);
+      filter: blur(4px);
+      animation-duration: 9.6s;
+      animation-iteration-count: infinite;
     }
 
     @keyframes sweep-across {
@@ -452,8 +559,62 @@
       fill: rgba(33, 150, 243, 0.04);
     }
 
+    .map-wrap.map-wrap--static .tenant-fill,
+    .map-wrap.map-wrap--static .tenant-rim {
+      opacity: 0;
+    }
+
+    .map-wrap.map-wrap--static .tenant-aura,
+    .map-wrap.map-wrap--static .tenant-rim,
+    .map-wrap.map-wrap--static .tenant-runner {
+      filter: none !important;
+    }
+
+    .map-wrap.map-wrap--static .tenant-runner {
+      stroke: #ffffff;
+      stroke-width: 4.4;
+      opacity: .96;
+      filter:
+        drop-shadow(0 0 4px rgba(255, 255, 255, .9))
+        drop-shadow(0 0 12px rgba(60, 180, 255, .65)) !important;
+    }
+
+    .map-wrap.map-wrap--static .tenant-spot:hover:not(.active) .tenant-fill {
+      fill: rgba(48, 171, 255, .48);
+      opacity: .82;
+      animation: gf-tenant-breathe 2.25s ease-in-out infinite;
+    }
+
+    .map-wrap.map-wrap--static .tenant-spot:hover:not(.active) .tenant-rim,
+    .map-wrap.map-wrap--static .tenant-spot.active .tenant-rim {
+      opacity: .95;
+      animation: none;
+    }
+
+    .map-wrap.map-wrap--static .tenant-spot.active .tenant-fill {
+      fill: rgba(48, 171, 255, .46);
+      opacity: .78;
+      animation: gf-tenant-breathe 2.4s ease-in-out infinite;
+    }
+
+    .map-wrap.map-wrap--static:not(.map-wrap--tenant-hotspots) #hits,
+    .map-wrap:not(.map-wrap--static) #gfHits {
+      display: none !important;
+    }
+
     .overlay.has-hover .tenant-spot:not(.is-hovered):not(.active) {
       opacity: 0.15;
+    }
+
+    @keyframes gf-tenant-breathe {
+      0%,
+      100% {
+        opacity: .48;
+      }
+
+      50% {
+        opacity: .9;
+      }
     }
 
     @keyframes hover-fill-pulse {
@@ -647,6 +808,10 @@
       stroke: #2db15c;
       stroke-width: 3;
       animation: dest-pulse 2s ease-in-out infinite;
+    }
+
+    #entranceGroup {
+      display: none !important;
     }
 
     /* Controls */
@@ -879,12 +1044,35 @@
       transition: all .3s;
     }
 
+    .tenant-chip--static {
+      cursor: default;
+    }
+
+    .tenant-chip--empty {
+      color: #7d8798;
+      border-style: dashed;
+      background: rgba(255, 255, 255, .64);
+    }
+
     .tenant-chip:hover,
     .tenant-chip.active {
       background: #0c1a3a;
       color: #fff;
       border-color: #0c1a3a;
       transform: translateY(-1px);
+    }
+
+    .tenant-chip--static:hover {
+      background: #fff;
+      color: #0c1a3a;
+      border-color: rgba(12, 26, 58, .1);
+      transform: none;
+    }
+
+    .tenant-chip--static.tenant-chip--empty:hover {
+      color: #7d8798;
+      border-style: dashed;
+      background: rgba(255, 255, 255, .64);
     }
 
     @media (max-width: 900px) {
@@ -939,14 +1127,14 @@
   <div class="page">
     <div class="header">
       <div>
-        <div class="eyebrow">Floor Directory · 1F</div>
-        <h1 class="title"><em>Lantai 1</em> — Fashion, Tech &amp; Dining</h1>
-        <p class="subtitle">Klik tenant untuk melihat detail dan rute jalan dari pintu masuk.</p>
+        <div class="eyebrow" id="floorEyebrow">Floor Directory · 1F</div>
+        <h1 class="title" id="floorTitle"><em>Lantai 1</em> — Fashion, Tech &amp; Dining</h1>
+        <p class="subtitle" id="floorSubtitle">Klik tenant untuk melihat detail dan rute jalan dari pintu masuk.</p>
       </div>
       <div class="header-meta">
         <div class="live-pill"><span class="live-dot"></span><span>Mall buka · 10:00 — 22:00</span></div>
         <div class="floor-toggle">
-          <button>GF</button><button class="active">1F</button><button>2F</button><button>3F</button>
+          <button data-floor="gf">GF</button><button data-floor="1f" class="active">1F</button><button data-floor="2f">2F</button><button data-floor="3f">3F</button><button data-floor="4f">4F</button>
         </div>
       </div>
     </div>
@@ -954,11 +1142,11 @@
     <div class="tenant-strip" id="tenantStrip"></div>
 
     <div class="stage">
-      <div class="map-wrap" id="mapWrap">
+      <div class="map-wrap map-wrap--static" id="mapWrap">
         <button class="replay-anim" id="replayAnim">↻ Replay Animation</button>
-        <div class="map-inner" id="mapInner">
+        <div class="map-inner" id="mapInner" style="transform: translate(0px, 0px) scale(0.333333);">
           <div class="map-stage" id="mapStage">
-            <img class="map-img" src="Maps.PNG" alt="Floor plan" />
+            <img class="map-img map-img--crisp" id="mapImage" src="1st FLOOR.png" alt="Lantai 1 floor plan" />
 
             <!-- Light sweep effect -->
             <div class="light-sweep" id="lightSweep"></div>
@@ -1058,6 +1246,972 @@
                   <path class="tenant-rim" d="M1321 361.5L1103.5 454.5L1117.5 796.5L1428 766L1438 369L1321 361.5Z" />
                   <path class="hit" data-id="baleno" d="M1321 361.5L1103.5 454.5L1117.5 796.5L1428 766L1438 369L1321 361.5Z" />
                 </g>
+
+                <g class="tenant-spot" data-id="l1-a3" style="--pulse-delay:.08s;">
+                  <path class="tenant-aura" d="M285.552 810.009H271.728L266.976 700.713H271.728L266.976 629.001L204.768 632.025V595.737L199.152 592.713L89.856 601.785L8.640 666.585V689.481L136.512 904.617L143.856 907.641L158.544 901.161H233.280V950.841L237.600 959.913H245.808L288.576 950.841L354.240 947.385V925.353L351.648 848.889L306.720 827.289L285.552 810.009Z" />
+                  <path class="tenant-fill" d="M285.552 810.009H271.728L266.976 700.713H271.728L266.976 629.001L204.768 632.025V595.737L199.152 592.713L89.856 601.785L8.640 666.585V689.481L136.512 904.617L143.856 907.641L158.544 901.161H233.280V950.841L237.600 959.913H245.808L288.576 950.841L354.240 947.385V925.353L351.648 848.889L306.720 827.289L285.552 810.009Z" />
+                  <path class="tenant-rim" d="M285.552 810.009H271.728L266.976 700.713H271.728L266.976 629.001L204.768 632.025V595.737L199.152 592.713L89.856 601.785L8.640 666.585V689.481L136.512 904.617L143.856 907.641L158.544 901.161H233.280V950.841L237.600 959.913H245.808L288.576 950.841L354.240 947.385V925.353L351.648 848.889L306.720 827.289L285.552 810.009Z" />
+                  <path class="hit" data-id="l1-a3" d="M285.552 810.009H271.728L266.976 700.713H271.728L266.976 629.001L204.768 632.025V595.737L199.152 592.713L89.856 601.785L8.640 666.585V689.481L136.512 904.617L143.856 907.641L158.544 901.161H233.280V950.841L237.600 959.913H245.808L288.576 950.841L354.240 947.385V925.353L351.648 848.889L306.720 827.289L285.552 810.009Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-11" style="--pulse-delay:.16s;">
+                  <path class="tenant-aura" d="M344.742 581.476L269.578 586.659L276.057 711.502H316.663L333.511 698.974L350.358 690.767L344.742 581.476Z" />
+                  <path class="tenant-fill" d="M344.742 581.476L269.578 586.659L276.057 711.502H316.663L333.511 698.974L350.358 690.767L344.742 581.476Z" />
+                  <path class="tenant-rim" d="M344.742 581.476L269.578 586.659L276.057 711.502H316.663L333.511 698.974L350.358 690.767L344.742 581.476Z" />
+                  <path class="hit" data-id="l1-11" d="M344.742 581.476L269.578 586.659L276.057 711.502H316.663L333.511 698.974L350.358 690.767L344.742 581.476Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-9810" style="--pulse-delay:.24s;">
+                  <path class="tenant-aura" d="M358.131 687.744L353.379 582.341L485.565 572.837L490.316 667.441H459.214L422.928 671.329L392.257 676.944L358.131 687.744Z" />
+                  <path class="tenant-fill" d="M358.131 687.744L353.379 582.341L485.565 572.837L490.316 667.441H459.214L422.928 671.329L392.257 676.944L358.131 687.744Z" />
+                  <path class="tenant-rim" d="M358.131 687.744L353.379 582.341L485.565 572.837L490.316 667.441H459.214L422.928 671.329L392.257 676.944L358.131 687.744Z" />
+                  <path class="hit" data-id="l1-9810" d="M358.131 687.744L353.379 582.341L485.565 572.837L490.316 667.441H459.214L422.928 671.329L392.257 676.944L358.131 687.744Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-08" style="--pulse-delay:.32s;">
+                  <path class="tenant-aura" d="M547.342 571.100L488.161 574.124L493.345 670.456L526.607 673.480L552.958 678.664L547.342 571.100Z" />
+                  <path class="tenant-fill" d="M547.342 571.100L488.161 574.124L493.345 670.456L526.607 673.480L552.958 678.664L547.342 571.100Z" />
+                  <path class="tenant-rim" d="M547.342 571.100L488.161 574.124L493.345 670.456L526.607 673.480L552.958 678.664L547.342 571.100Z" />
+                  <path class="hit" data-id="l1-08" d="M547.342 571.100L488.161 574.124L493.345 670.456L526.607 673.480L552.958 678.664L547.342 571.100Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-07" style="--pulse-delay:.40s;">
+                  <path class="tenant-aura" d="M614.277 592.678L549.048 595.270L554.232 683.394L580.150 693.330L596.998 701.969L606.069 706.289L623.348 698.082L614.277 592.678Z" />
+                  <path class="tenant-fill" d="M614.277 592.678L549.048 595.270L554.232 683.394L580.150 693.330L596.998 701.969L606.069 706.289L623.348 698.082L614.277 592.678Z" />
+                  <path class="tenant-rim" d="M614.277 592.678L549.048 595.270L554.232 683.394L580.150 693.330L596.998 701.969L606.069 706.289L623.348 698.082L614.277 592.678Z" />
+                  <path class="hit" data-id="l1-07" d="M614.277 592.678L549.048 595.270L554.232 683.394L580.150 693.330L596.998 701.969L606.069 706.289L623.348 698.082L614.277 592.678Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-06" style="--pulse-delay:.48s;">
+                  <path class="tenant-aura" d="M625.076 698.513L616.437 581.014V577.558L671.730 574.103L733.504 631.988V644.516L625.076 698.513Z" />
+                  <path class="tenant-fill" d="M625.076 698.513L616.437 581.014V577.558L671.730 574.103L733.504 631.988V644.516L625.076 698.513Z" />
+                  <path class="tenant-rim" d="M625.076 698.513L616.437 581.014V577.558L671.730 574.103L733.504 631.988V644.516L625.076 698.513Z" />
+                  <path class="hit" data-id="l1-06" d="M625.076 698.513L616.437 581.014V577.558L671.730 574.103L733.504 631.988V644.516L625.076 698.513Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-05" style="--pulse-delay:.56s;">
+                  <path class="tenant-aura" d="M609.093 495.050L614.709 575.831L673.890 571.943L710.608 605.206L743.439 575.831V499.370L609.093 495.050Z" />
+                  <path class="tenant-fill" d="M609.093 495.050L614.709 575.831L673.890 571.943L710.608 605.206L743.439 575.831V499.370L609.093 495.050Z" />
+                  <path class="tenant-rim" d="M609.093 495.050L614.709 575.831L673.890 571.943L710.608 605.206L743.439 575.831V499.370L609.093 495.050Z" />
+                  <path class="hit" data-id="l1-05" d="M609.093 495.050L614.709 575.831L673.890 571.943L710.608 605.206L743.439 575.831V499.370L609.093 495.050Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-22a" style="--pulse-delay:.64s;">
+                  <path class="tenant-aura" d="M567.623 714.064L543.000 705.857V760.286H603.909L599.158 744.303L586.630 726.160L567.623 714.064Z" />
+                  <path class="tenant-fill" d="M567.623 714.064L543.000 705.857V760.286H603.909L599.158 744.303L586.630 726.160L567.623 714.064Z" />
+                  <path class="tenant-rim" d="M567.623 714.064L543.000 705.857V760.286H603.909L599.158 744.303L586.630 726.160L567.623 714.064Z" />
+                  <path class="hit" data-id="l1-22a" d="M567.623 714.064L543.000 705.857V760.286H603.909L599.158 744.303L586.630 726.160L567.623 714.064Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-22b" style="--pulse-delay:.72s;">
+                  <path class="tenant-aura" d="M580.582 813.420L543.000 829.835V762.014H604.341V778.862L600.885 790.957L580.582 813.420Z" />
+                  <path class="tenant-fill" d="M580.582 813.420L543.000 829.835V762.014H604.341V778.862L600.885 790.957L580.582 813.420Z" />
+                  <path class="tenant-rim" d="M580.582 813.420L543.000 829.835V762.014H604.341V778.862L600.885 790.957L580.582 813.420Z" />
+                  <path class="hit" data-id="l1-22b" d="M580.582 813.420L543.000 829.835V762.014H604.341V778.862L600.885 790.957L580.582 813.420Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-24" style="--pulse-delay:.80s;">
+                  <path class="tenant-aura" d="M666.115 692.897L625.940 712.337L623.348 724.432L641.924 753.807L685.554 734.368L682.962 722.272L666.115 692.897Z" />
+                  <path class="tenant-fill" d="M666.115 692.897L625.940 712.337L623.348 724.432L641.924 753.807L685.554 734.368L682.962 722.272L666.115 692.897Z" />
+                  <path class="tenant-rim" d="M666.115 692.897L625.940 712.337L623.348 724.432L641.924 753.807L685.554 734.368L682.962 722.272L666.115 692.897Z" />
+                  <path class="hit" data-id="l1-24" d="M666.115 692.897L625.940 712.337L623.348 724.432L641.924 753.807L685.554 734.368L682.962 722.272L666.115 692.897Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-29" style="--pulse-delay:.88s;">
+                  <path class="tenant-aura" d="M724.000 663.091L680.802 684.690V696.353L697.649 727.024L742.575 702.401V690.737L724.000 663.091Z" />
+                  <path class="tenant-fill" d="M724.000 663.091L680.802 684.690V696.353L697.649 727.024L742.575 702.401V690.737L724.000 663.091Z" />
+                  <path class="tenant-rim" d="M724.000 663.091L680.802 684.690V696.353L697.649 727.024L742.575 702.401V690.737L724.000 663.091Z" />
+                  <path class="hit" data-id="l1-29" d="M724.000 663.091L680.802 684.690V696.353L697.649 727.024L742.575 702.401V690.737L724.000 663.091Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-27" style="--pulse-delay:.96s;">
+                  <path class="tenant-aura" d="M780.158 627.236L740.847 652.723V666.979L762.014 691.601L800.029 660.931V652.723L780.158 627.236Z" />
+                  <path class="tenant-fill" d="M780.158 627.236L740.847 652.723V666.979L762.014 691.601L800.029 660.931V652.723L780.158 627.236Z" />
+                  <path class="tenant-rim" d="M780.158 627.236L740.847 652.723V666.979L762.014 691.601L800.029 660.931V652.723L780.158 627.236Z" />
+                  <path class="hit" data-id="l1-27" d="M780.158 627.236L740.847 652.723V666.979L762.014 691.601L800.029 660.931V652.723L780.158 627.236Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-04" style="--pulse-delay:1.04s;">
+                  <path class="tenant-aura" d="M776.270 534.792V506.282L847.979 509.305L863.530 518.377V529.609L776.270 611.253L758.126 600.453V590.086V534.792H776.270Z" />
+                  <path class="tenant-fill" d="M776.270 534.792V506.282L847.979 509.305L863.530 518.377V529.609L776.270 611.253L758.126 600.453V590.086V534.792H776.270Z" />
+                  <path class="tenant-rim" d="M776.270 534.792V506.282L847.979 509.305L863.530 518.377V529.609L776.270 611.253L758.126 600.453V590.086V534.792H776.270Z" />
+                  <path class="hit" data-id="l1-04" d="M776.270 534.792V506.282L847.979 509.305L863.530 518.377V529.609L776.270 611.253L758.126 600.453V590.086V534.792H776.270Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-03a" style="--pulse-delay:1.12s;">
+                  <path class="tenant-aura" d="M896.792 447.964H780.589V466.107H777.566V503.690L847.979 505.418L862.234 517.945L866.122 530.041L909.320 488.138V475.179L900.248 459.196L896.792 447.964Z" />
+                  <path class="tenant-fill" d="M896.792 447.964H780.589V466.107H777.566V503.690L847.979 505.418L862.234 517.945L866.122 530.041L909.320 488.138V475.179L900.248 459.196L896.792 447.964Z" />
+                  <path class="tenant-rim" d="M896.792 447.964H780.589V466.107H777.566V503.690L847.979 505.418L862.234 517.945L866.122 530.041L909.320 488.138V475.179L900.248 459.196L896.792 447.964Z" />
+                  <path class="hit" data-id="l1-03a" d="M896.792 447.964H780.589V466.107H777.566V503.690L847.979 505.418L862.234 517.945L866.122 530.041L909.320 488.138V475.179L900.248 459.196L896.792 447.964Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-03" style="--pulse-delay:1.20s;">
+                  <path class="tenant-aura" d="M755.535 467.403H774.542V446.668H896.361L893.769 427.661V398.286L899.385 370.640H755.535L751.647 460.492L755.535 467.403Z" />
+                  <path class="tenant-fill" d="M755.535 467.403H774.542V446.668H896.361L893.769 427.661V398.286L899.385 370.640H755.535L751.647 460.492L755.535 467.403Z" />
+                  <path class="tenant-rim" d="M755.535 467.403H774.542V446.668H896.361L893.769 427.661V398.286L899.385 370.640H755.535L751.647 460.492L755.535 467.403Z" />
+                  <path class="hit" data-id="l1-03" d="M755.535 467.403H774.542V446.668H896.361L893.769 427.661V398.286L899.385 370.640H755.535L751.647 460.492L755.535 467.403Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-a1" style="--pulse-delay:1.28s;">
+                  <path class="tenant-aura" d="M1124.878 34.126H838.907L832.859 39.310L836.747 357.680L843.227 360.704H908.024L921.415 332.625L933.943 314.482L945.606 298.931L958.566 287.267L972.821 275.172L989.668 262.212L1012.563 251.413L1038.482 241.909L1060.945 239.317H1091.184L1112.783 244.069L1133.950 251.413L1152.525 262.212L1170.668 278.628L1184.060 296.771L1192.699 317.938L1196.155 338.673H1280.392V278.628H1302.423L1296.807 120.091H1419.921V73.869H1385.363V34.126H1296.807V67.389H1251.017V25.487H1229.850V12.095H1124.878V34.126Z" />
+                  <path class="tenant-fill" d="M1124.878 34.126H838.907L832.859 39.310L836.747 357.680L843.227 360.704H908.024L921.415 332.625L933.943 314.482L945.606 298.931L958.566 287.267L972.821 275.172L989.668 262.212L1012.563 251.413L1038.482 241.909L1060.945 239.317H1091.184L1112.783 244.069L1133.950 251.413L1152.525 262.212L1170.668 278.628L1184.060 296.771L1192.699 317.938L1196.155 338.673H1280.392V278.628H1302.423L1296.807 120.091H1419.921V73.869H1385.363V34.126H1296.807V67.389H1251.017V25.487H1229.850V12.095H1124.878V34.126Z" />
+                  <path class="tenant-rim" d="M1124.878 34.126H838.907L832.859 39.310L836.747 357.680L843.227 360.704H908.024L921.415 332.625L933.943 314.482L945.606 298.931L958.566 287.267L972.821 275.172L989.668 262.212L1012.563 251.413L1038.482 241.909L1060.945 239.317H1091.184L1112.783 244.069L1133.950 251.413L1152.525 262.212L1170.668 278.628L1184.060 296.771L1192.699 317.938L1196.155 338.673H1280.392V278.628H1302.423L1296.807 120.091H1419.921V73.869H1385.363V34.126H1296.807V67.389H1251.017V25.487H1229.850V12.095H1124.878V34.126Z" />
+                  <path class="hit" data-id="l1-a1" d="M1124.878 34.126H838.907L832.859 39.310L836.747 357.680L843.227 360.704H908.024L921.415 332.625L933.943 314.482L945.606 298.931L958.566 287.267L972.821 275.172L989.668 262.212L1012.563 251.413L1038.482 241.909L1060.945 239.317H1091.184L1112.783 244.069L1133.950 251.413L1152.525 262.212L1170.668 278.628L1184.060 296.771L1192.699 317.938L1196.155 338.673H1280.392V278.628H1302.423L1296.807 120.091H1419.921V73.869H1385.363V34.126H1296.807V67.389H1251.017V25.487H1229.850V12.095H1124.878V34.126Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-21" style="--pulse-delay:1.36s;">
+                  <path class="tenant-aura" d="M1302.854 343.425H1201.339L1195.723 373.663L1190.971 395.695L1182.332 421.181L1171.964 439.325L1156.845 460.492L1136.542 479.067L1117.967 493.322V506.282L1163.325 571.511V599.158L1171.964 609.525L1348.644 605.637L1352.100 599.158L1348.644 435.437H1328.341V373.663H1302.854V343.425Z" />
+                  <path class="tenant-fill" d="M1302.854 343.425H1201.339L1195.723 373.663L1190.971 395.695L1182.332 421.181L1171.964 439.325L1156.845 460.492L1136.542 479.067L1117.967 493.322V506.282L1163.325 571.511V599.158L1171.964 609.525L1348.644 605.637L1352.100 599.158L1348.644 435.437H1328.341V373.663H1302.854V343.425Z" />
+                  <path class="tenant-rim" d="M1302.854 343.425H1201.339L1195.723 373.663L1190.971 395.695L1182.332 421.181L1171.964 439.325L1156.845 460.492L1136.542 479.067L1117.967 493.322V506.282L1163.325 571.511V599.158L1171.964 609.525L1348.644 605.637L1352.100 599.158L1348.644 435.437H1328.341V373.663H1302.854V343.425Z" />
+                  <path class="hit" data-id="l1-21" d="M1302.854 343.425H1201.339L1195.723 373.663L1190.971 395.695L1182.332 421.181L1171.964 439.325L1156.845 460.492L1136.542 479.067L1117.967 493.322V506.282L1163.325 571.511V599.158L1171.964 609.525L1348.644 605.637L1352.100 599.158L1348.644 435.437H1328.341V373.663H1302.854V343.425Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-20" style="--pulse-delay:1.44s;">
+                  <path class="tenant-aura" d="M991.828 527.449L972.389 523.993L1061.377 611.253L1065.697 634.148L1093.344 630.692H1108.031L1124.878 633.284L1141.294 634.148L1146.045 633.284L1143.454 570.215L1099.392 506.714L1074.337 518.809L1058.353 523.993L1030.274 527.449H1013.859H991.828Z" />
+                  <path class="tenant-fill" d="M991.828 527.449L972.389 523.993L1061.377 611.253L1065.697 634.148L1093.344 630.692H1108.031L1124.878 633.284L1141.294 634.148L1146.045 633.284L1143.454 570.215L1099.392 506.714L1074.337 518.809L1058.353 523.993L1030.274 527.449H1013.859H991.828Z" />
+                  <path class="tenant-rim" d="M991.828 527.449L972.389 523.993L1061.377 611.253L1065.697 634.148L1093.344 630.692H1108.031L1124.878 633.284L1141.294 634.148L1146.045 633.284L1143.454 570.215L1099.392 506.714L1074.337 518.809L1058.353 523.993L1030.274 527.449H1013.859H991.828Z" />
+                  <path class="hit" data-id="l1-20" d="M991.828 527.449L972.389 523.993L1061.377 611.253L1065.697 634.148L1093.344 630.692H1108.031L1124.878 633.284L1141.294 634.148L1146.045 633.284L1143.454 570.215L1099.392 506.714L1074.337 518.809L1058.353 523.993L1030.274 527.449H1013.859H991.828Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-19" style="--pulse-delay:1.52s;">
+                  <path class="tenant-aura" d="M1059.217 614.277L964.613 523.129L927.895 558.119L1012.995 634.148L1024.659 652.724L1040.642 644.516L1063.105 634.148L1059.217 614.277Z" />
+                  <path class="tenant-fill" d="M1059.217 614.277L964.613 523.129L927.895 558.119L1012.995 634.148L1024.659 652.724L1040.642 644.516L1063.105 634.148L1059.217 614.277Z" />
+                  <path class="tenant-rim" d="M1059.217 614.277L964.613 523.129L927.895 558.119L1012.995 634.148L1024.659 652.724L1040.642 644.516L1063.105 634.148L1059.217 614.277Z" />
+                  <path class="hit" data-id="l1-19" d="M1059.217 614.277L964.613 523.129L927.895 558.119L1012.995 634.148L1024.659 652.724L1040.642 644.516L1063.105 634.148L1059.217 614.277Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-18" style="--pulse-delay:1.60s;">
+                  <path class="tenant-aura" d="M870.442 616.869V626.804L901.976 654.019L915.800 673.459L921.847 689.874V703.265H983.189L996.580 680.802L1006.947 669.139L1015.587 661.363L1023.363 654.019L1012.131 638.468L926.599 560.711L870.442 616.869Z" />
+                  <path class="tenant-fill" d="M870.442 616.869V626.804L901.976 654.019L915.800 673.459L921.847 689.874V703.265H983.189L996.580 680.802L1006.947 669.139L1015.587 661.363L1023.363 654.019L1012.131 638.468L926.599 560.711L870.442 616.869Z" />
+                  <path class="tenant-rim" d="M870.442 616.869V626.804L901.976 654.019L915.800 673.459L921.847 689.874V703.265H983.189L996.580 680.802L1006.947 669.139L1015.587 661.363L1023.363 654.019L1012.131 638.468L926.599 560.711L870.442 616.869Z" />
+                  <path class="hit" data-id="l1-18" d="M870.442 616.869V626.804L901.976 654.019L915.800 673.459L921.847 689.874V703.265H983.189L996.580 680.802L1006.947 669.139L1015.587 661.363L1023.363 654.019L1012.131 638.468L926.599 560.711L870.442 616.869Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-28" style="--pulse-delay:1.68s;">
+                  <path class="tenant-aura" d="M895.064 665.251L884.265 657.907V748.191H905.000L909.320 744.735V673.890L895.064 665.251Z" />
+                  <path class="tenant-fill" d="M895.064 665.251L884.265 657.907V748.191H905.000L909.320 744.735V673.890L895.064 665.251Z" />
+                  <path class="tenant-rim" d="M895.064 665.251L884.265 657.907V748.191H905.000L909.320 744.735V673.890L895.064 665.251Z" />
+                  <path class="hit" data-id="l1-28" d="M895.064 665.251L884.265 657.907V748.191H905.000L909.320 744.735V673.890L895.064 665.251Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-2b" style="--pulse-delay:1.70s;">
+                  <path class="tenant-aura" d="M863.098 544.728L828.107 580.150V592.678L852.298 610.821L887.721 576.694V565.031L863.098 544.728Z" />
+                  <path class="tenant-fill" d="M863.098 544.728L828.107 580.150V592.678L852.298 610.821L887.721 576.694V565.031L863.098 544.728Z" />
+                  <path class="tenant-rim" d="M863.098 544.728L828.107 580.150V592.678L852.298 610.821L887.721 576.694V565.031L863.098 544.728Z" />
+                  <path class="hit" data-id="l1-2b" d="M863.098 544.728L828.107 580.150V592.678L852.298 610.821L887.721 576.694V565.031L863.098 544.728Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-26" style="--pulse-delay:1.72s;">
+                  <path class="tenant-aura" d="M920.983 489.434L883.401 527.449V540.408L908.456 558.119L946.470 524.425V511.465L920.983 489.434Z" />
+                  <path class="tenant-fill" d="M920.983 489.434L883.401 527.449V540.408L908.456 558.119L946.470 524.425V511.465L920.983 489.434Z" />
+                  <path class="tenant-rim" d="M920.983 489.434L883.401 527.449V540.408L908.456 558.119L946.470 524.425V511.465L920.983 489.434Z" />
+                  <path class="hit" data-id="l1-26" d="M920.983 489.434L883.401 527.449V540.408L908.456 558.119L946.470 524.425V511.465L920.983 489.434Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-16-17" style="--pulse-delay:1.76s;">
+                  <path class="tenant-aura" d="M756.399 711.041L698.081 746.031L714.496 954.246V981.893L876.057 961.158L882.105 954.246L876.057 746.031H817.740V711.041H756.399Z" />
+                  <path class="tenant-fill" d="M756.399 711.041L698.081 746.031L714.496 954.246V981.893L876.057 961.158L882.105 954.246L876.057 746.031H817.740V711.041H756.399Z" />
+                  <path class="tenant-rim" d="M756.399 711.041L698.081 746.031L714.496 954.246V981.893L876.057 961.158L882.105 954.246L876.057 746.031H817.740V711.041H756.399Z" />
+                  <path class="hit" data-id="l1-16-17" d="M756.399 711.041L698.081 746.031L714.496 954.246V981.893L876.057 961.158L882.105 954.246L876.057 746.031H817.740V711.041H756.399Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-15" style="--pulse-delay:1.84s;">
+                  <path class="tenant-aura" d="M695.489 746.031L632.420 780.158L645.380 969.797V993.556L713.201 981.461V958.134L695.489 746.031Z" />
+                  <path class="tenant-fill" d="M695.489 746.031L632.420 780.158L645.380 969.797V993.556L713.201 981.461V958.134L695.489 746.031Z" />
+                  <path class="tenant-rim" d="M695.489 746.031L632.420 780.158L645.380 969.797V993.556L713.201 981.461V958.134L695.489 746.031Z" />
+                  <path class="hit" data-id="l1-15" d="M695.489 746.031L632.420 780.158L645.380 969.797V993.556L713.201 981.461V958.134L695.489 746.031Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-14" style="--pulse-delay:1.92s;">
+                  <path class="tenant-aura" d="M587.062 826.811L566.759 836.747L574.535 978.005V1000.900L643.220 993.556V969.797L629.828 781.453L612.549 803.916L587.062 826.811Z" />
+                  <path class="tenant-fill" d="M587.062 826.811L566.759 836.747L574.535 978.005V1000.900L643.220 993.556V969.797L629.828 781.453L612.549 803.916L587.062 826.811Z" />
+                  <path class="tenant-rim" d="M587.062 826.811L566.759 836.747L574.535 978.005V1000.900L643.220 993.556V969.797L629.828 781.453L612.549 803.916L587.062 826.811Z" />
+                  <path class="hit" data-id="l1-14" d="M587.062 826.811L566.759 836.747L574.535 978.005V1000.900L643.220 993.556V969.797L629.828 781.453L612.549 803.916L587.062 826.811Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-13" style="--pulse-delay:2.00s;">
+                  <path class="tenant-aura" d="M524.425 854.026L498.506 859.642L504.122 982.756V1006.515L572.807 1000.900V978.437L565.463 838.475L524.425 854.026Z" />
+                  <path class="tenant-fill" d="M524.425 854.026L498.506 859.642L504.122 982.756V1006.515L572.807 1000.900V978.437L565.463 838.475L524.425 854.026Z" />
+                  <path class="tenant-rim" d="M524.425 854.026L498.506 859.642L504.122 982.756V1006.515L572.807 1000.900V978.437L565.463 838.475L524.425 854.026Z" />
+                  <path class="hit" data-id="l1-13" d="M524.425 854.026L498.506 859.642L504.122 982.756V1006.515L572.807 1000.900V978.437L565.463 838.475L524.425 854.026Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-12" style="--pulse-delay:2.08s;">
+                  <path class="tenant-aura" d="M443.212 863.098H419.885V999.172L424.637 1010.836H431.117L502.826 1005.652L497.210 859.642L463.516 863.098H443.212Z" />
+                  <path class="tenant-fill" d="M443.212 863.098H419.885V999.172L424.637 1010.836H431.117L502.826 1005.652L497.210 859.642L463.516 863.098H443.212Z" />
+                  <path class="tenant-rim" d="M443.212 863.098H419.885V999.172L424.637 1010.836H431.117L502.826 1005.652L497.210 859.642L463.516 863.098H443.212Z" />
+                  <path class="hit" data-id="l1-12" d="M443.212 863.098H419.885V999.172L424.637 1010.836H431.117L502.826 1005.652L497.210 859.642L463.516 863.098H443.212Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-12a" style="--pulse-delay:2.16s;">
+                  <path class="tenant-aura" d="M387.055 860.938L353.792 854.890L356.816 951.654H410.814L413.838 947.767L410.814 864.826L387.055 860.938Z" />
+                  <path class="tenant-fill" d="M387.055 860.938L353.792 854.890L356.816 951.654H410.814L413.838 947.767L410.814 864.826L387.055 860.938Z" />
+                  <path class="tenant-rim" d="M387.055 860.938L353.792 854.890L356.816 951.654H410.814L413.838 947.767L410.814 864.826L387.055 860.938Z" />
+                  <path class="hit" data-id="l1-12a" d="M387.055 860.938L353.792 854.890L356.816 951.654H410.814L413.838 947.767L410.814 864.826L387.055 860.938Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l1-23" style="--pulse-delay:2.24s;">
+                  <path class="tenant-aura" d="M1040.642 507.146H1023.363L1020.339 492.890L1023.363 484.251L1029.842 468.267L1040.642 452.716L1055.329 440.189L1070.881 431.549L1088.160 425.933H1109.327H1124.446L1141.293 431.549V444.076L1118.398 468.267L1102.847 480.795L1083.408 492.890L1062.241 501.962L1040.642 507.146Z" />
+                  <path class="tenant-fill" d="M1040.642 507.146H1023.363L1020.339 492.890L1023.363 484.251L1029.842 468.267L1040.642 452.716L1055.329 440.189L1070.881 431.549L1088.160 425.933H1109.327H1124.446L1141.293 431.549V444.076L1118.398 468.267L1102.847 480.795L1083.408 492.890L1062.241 501.962L1040.642 507.146Z" />
+                  <path class="tenant-rim" d="M1040.642 507.146H1023.363L1020.339 492.890L1023.363 484.251L1029.842 468.267L1040.642 452.716L1055.329 440.189L1070.881 431.549L1088.160 425.933H1109.327H1124.446L1141.293 431.549V444.076L1118.398 468.267L1102.847 480.795L1083.408 492.890L1062.241 501.962L1040.642 507.146Z" />
+                  <path class="hit" data-id="l1-23" d="M1040.642 507.146H1023.363L1020.339 492.890L1023.363 484.251L1029.842 468.267L1040.642 452.716L1055.329 440.189L1070.881 431.549L1088.160 425.933H1109.327H1124.446L1141.293 431.549V444.076L1118.398 468.267L1102.847 480.795L1083.408 492.890L1062.241 501.962L1040.642 507.146Z" />
+                </g>
+              </g>
+
+              <g id="f2Hits" style="display:none;">
+                <g class="tenant-spot" data-id="l2-22a" style="--pulse-delay:0s;">
+                  <path class="tenant-aura" d="M495.817 877.581L456.603 880.583L461.373 1022.726L502.529 1022.726L495.817 877.581Z" />
+                  <path class="tenant-fill" d="M495.817 877.581L456.603 880.583L461.373 1022.726L502.529 1022.726L495.817 877.581Z" />
+                  <path class="tenant-rim" d="M495.817 877.581L456.603 880.583L461.373 1022.726L502.529 1022.726L495.817 877.581Z" />
+                  <path class="hit" data-id="l2-22a" d="M495.817 877.581L456.603 880.583L461.373 1022.726L502.529 1022.726L495.817 877.581Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-22b" style="--pulse-delay:.08s;">
+                  <path class="tenant-aura" d="M535.560 876.169L499.173 878.641L505.885 1018.489L541.742 1018.489L535.560 876.169Z" />
+                  <path class="tenant-fill" d="M535.560 876.169L499.173 878.641L505.885 1018.489L541.742 1018.489L535.560 876.169Z" />
+                  <path class="tenant-rim" d="M535.560 876.169L499.173 878.641L505.885 1018.489L541.742 1018.489L535.560 876.169Z" />
+                  <path class="hit" data-id="l2-22b" d="M535.560 876.169L499.173 878.641L505.885 1018.489L541.742 1018.489L535.560 876.169Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-23a" style="--pulse-delay:.16s;">
+                  <path class="tenant-aura" d="M573.183 874.226L538.386 877.581L544.745 1017.959L580.955 1015.134L573.183 874.226Z" />
+                  <path class="tenant-fill" d="M573.183 874.226L538.386 877.581L544.745 1017.959L580.955 1015.134L573.183 874.226Z" />
+                  <path class="tenant-rim" d="M573.183 874.226L538.386 877.581L544.745 1017.959L580.955 1015.134L573.183 874.226Z" />
+                  <path class="hit" data-id="l2-23a" d="M573.183 874.226L538.386 877.581L544.745 1017.959L580.955 1015.134L573.183 874.226Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-23b" style="--pulse-delay:.24s;">
+                  <path class="tenant-aura" d="M612.043 871.401L578.482 874.226L584.311 1016.017L621.581 1012.662L612.043 871.401Z" />
+                  <path class="tenant-fill" d="M612.043 871.401L578.482 874.226L584.311 1016.017L621.581 1012.662L612.043 871.401Z" />
+                  <path class="tenant-rim" d="M612.043 871.401L578.482 874.226L584.311 1016.017L621.581 1012.662L612.043 871.401Z" />
+                  <path class="hit" data-id="l2-23b" d="M612.043 871.401L578.482 874.226L584.311 1016.017L621.581 1012.662L612.043 871.401Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-24-25-26" style="--pulse-delay:.32s;">
+                  <path class="tenant-aura" d="M721.910 863.278L618.402 871.931L624.231 1012.308L646.487 1012.308L741.340 995.357L860.922 975.051L927.161 962.867V885.527L837.607 888.882L830.894 820.194L770.838 852.154L721.910 863.278Z" />
+                  <path class="tenant-fill" d="M721.910 863.278L618.402 871.931L624.231 1012.308L646.487 1012.308L741.340 995.357L860.922 975.051L927.161 962.867V885.527L837.607 888.882L830.894 820.194L770.838 852.154L721.910 863.278Z" />
+                  <path class="tenant-rim" d="M721.910 863.278L618.402 871.931L624.231 1012.308L646.487 1012.308L741.340 995.357L860.922 975.051L927.161 962.867V885.527L837.607 888.882L830.894 820.194L770.838 852.154L721.910 863.278Z" />
+                  <path class="hit" data-id="l2-24-25-26" d="M721.910 863.278L618.402 871.931L624.231 1012.308L646.487 1012.308L741.340 995.357L860.922 975.051L927.161 962.867V885.527L837.607 888.882L830.894 820.194L770.838 852.154L721.910 863.278Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-27" style="--pulse-delay:.40s;">
+                  <path class="tenant-aura" d="M856.330 797.946L834.074 820.194L840.786 886.587L927.867 881.289V737.027H887.241L876.643 767.045L856.330 797.946Z" />
+                  <path class="tenant-fill" d="M856.330 797.946L834.074 820.194L840.786 886.587L927.867 881.289V737.027H887.241L876.643 767.045L856.330 797.946Z" />
+                  <path class="tenant-rim" d="M856.330 797.946L834.074 820.194L840.786 886.587L927.867 881.289V737.027H887.241L876.643 767.045L856.330 797.946Z" />
+                  <path class="hit" data-id="l2-27" d="M856.330 797.946L834.074 820.194L840.786 886.587L927.867 881.289V737.027H887.241L876.643 767.045L856.330 797.946Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-32" style="--pulse-delay:.48s;">
+                  <path class="tenant-aura" d="M705.837 737.733V740.735L666.093 744.090L667.683 791.589H684.993L687.996 829.729H748.053L775.608 823.373L798.747 813.308L822.063 795.827L839.373 770.223L845.202 746.032L842.376 726.609L834.604 708.775L822.063 699.063L807.932 693.236L790.622 696.238L770.309 705.420L705.837 737.733Z" />
+                  <path class="tenant-fill" d="M705.837 737.733V740.735L666.093 744.090L667.683 791.589H684.993L687.996 829.729H748.053L775.608 823.373L798.747 813.308L822.063 795.827L839.373 770.223L845.202 746.032L842.376 726.609L834.604 708.775L822.063 699.063L807.932 693.236L790.622 696.238L770.309 705.420L705.837 737.733Z" />
+                  <path class="tenant-rim" d="M705.837 737.733V740.735L666.093 744.090L667.683 791.589H684.993L687.996 829.729H748.053L775.608 823.373L798.747 813.308L822.063 795.827L839.373 770.223L845.202 746.032L842.376 726.609L834.604 708.775L822.063 699.063L807.932 693.236L790.622 696.238L770.309 705.420L705.837 737.733Z" />
+                  <path class="hit" data-id="l2-32" d="M705.837 737.733V740.735L666.093 744.090L667.683 791.589H684.993L687.996 829.729H748.053L775.608 823.373L798.747 813.308L822.063 795.827L839.373 770.223L845.202 746.032L842.376 726.609L834.604 708.775L822.063 699.063L807.932 693.236L790.622 696.238L770.309 705.420L705.837 737.733Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-42" style="--pulse-delay:.56s;">
+                  <path class="tenant-aura" d="M938.112 681.582H928.044V744.620H954.186V694.296L938.112 681.582Z" />
+                  <path class="tenant-fill" d="M938.112 681.582H928.044V744.620H954.186V694.296L938.112 681.582Z" />
+                  <path class="tenant-rim" d="M938.112 681.582H928.044V744.620H954.186V694.296L938.112 681.582Z" />
+                  <path class="hit" data-id="l2-42" d="M938.112 681.582H928.044V744.620H954.186V694.296L938.112 681.582Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-28" style="--pulse-delay:.64s;">
+                  <path class="tenant-aura" d="M1011.770 556.213L926.808 640.440V652.800L952.597 677.698L972.026 702.771L976.796 724.490H1027.490L1033.672 729.964L1063.347 692.530V670.811L1027.490 627.020L1011.770 556.213Z" />
+                  <path class="tenant-fill" d="M1011.770 556.213L926.808 640.440V652.800L952.597 677.698L972.026 702.771L976.796 724.490H1027.490L1033.672 729.964L1063.347 692.530V670.811L1027.490 627.020L1011.770 556.213Z" />
+                  <path class="tenant-rim" d="M1011.770 556.213L926.808 640.440V652.800L952.597 677.698L972.026 702.771L976.796 724.490H1027.490L1033.672 729.964L1063.347 692.530V670.811L1027.490 627.020L1011.770 556.213Z" />
+                  <path class="hit" data-id="l2-28" d="M1011.770 556.213L926.808 640.440V652.800L952.597 677.698L972.026 702.771L976.796 724.490H1027.490L1033.672 729.964L1063.347 692.530V670.811L1027.490 627.020L1011.770 556.213Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-29" style="--pulse-delay:.72s;">
+                  <path class="tenant-aura" d="M1049.216 559.392L1017.245 553.918L1031.376 628.609L1066.350 669.222V690.234L1100.617 669.222L1148.309 658.274V634.966L1093.729 553.918L1049.216 559.392Z" />
+                  <path class="tenant-fill" d="M1049.216 559.392L1017.245 553.918L1031.376 628.609L1066.350 669.222V690.234L1100.617 669.222L1148.309 658.274V634.966L1093.729 553.918L1049.216 559.392Z" />
+                  <path class="tenant-rim" d="M1049.216 559.392L1017.245 553.918L1031.376 628.609L1066.350 669.222V690.234L1100.617 669.222L1148.309 658.274V634.966L1093.729 553.918L1049.216 559.392Z" />
+                  <path class="hit" data-id="l2-29" d="M1049.216 559.392L1017.245 553.918L1031.376 628.609L1066.350 669.222V690.234L1100.617 669.222L1148.309 658.274V634.966L1093.729 553.918L1049.216 559.392Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-29b" style="--pulse-delay:.80s;">
+                  <path class="tenant-aura" d="M1130.469 537.143L1098.498 552.859L1153.785 634.613V657.921H1180.280L1204.479 663.395L1235.567 677.521V654.919V579.345L1217.727 559.745L1177.101 584.819H1169.329L1130.469 537.143Z" />
+                  <path class="tenant-fill" d="M1130.469 537.143L1098.498 552.859L1153.785 634.613V657.921H1180.280L1204.479 663.395L1235.567 677.521V654.919V579.345L1217.727 559.745L1177.101 584.819H1169.329L1130.469 537.143Z" />
+                  <path class="tenant-rim" d="M1130.469 537.143L1098.498 552.859L1153.785 634.613V657.921H1180.280L1204.479 663.395L1235.567 677.521V654.919V579.345L1217.727 559.745L1177.101 584.819H1169.329L1130.469 537.143Z" />
+                  <path class="hit" data-id="l2-29b" d="M1130.469 537.143L1098.498 552.859L1153.785 634.613V657.921H1180.280L1204.479 663.395L1235.567 677.521V654.919V579.345L1217.727 559.745L1177.101 584.819H1169.329L1130.469 537.143Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-30" style="--pulse-delay:.88s;">
+                  <path class="tenant-aura" d="M1174.628 505.006L1137.358 533.612V540.322L1174.628 587.997L1216.490 560.098L1174.628 505.006Z" />
+                  <path class="tenant-fill" d="M1174.628 505.006L1137.358 533.612V540.322L1174.628 587.997L1216.490 560.098L1174.628 505.006Z" />
+                  <path class="tenant-rim" d="M1174.628 505.006L1137.358 533.612V540.322L1174.628 587.997L1216.490 560.098L1174.628 505.006Z" />
+                  <path class="hit" data-id="l2-30" d="M1174.628 505.006L1137.358 533.612V540.322L1174.628 587.997L1216.490 560.098L1174.628 505.006Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-a2" style="--pulse-delay:.96s;">
+                  <path class="tenant-aura" d="M1362.568 371.868H1235.920L1227.442 413.364L1217.904 436.672L1206.599 462.805L1190.702 483.994L1179.573 499.533L1239.100 580.404L1243.869 662.335L1239.100 680.876L1255.174 694.825L1268.421 707.539L1276.900 722.901L1281.139 744.090L1287.498 750.800H1409.377L1416.089 744.090V726.432L1404.607 465.807H1386.944L1382.881 402.946H1362.568V371.868Z" />
+                  <path class="tenant-fill" d="M1362.568 371.868H1235.920L1227.442 413.364L1217.904 436.672L1206.599 462.805L1190.702 483.994L1179.573 499.533L1239.100 580.404L1243.869 662.335L1239.100 680.876L1255.174 694.825L1268.421 707.539L1276.900 722.901L1281.139 744.090L1287.498 750.800H1409.377L1416.089 744.090V726.432L1404.607 465.807H1386.944L1382.881 402.946H1362.568V371.868Z" />
+                  <path class="tenant-rim" d="M1362.568 371.868H1235.920L1227.442 413.364L1217.904 436.672L1206.599 462.805L1190.702 483.994L1179.573 499.533L1239.100 580.404L1243.869 662.335L1239.100 680.876L1255.174 694.825L1268.421 707.539L1276.900 722.901L1281.139 744.090L1287.498 750.800H1409.377L1416.089 744.090V726.432L1404.607 465.807H1386.944L1382.881 402.946H1362.568V371.868Z" />
+                  <path class="hit" data-id="l2-a2" d="M1362.568 371.868H1235.920L1227.442 413.364L1217.904 436.672L1206.599 462.805L1190.702 483.994L1179.573 499.533L1239.100 580.404L1243.869 662.335L1239.100 680.876L1255.174 694.825L1268.421 707.539L1276.900 722.901L1281.139 744.090L1287.498 750.800H1409.377L1416.089 744.090V726.432L1404.607 465.807H1386.944L1382.881 402.946H1362.568V371.868Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-a1" style="--pulse-delay:1.04s;">
+                  <path class="tenant-aura" d="M1165.443 21.719V52.796H1119.341V87.052H939.349V227.429H945.531V272.633H954.893L961.958 268.748H985.274L993.046 272.633H1128.702L1165.443 283.404L1197.414 299.826L1223.909 334.964L1234.684 369.926H1353.206L1334.483 21.719H1165.443Z" />
+                  <path class="tenant-fill" d="M1165.443 21.719V52.796H1119.341V87.052H939.349V227.429H945.531V272.633H954.893L961.958 268.748H985.274L993.046 272.633H1128.702L1165.443 283.404L1197.414 299.826L1223.909 334.964L1234.684 369.926H1353.206L1334.483 21.719H1165.443Z" />
+                  <path class="tenant-rim" d="M1165.443 21.719V52.796H1119.341V87.052H939.349V227.429H945.531V272.633H954.893L961.958 268.748H985.274L993.046 272.633H1128.702L1165.443 283.404L1197.414 299.826L1223.909 334.964L1234.684 369.926H1353.206L1334.483 21.719H1165.443Z" />
+                  <path class="hit" data-id="l2-a1" d="M1165.443 21.719V52.796H1119.341V87.052H939.349V227.429H945.531V272.633H954.893L961.958 268.748H985.274L993.046 272.633H1128.702L1165.443 283.404L1197.414 299.826L1223.909 334.964L1234.684 369.926H1353.206L1334.483 21.719H1165.443Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-a48" style="--pulse-delay:1.12s;">
+                  <path class="tenant-aura" d="M993.223 312.892L953.303 280.932V277.047L963.548 268.395H987.570L1017.775 292.056V301.591L997.462 321.015L993.223 312.892Z" />
+                  <path class="tenant-fill" d="M993.223 312.892L953.303 280.932V277.047L963.548 268.395H987.570L1017.775 292.056V301.591L997.462 321.015L993.223 312.892Z" />
+                  <path class="tenant-rim" d="M993.223 312.892L953.303 280.932V277.047L963.548 268.395H987.570L1017.775 292.056V301.591L997.462 321.015L993.223 312.892Z" />
+                  <path class="hit" data-id="l2-a48" d="M993.223 312.892L953.303 280.932V277.047L963.548 268.395H987.570L1017.775 292.056V301.591L997.462 321.015L993.223 312.892Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-a44" style="--pulse-delay:1.20s;">
+                  <path class="tenant-aura" d="M949.594 281.285L929.634 301.415L927.868 305.123V309.184V311.833L971.143 345.559L974.853 344.146L994.283 324.193L992.870 313.952L949.594 281.285Z" />
+                  <path class="tenant-fill" d="M949.594 281.285L929.634 301.415L927.868 305.123V309.184V311.833L971.143 345.559L974.853 344.146L994.283 324.193L992.870 313.952L949.594 281.285Z" />
+                  <path class="tenant-rim" d="M949.594 281.285L929.634 301.415L927.868 305.123V309.184V311.833L971.143 345.559L974.853 344.146L994.283 324.193L992.870 313.952L949.594 281.285Z" />
+                  <path class="hit" data-id="l2-a44" d="M949.594 281.285L929.634 301.415L927.868 305.123V309.184V311.833L971.143 345.559L974.853 344.146L994.283 324.193L992.870 313.952L949.594 281.285Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-02" style="--pulse-delay:1.28s;">
+                  <path class="tenant-aura" d="M941.645 226.193H904.905V274.928H941.645V226.193Z" />
+                  <path class="tenant-fill" d="M941.645 226.193H904.905V274.928H941.645V226.193Z" />
+                  <path class="tenant-rim" d="M941.645 226.193H904.905V274.928H941.645V226.193Z" />
+                  <path class="hit" data-id="l2-02" d="M941.645 226.193H904.905V274.928H941.645V226.193Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-02a" style="--pulse-delay:1.36s;">
+                  <path class="tenant-aura" d="M903.492 226.017H863.042V275.105H903.492V226.017Z" />
+                  <path class="tenant-fill" d="M903.492 226.017H863.042V275.105H903.492V226.017Z" />
+                  <path class="tenant-rim" d="M903.492 226.017H863.042V275.105H903.492V226.017Z" />
+                  <path class="hit" data-id="l2-02a" d="M903.492 226.017H863.042V275.105H903.492V226.017Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp25" style="--pulse-delay:1.44s;">
+                  <path class="tenant-aura" d="M798.394 90.760H713.255V134.374L740.280 156.799L742.753 173.927H798.394V90.760Z" />
+                  <path class="tenant-fill" d="M798.394 90.760H713.255V134.374L740.280 156.799L742.753 173.927H798.394V90.760Z" />
+                  <path class="tenant-rim" d="M798.394 90.760H713.255V134.374L740.280 156.799L742.753 173.927H798.394V90.760Z" />
+                  <path class="hit" data-id="l2-fp25" d="M798.394 90.760H713.255V134.374L740.280 156.799L742.753 173.927H798.394V90.760Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp26" style="--pulse-delay:1.52s;">
+                  <path class="tenant-aura" d="M800.160 174.987H742.223V236.435H800.160V174.987Z" />
+                  <path class="tenant-fill" d="M800.160 174.987H742.223V236.435H800.160V174.987Z" />
+                  <path class="tenant-rim" d="M800.160 174.987H742.223V236.435H800.160V174.987Z" />
+                  <path class="hit" data-id="l2-fp26" d="M800.160 174.987H742.223V236.435H800.160V174.987Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp27" style="--pulse-delay:1.56s;">
+                  <path class="tenant-aura" d="M729.152 538.208V408.072L798.217 405.953L800.337 538.208H729.152Z" />
+                  <path class="tenant-fill" d="M729.152 538.208V408.072L798.217 405.953L800.337 538.208H729.152Z" />
+                  <path class="tenant-rim" d="M729.152 538.208V408.072L798.217 405.953L800.337 538.208H729.152Z" />
+                  <path class="hit" data-id="l2-fp27" d="M729.152 538.208V408.072L798.217 405.953L800.337 538.208H729.152Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-09" style="--pulse-delay:1.58s;">
+                  <path class="tenant-aura" d="M917.623 315.541L812.348 315.541L812.348 406.830L938.642 406.830L953.303 369.396L949.417 345.205L930.694 321.897L917.623 315.541Z" />
+                  <path class="tenant-fill" d="M917.623 315.541L812.348 315.541L812.348 406.830L938.642 406.830L953.303 369.396L949.417 345.205L930.694 321.897L917.623 315.541Z" />
+                  <path class="tenant-rim" d="M917.623 315.541L812.348 315.541L812.348 406.830L938.642 406.830L953.303 369.396L949.417 345.205L930.694 321.897L917.623 315.541Z" />
+                  <path class="hit" data-id="l2-09" d="M917.623 315.541L812.348 315.541L812.348 406.830L938.642 406.830L953.303 369.396L949.417 345.205L930.694 321.897L917.623 315.541Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-10" style="--pulse-delay:1.59s;">
+                  <path class="tenant-aura" d="M941.333 410.176L812.700 408.068L812.700 480.598L817.445 483.408L832.030 483.408L871.393 483.408L916.907 525.731L916.907 536.619L948.713 506.062L946.429 496.930L941.333 483.408L937.818 473.222L935.182 460.577L935.182 447.055L935.182 435.113L937.818 420.888L941.333 410.176Z" />
+                  <path class="tenant-fill" d="M941.333 410.176L812.700 408.068L812.700 480.598L817.445 483.408L832.030 483.408L871.393 483.408L916.907 525.731L916.907 536.619L948.713 506.062L946.429 496.930L941.333 483.408L937.818 473.222L935.182 460.577L935.182 447.055L935.182 435.113L937.818 420.888L941.333 410.176Z" />
+                  <path class="tenant-rim" d="M941.333 410.176L812.700 408.068L812.700 480.598L817.445 483.408L832.030 483.408L871.393 483.408L916.907 525.731L916.907 536.619L948.713 506.062L946.429 496.930L941.333 483.408L937.818 473.222L935.182 460.577L935.182 447.055L935.182 435.113L937.818 420.888L941.333 410.176Z" />
+                  <path class="hit" data-id="l2-10" d="M941.333 410.176L812.700 408.068L812.700 480.598L817.445 483.408L832.030 483.408L871.393 483.408L916.907 525.731L916.907 536.619L948.713 506.062L946.429 496.930L941.333 483.408L937.818 473.222L935.182 460.577L935.182 447.055L935.182 435.113L937.818 420.888L941.333 410.176Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-11" style="--pulse-delay:1.595s;">
+                  <path class="tenant-aura" d="M835.107 486.465L831.070 490.506L831.070 560.422L861.257 586.596L864.240 588.529L912.679 540.747L912.679 528.450L872.138 486.465L835.107 486.465Z" />
+                  <path class="tenant-fill" d="M835.107 486.465L831.070 490.506L831.070 560.422L861.257 586.596L864.240 588.529L912.679 540.747L912.679 528.450L872.138 486.465L835.107 486.465Z" />
+                  <path class="tenant-rim" d="M835.107 486.465L831.070 490.506L831.070 560.422L861.257 586.596L864.240 588.529L912.679 540.747L912.679 528.450L872.138 486.465L835.107 486.465Z" />
+                  <path class="hit" data-id="l2-11" d="M835.107 486.465L831.070 490.506L831.070 560.422L861.257 586.596L864.240 588.529L912.679 540.747L912.679 528.450L872.138 486.465L835.107 486.465Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-12" style="--pulse-delay:1.597s;">
+                  <path class="tenant-aura" d="M805.372 573.688L802.368 575.384L802.368 648.327L807.875 648.327L859.440 606.088L856.937 595.910L832.740 573.688L805.372 573.688Z" />
+                  <path class="tenant-fill" d="M805.372 573.688L802.368 575.384L802.368 648.327L807.875 648.327L859.440 606.088L856.937 595.910L832.740 573.688L805.372 573.688Z" />
+                  <path class="tenant-rim" d="M805.372 573.688L802.368 575.384L802.368 648.327L807.875 648.327L859.440 606.088L856.937 595.910L832.740 573.688L805.372 573.688Z" />
+                  <path class="hit" data-id="l2-12" d="M805.372 573.688L802.368 575.384L802.368 648.327L807.875 648.327L859.440 606.088L856.937 595.910L832.740 573.688L805.372 573.688Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-13-14" style="--pulse-delay:1.596s;">
+                  <path class="tenant-aura" d="M798.0 662.6L675.0 721.4L671.3 721.4L660.8 561.8L660.8 548.1L664.8 548.1L801.0 548.1L801.0 659.3Z" />
+                  <path class="tenant-fill" d="M798.0 662.6L675.0 721.4L671.3 721.4L660.8 561.8L660.8 548.1L664.8 548.1L801.0 548.1L801.0 659.3Z" />
+                  <path class="tenant-rim" d="M798.0 662.6L675.0 721.4L671.3 721.4L660.8 561.8L660.8 548.1L664.8 548.1L801.0 548.1L801.0 659.3Z" />
+                  <path class="hit" data-id="l2-13-14" d="M798.0 662.6L675.0 721.4L671.3 721.4L660.8 561.8L660.8 548.1L664.8 548.1L801.0 548.1L801.0 659.3Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-46" style="--pulse-delay:1.598s;">
+                  <path class="tenant-aura" d="M869.949 607.420L838.302 638.690L835.505 650.636L864.879 675.933L869.949 675.933L903.693 643.081L903.693 632.541L874.670 607.420L869.949 607.420Z" />
+                  <path class="tenant-fill" d="M869.949 607.420L838.302 638.690L835.505 650.636L864.879 675.933L869.949 675.933L903.693 643.081L903.693 632.541L874.670 607.420L869.949 607.420Z" />
+                  <path class="tenant-rim" d="M869.949 607.420L838.302 638.690L835.505 650.636L864.879 675.933L869.949 675.933L903.693 643.081L903.693 632.541L874.670 607.420L869.949 607.420Z" />
+                  <path class="hit" data-id="l2-46" d="M869.949 607.420L838.302 638.690L835.505 650.636L864.879 675.933L869.949 675.933L903.693 643.081L903.693 632.541L874.670 607.420L869.949 607.420Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-39" style="--pulse-delay:1.599s;">
+                  <path class="tenant-aura" d="M912.879 560.450L885.262 587.769L881.940 591.271L881.940 598.276L912.879 623.668L917.599 623.668L948.363 595.299L946.615 584.441L917.599 560.450L912.879 560.450Z" />
+                  <path class="tenant-fill" d="M912.879 560.450L885.262 587.769L881.940 591.271L881.940 598.276L912.879 623.668L917.599 623.668L948.363 595.299L946.615 584.441L917.599 560.450L912.879 560.450Z" />
+                  <path class="tenant-rim" d="M912.879 560.450L885.262 587.769L881.940 591.271L881.940 598.276L912.879 623.668L917.599 623.668L948.363 595.299L946.615 584.441L917.599 560.450L912.879 560.450Z" />
+                  <path class="hit" data-id="l2-39" d="M912.879 560.450L885.262 587.769L881.940 591.271L881.940 598.276L912.879 623.668L917.599 623.668L948.363 595.299L946.615 584.441L917.599 560.450L912.879 560.450Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-40" style="--pulse-delay:1.5995s;">
+                  <path class="tenant-aura" d="M955.295 518.425L927.860 546.628L925.938 557.664L958.266 584.115L962.285 582.013L990.594 551.358L990.594 542.599L962.285 518.425L955.295 518.425Z" />
+                  <path class="tenant-fill" d="M955.295 518.425L927.860 546.628L925.938 557.664L958.266 584.115L962.285 582.013L990.594 551.358L990.594 542.599L962.285 518.425L955.295 518.425Z" />
+                  <path class="tenant-rim" d="M955.295 518.425L927.860 546.628L925.938 557.664L958.266 584.115L962.285 582.013L990.594 551.358L990.594 542.599L962.285 518.425L955.295 518.425Z" />
+                  <path class="hit" data-id="l2-40" d="M955.295 518.425L927.860 546.628L925.938 557.664L958.266 584.115L962.285 582.013L990.594 551.358L990.594 542.599L962.285 518.425L955.295 518.425Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-15" style="--pulse-delay:1.5997s;">
+                  <path class="tenant-aura" d="M601.248 608.812L598.267 610.919L601.248 709.421L614.048 713.635L631.757 718.376L650.694 726.453L656.130 728.735L669.631 724.346L669.631 713.635L659.462 606.705L656.130 604.422L601.248 608.812Z" />
+                  <path class="tenant-fill" d="M601.248 608.812L598.267 610.919L601.248 709.421L614.048 713.635L631.757 718.376L650.694 726.453L656.130 728.735L669.631 724.346L669.631 713.635L659.462 606.705L656.130 604.422L601.248 608.812Z" />
+                  <path class="tenant-rim" d="M601.248 608.812L598.267 610.919L601.248 709.421L614.048 713.635L631.757 718.376L650.694 726.453L656.130 728.735L669.631 724.346L669.631 713.635L659.462 606.705L656.130 604.422L601.248 608.812Z" />
+                  <path class="hit" data-id="l2-15" d="M601.248 608.812L598.267 610.919L601.248 709.421L614.048 713.635L631.757 718.376L650.694 726.453L656.130 728.735L669.631 724.346L669.631 713.635L659.462 606.705L656.130 604.422L601.248 608.812Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-20-21" style="--pulse-delay:1.5986s;">
+                  <path class="tenant-aura" d="M312.3 794.2L143.6 894.5L143.6 915.8L214.2 1046.5L221.4 1052.3L218.6 1026.2L308.9 1001.8L306.1 981.4L301.7 966.9L364.5 953.0L372.3 1012.4L449.1 1006.0L449.1 986.3L444.3 882.9L414.8 877.6L387.8 870.4L351.5 856.5L329.2 836.3L315.3 809.1Z" />
+                  <path class="tenant-fill" d="M312.3 794.2L143.6 894.5L143.6 915.8L214.2 1046.5L221.4 1052.3L218.6 1026.2L308.9 1001.8L306.1 981.4L301.7 966.9L364.5 953.0L372.3 1012.4L449.1 1006.0L449.1 986.3L444.3 882.9L414.8 877.6L387.8 870.4L351.5 856.5L329.2 836.3L315.3 809.1Z" />
+                  <path class="tenant-rim" d="M312.3 794.2L143.6 894.5L143.6 915.8L214.2 1046.5L221.4 1052.3L218.6 1026.2L308.9 1001.8L306.1 981.4L301.7 966.9L364.5 953.0L372.3 1012.4L449.1 1006.0L449.1 986.3L444.3 882.9L414.8 877.6L387.8 870.4L351.5 856.5L329.2 836.3L315.3 809.1Z" />
+                  <path class="hit" data-id="l2-20-21" d="M312.3 794.2L143.6 894.5L143.6 915.8L214.2 1046.5L221.4 1052.3L218.6 1026.2L308.9 1001.8L306.1 981.4L301.7 966.9L364.5 953.0L372.3 1012.4L449.1 1006.0L449.1 986.3L444.3 882.9L414.8 877.6L387.8 870.4L351.5 856.5L329.2 836.3L315.3 809.1Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-19" style="--pulse-delay:1.5988s;">
+                  <path class="tenant-aura" d="M129.5 672.8L114.8 646.2L32.7 694.5L32.7 715.1L141.5 907.8L138.8 889.5L315.3 787.6L315.3 721.7L257.5 660.6L246.4 666.3Z" />
+                  <path class="tenant-fill" d="M129.5 672.8L114.8 646.2L32.7 694.5L32.7 715.1L141.5 907.8L138.8 889.5L315.3 787.6L315.3 721.7L257.5 660.6L246.4 666.3Z" />
+                  <path class="tenant-rim" d="M129.5 672.8L114.8 646.2L32.7 694.5L32.7 715.1L141.5 907.8L138.8 889.5L315.3 787.6L315.3 721.7L257.5 660.6L246.4 666.3Z" />
+                  <path class="hit" data-id="l2-19" d="M129.5 672.8L114.8 646.2L32.7 694.5L32.7 715.1L141.5 907.8L138.8 889.5L315.3 787.6L315.3 721.7L257.5 660.6L246.4 666.3Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-18c" style="--pulse-delay:1.5990s;">
+                  <path class="tenant-aura" d="M378.6 623.1L285.4 628.6L282.4 635.4L282.4 647.3L349.1 719.8L361.4 724.5L377.7 726.6L388.8 724.5L382.3 628.6Z" />
+                  <path class="tenant-fill" d="M378.6 623.1L285.4 628.6L282.4 635.4L282.4 647.3L349.1 719.8L361.4 724.5L377.7 726.6L388.8 724.5L382.3 628.6Z" />
+                  <path class="tenant-rim" d="M378.6 623.1L285.4 628.6L282.4 635.4L282.4 647.3L349.1 719.8L361.4 724.5L377.7 726.6L388.8 724.5L382.3 628.6Z" />
+                  <path class="hit" data-id="l2-18c" d="M378.6 623.1L285.4 628.6L282.4 635.4L282.4 647.3L349.1 719.8L361.4 724.5L377.7 726.6L388.8 724.5L382.3 628.6Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-18b" style="--pulse-delay:1.5992s;">
+                  <path class="tenant-aura" d="M424.8 620.2L385.3 622.3L391.6 724.4L429.8 711.5Z" />
+                  <path class="tenant-fill" d="M424.8 620.2L385.3 622.3L391.6 724.4L429.8 711.5Z" />
+                  <path class="tenant-rim" d="M424.8 620.2L385.3 622.3L391.6 724.4L429.8 711.5Z" />
+                  <path class="hit" data-id="l2-18b" d="M424.8 620.2L385.3 622.3L391.6 724.4L429.8 711.5Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-18a" style="--pulse-delay:1.5994s;">
+                  <path class="tenant-aura" d="M470.7 617.7L428.1 620.0L432.1 711.7L449.8 708.4L464.4 706.1L475.1 703.6Z" />
+                  <path class="tenant-fill" d="M470.7 617.7L428.1 620.0L432.1 711.7L449.8 708.4L464.4 706.1L475.1 703.6Z" />
+                  <path class="tenant-rim" d="M470.7 617.7L428.1 620.0L432.1 711.7L449.8 708.4L464.4 706.1L475.1 703.6Z" />
+                  <path class="hit" data-id="l2-18a" d="M470.7 617.7L428.1 620.0L432.1 711.7L449.8 708.4L464.4 706.1L475.1 703.6Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-17" style="--pulse-delay:1.5996s;">
+                  <path class="tenant-aura" d="M475.1 616.6L472.5 619.9L478.3 704.0L498.4 701.4L506.8 701.4L524.1 701.4L535.8 701.4L533.1 616.6L531.0 613.3Z" />
+                  <path class="tenant-fill" d="M475.1 616.6L472.5 619.9L478.3 704.0L498.4 701.4L506.8 701.4L524.1 701.4L535.8 701.4L533.1 616.6L531.0 613.3Z" />
+                  <path class="tenant-rim" d="M475.1 616.6L472.5 619.9L478.3 704.0L498.4 701.4L506.8 701.4L524.1 701.4L535.8 701.4L533.1 616.6L531.0 613.3Z" />
+                  <path class="hit" data-id="l2-17" d="M475.1 616.6L472.5 619.9L478.3 704.0L498.4 701.4L506.8 701.4L524.1 701.4L535.8 701.4L533.1 616.6L531.0 613.3Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-16" style="--pulse-delay:1.5998s;">
+                  <path class="tenant-aura" d="M594.3 609.0L534.7 613.0L537.3 698.9L558.6 701.0L576.8 703.8L592.7 706.8L599.7 708.2L596.8 609.0Z" />
+                  <path class="tenant-fill" d="M594.3 609.0L534.7 613.0L537.3 698.9L558.6 701.0L576.8 703.8L592.7 706.8L599.7 708.2L596.8 609.0Z" />
+                  <path class="tenant-rim" d="M594.3 609.0L534.7 613.0L537.3 698.9L558.6 701.0L576.8 703.8L592.7 706.8L599.7 708.2L596.8 609.0Z" />
+                  <path class="hit" data-id="l2-16" d="M594.3 609.0L534.7 613.0L537.3 698.9L558.6 701.0L576.8 703.8L592.7 706.8L599.7 708.2L596.8 609.0Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp24" style="--pulse-delay:1.60s;">
+                  <path class="tenant-aura" d="M709.193 89.700H635.005V134.727H709.193V89.700Z" />
+                  <path class="tenant-fill" d="M709.193 89.700H635.005V134.727H709.193V89.700Z" />
+                  <path class="tenant-rim" d="M709.193 89.700H635.005V134.727H709.193V89.700Z" />
+                  <path class="hit" data-id="l2-fp24" d="M709.193 89.700H635.005V134.727H709.193V89.700Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp23" style="--pulse-delay:1.68s;">
+                  <path class="tenant-aura" d="M550.044 136.846H505.355L502.882 140.731V164.745H550.044V136.846Z" />
+                  <path class="tenant-fill" d="M550.044 136.846H505.355L502.882 140.731V164.745H550.044V136.846Z" />
+                  <path class="tenant-rim" d="M550.044 136.846H505.355L502.882 140.731V164.745H550.044V136.846Z" />
+                  <path class="hit" data-id="l2-fp23" d="M550.044 136.846H505.355L502.882 140.731V164.745H550.044V136.846Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp22" style="--pulse-delay:1.76s;">
+                  <path class="tenant-aura" d="M551.810 167.747H502.882H500.939V197.058H551.810V167.747Z" />
+                  <path class="tenant-fill" d="M551.810 167.747H502.882H500.939V197.058H551.810V167.747Z" />
+                  <path class="tenant-rim" d="M551.810 167.747H502.882H500.939V197.058H551.810V167.747Z" />
+                  <path class="hit" data-id="l2-fp22" d="M551.810 167.747H502.882H500.939V197.058H551.810V167.747Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp21" style="--pulse-delay:1.84s;">
+                  <path class="tenant-aura" d="M551.104 198.295H500.939V236.082H506.061H551.104V198.295Z" />
+                  <path class="tenant-fill" d="M551.104 198.295H500.939V236.082H506.061H551.104V198.295Z" />
+                  <path class="tenant-rim" d="M551.104 198.295H500.939V236.082H506.061H551.104V198.295Z" />
+                  <path class="hit" data-id="l2-fp21" d="M551.104 198.295H500.939V236.082H506.061H551.104V198.295Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp01" style="--pulse-delay:1.88s;">
+                  <path class="tenant-aura" d="M593.143 253.210H531.674V279.872H593.143V253.210Z" />
+                  <path class="tenant-fill" d="M593.143 253.210H531.674V279.872H593.143V253.210Z" />
+                  <path class="tenant-rim" d="M593.143 253.210H531.674V279.872H593.143V253.210Z" />
+                  <path class="hit" data-id="l2-fp01" d="M593.143 253.210H531.674V279.872H593.143V253.210Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp03" style="--pulse-delay:1.92s;">
+                  <path class="tenant-aura" d="M593.143 284.640H531.674V311.303H593.143V284.640Z" />
+                  <path class="tenant-fill" d="M593.143 284.640H531.674V311.303H593.143V284.640Z" />
+                  <path class="tenant-rim" d="M593.143 284.640H531.674V311.303H593.143V284.640Z" />
+                  <path class="hit" data-id="l2-fp03" d="M593.143 284.640H531.674V311.303H593.143V284.640Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp05" style="--pulse-delay:2s;">
+                  <path class="tenant-aura" d="M592.790 313.598H530.614V351.739H590.493L592.790 348.914V313.598Z" />
+                  <path class="tenant-fill" d="M592.790 313.598H530.614V351.739H590.493L592.790 348.914V313.598Z" />
+                  <path class="tenant-rim" d="M592.790 313.598H530.614V351.739H590.493L592.790 348.914V313.598Z" />
+                  <path class="hit" data-id="l2-fp05" d="M592.790 313.598H530.614V351.739H590.493L592.790 348.914V313.598Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp02" style="--pulse-delay:2.08s;">
+                  <path class="tenant-aura" d="M679.871 251.620H620.168V280.226H679.871V251.620Z" />
+                  <path class="tenant-fill" d="M679.871 251.620H620.168V280.226H679.871V251.620Z" />
+                  <path class="tenant-rim" d="M679.871 251.620H620.168V280.226H679.871V251.620Z" />
+                  <path class="hit" data-id="l2-fp02" d="M679.871 251.620H620.168V280.226H679.871V251.620Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp04" style="--pulse-delay:2.16s;">
+                  <path class="tenant-aura" d="M679.341 284.110H621.051V312.892H679.341V284.110Z" />
+                  <path class="tenant-fill" d="M679.341 284.110H621.051V312.892H679.341V284.110Z" />
+                  <path class="tenant-rim" d="M679.341 284.110H621.051V312.892H679.341V284.110Z" />
+                  <path class="hit" data-id="l2-fp04" d="M679.341 284.110H621.051V312.892H679.341V284.110Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp07" style="--pulse-delay:2.24s;">
+                  <path class="tenant-aura" d="M679.164 350.503H619.638V315.364H679.164V350.503Z" />
+                  <path class="tenant-fill" d="M679.164 350.503H619.638V315.364H679.164V350.503Z" />
+                  <path class="tenant-rim" d="M679.164 350.503H619.638V315.364H679.164V350.503Z" />
+                  <path class="hit" data-id="l2-fp07" d="M679.164 350.503H619.638V315.364H679.164V350.503Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp07" style="--pulse-delay:2.26s;">
+                  <path class="tenant-aura" d="M549.690 393.764H495.993V426.254H549.690V393.764Z" />
+                  <path class="tenant-fill" d="M549.690 393.764H495.993V426.254H549.690V393.764Z" />
+                  <path class="tenant-rim" d="M549.690 393.764H495.993V426.254H549.690V393.764Z" />
+                  <path class="hit" data-id="l2-fp07" d="M549.690 393.764H495.993V426.254H549.690V393.764Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp06" style="--pulse-delay:2.20s;">
+                  <path class="tenant-aura" d="M496.170 456.272V426.607H547.571V456.272H496.170Z" />
+                  <path class="tenant-fill" d="M496.170 456.272V426.607H547.571V456.272H496.170Z" />
+                  <path class="tenant-rim" d="M496.170 456.272V426.607H547.571V456.272H496.170Z" />
+                  <path class="hit" data-id="l2-fp06" d="M496.170 456.272V426.607H547.571V456.272H496.170Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp0s" style="--pulse-delay:2.28s;">
+                  <path class="tenant-aura" d="M496.170 490.527V460.509H548.454V490.527H496.170Z" />
+                  <path class="tenant-fill" d="M496.170 490.527V460.509H548.454V490.527H496.170Z" />
+                  <path class="tenant-rim" d="M496.170 490.527V460.509H548.454V490.527H496.170Z" />
+                  <path class="hit" data-id="l2-fp0s" d="M496.170 490.527V460.509H548.454V490.527H496.170Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp09" style="--pulse-delay:2.32s;">
+                  <path class="tenant-aura" d="M769.955 252.327H710.252V283.227H772.605L769.955 252.327Z" />
+                  <path class="tenant-fill" d="M769.955 252.327H710.252V283.227H772.605L769.955 252.327Z" />
+                  <path class="tenant-rim" d="M769.955 252.327H710.252V283.227H772.605L769.955 252.327Z" />
+                  <path class="hit" data-id="l2-fp09" d="M769.955 252.327H710.252V283.227H772.605L769.955 252.327Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp12" style="--pulse-delay:2.4s;">
+                  <path class="tenant-aura" d="M769.955 314.128H710.782V351.032H769.955V314.128Z" />
+                  <path class="tenant-fill" d="M769.955 314.128H710.782V351.032H769.955V314.128Z" />
+                  <path class="tenant-rim" d="M769.955 314.128H710.782V351.032H769.955V314.128Z" />
+                  <path class="hit" data-id="l2-fp12" d="M769.955 314.128H710.782V351.032H769.955V314.128Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp08" style="--pulse-delay:2.48s;">
+                  <path class="tenant-aura" d="M549.161 359.685H499.703L495.993 363.040V393.411H549.161V359.685Z" />
+                  <path class="tenant-fill" d="M549.161 359.685H499.703L495.993 363.040V393.411H549.161V359.685Z" />
+                  <path class="tenant-rim" d="M549.161 359.685H499.703L495.993 363.040V393.411H549.161V359.685Z" />
+                  <path class="hit" data-id="l2-fp08" d="M549.161 359.685H499.703L495.993 363.040V393.411H549.161V359.685Z" />
+                </g>
+                <g class="tenant-spot" data-id="l2-fp10" style="--pulse-delay:2.56s;">
+                  <path class="tenant-aura" d="M710.782 311.656V287.112V284.640H771.192V311.656H710.782Z" />
+                  <path class="tenant-fill" d="M710.782 311.656V287.112V284.640H771.192V311.656H710.782Z" />
+                  <path class="tenant-rim" d="M710.782 311.656V287.112V284.640H771.192V311.656H710.782Z" />
+                  <path class="hit" data-id="l2-fp10" d="M710.782 311.656V287.112V284.640H771.192V311.656H710.782Z" />
+                </g>
+              </g>
+
+              <g id="gfHits" style="display:none;">
+                <g class="tenant-spot" data-id="gf-pro1" style="--pulse-delay:0s;">
+                  <path class="tenant-aura" d="M253.815 457.558H192.87L189.433 462.472L192.87 557.046L258.442 551.733L253.815 457.558Z" />
+                  <path class="tenant-fill" d="M253.815 457.558H192.87L189.433 462.472L192.87 557.046L258.442 551.733L253.815 457.558Z" />
+                  <path class="tenant-rim" d="M253.815 457.558H192.87L189.433 462.472L192.87 557.046L258.442 551.733L253.815 457.558Z" />
+                  <path class="hit" data-id="gf-pro1" d="M253.815 457.558H192.87L189.433 462.472L192.87 557.046L258.442 551.733L253.815 457.558Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-pro2" style="--pulse-delay:.12s;">
+                  <path class="tenant-aura" d="M452.813 457.958H326.91V546.777L425.72 542.131L441.391 498.451L452.813 496.194L457.461 462.472L452.813 457.958Z" />
+                  <path class="tenant-fill" d="M452.813 457.958H326.91V546.777L425.72 542.131L441.391 498.451L452.813 496.194L457.461 462.472L452.813 457.958Z" />
+                  <path class="tenant-rim" d="M452.813 457.958H326.91V546.777L425.72 542.131L441.391 498.451L452.813 496.194L457.461 462.472L452.813 457.958Z" />
+                  <path class="hit" data-id="gf-pro2" d="M452.813 457.958H326.91V546.777L425.72 542.131L441.391 498.451L452.813 496.194L457.461 462.472L452.813 457.958Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-29a" style="--pulse-delay:.24s;">
+                  <path class="tenant-aura" d="M513.678 461.558H471.314V493.033H513.678V461.558Z" />
+                  <path class="tenant-fill" d="M513.678 461.558H471.314V493.033H513.678V461.558Z" />
+                  <path class="tenant-rim" d="M513.678 461.558H471.314V493.033H513.678V461.558Z" />
+                  <path class="hit" data-id="gf-29a" d="M513.678 461.558H471.314V493.033H513.678V461.558Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-29b" style="--pulse-delay:.36s;">
+                  <path class="tenant-aura" d="M515.278 535.043H473.978V495.565H515.278V535.043Z" />
+                  <path class="tenant-fill" d="M515.278 535.043H473.978V495.565H515.278V535.043Z" />
+                  <path class="tenant-rim" d="M515.278 535.043H473.978V495.565H515.278V535.043Z" />
+                  <path class="hit" data-id="gf-29b" d="M515.278 535.043H473.978V495.565H515.278V535.043Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-pro3a" style="--pulse-delay:.48s;">
+                  <path class="tenant-aura" d="M579.11 461.959H516.207V533.175L581.753 530.523L579.11 461.959Z" />
+                  <path class="tenant-fill" d="M579.11 461.959H516.207V533.175L581.753 530.523L579.11 461.959Z" />
+                  <path class="tenant-rim" d="M579.11 461.959H516.207V533.175L581.753 530.523L579.11 461.959Z" />
+                  <path class="hit" data-id="gf-pro3a" d="M579.11 461.959H516.207V533.175L581.753 530.523L579.11 461.959Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-pro3b" style="--pulse-delay:.6s;">
+                  <path class="tenant-aura" d="M636.502 461.559H583.215V528.773H636.502V461.559Z" />
+                  <path class="tenant-fill" d="M636.502 461.559H583.215V528.773H636.502V461.559Z" />
+                  <path class="tenant-rim" d="M636.502 461.559H583.215V528.773H636.502V461.559Z" />
+                  <path class="hit" data-id="gf-pro3b" d="M636.502 461.559H583.215V528.773H636.502V461.559Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-pro4a" style="--pulse-delay:.72s;">
+                  <path class="tenant-aura" d="M699.913 460.625H640.764V529.976L699.913 527.197V460.625Z" />
+                  <path class="tenant-fill" d="M699.913 460.625H640.764V529.976L699.913 527.197V460.625Z" />
+                  <path class="tenant-rim" d="M699.913 460.625H640.764V529.976L699.913 527.197V460.625Z" />
+                  <path class="hit" data-id="gf-pro4a" d="M699.913 460.625H640.764V529.976L699.913 527.197V460.625Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-pro4b" style="--pulse-delay:.84s;">
+                  <path class="tenant-aura" d="M751.468 461.558H703.774V525.04H751.468V461.558Z" />
+                  <path class="tenant-fill" d="M751.468 461.558H703.774V525.04H751.468V461.558Z" />
+                  <path class="tenant-rim" d="M751.468 461.558H703.774V525.04H751.468V461.558Z" />
+                  <path class="hit" data-id="gf-pro4b" d="M751.468 461.558H703.774V525.04H751.468V461.558Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-pro5" style="--pulse-delay:.96s;">
+                  <path class="tenant-aura" d="M793.565 461.558H753.596V525.574H793.565V461.558Z" />
+                  <path class="tenant-fill" d="M793.565 461.558H753.596V525.574H793.565V461.558Z" />
+                  <path class="tenant-rim" d="M793.565 461.558H753.596V525.574H793.565V461.558Z" />
+                  <path class="hit" data-id="gf-pro5" d="M793.565 461.558H753.596V525.574H793.565V461.558Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-22" style="--pulse-delay:1.08s;">
+                  <path class="tenant-aura" d="M835.661 461.025H794.893V524.239H835.661V461.025Z" />
+                  <path class="tenant-fill" d="M835.661 461.025H794.893V524.239H835.661V461.025Z" />
+                  <path class="tenant-rim" d="M835.661 461.025H794.893V524.239H835.661V461.025Z" />
+                  <path class="hit" data-id="gf-22" d="M835.661 461.025H794.893V524.239H835.661V461.025Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-05" style="--pulse-delay:1.2s;">
+                  <path class="tenant-aura" d="M873.234 461.958H837.5L835.66 524.909L873.234 523.586V461.958Z" />
+                  <path class="tenant-fill" d="M873.234 461.958H837.5L835.66 524.909L873.234 523.586V461.958Z" />
+                  <path class="tenant-rim" d="M873.234 461.958H837.5L835.66 524.909L873.234 523.586V461.958Z" />
+                  <path class="hit" data-id="gf-05" d="M873.234 461.958H837.5L835.66 524.909L873.234 523.586V461.958Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-05a" style="--pulse-delay:1.32s;">
+                  <path class="tenant-aura" d="M915.188 461.025H876.821V523.707H915.188V461.025Z" />
+                  <path class="tenant-fill" d="M915.188 461.025H876.821V523.707H915.188V461.025Z" />
+                  <path class="tenant-rim" d="M915.188 461.025H876.821V523.707H915.188V461.025Z" />
+                  <path class="hit" data-id="gf-05a" d="M915.188 461.025H876.821V523.707H915.188V461.025Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-03" style="--pulse-delay:1.44s;">
+                  <path class="tenant-aura" d="M1063.731 348.603H922.641L919.051 355.379V419.551H1061.071V390.189L1068.252 368.399V355.379L1063.731 348.603Z" />
+                  <path class="tenant-fill" d="M1063.731 348.603H922.641L919.051 355.379V419.551H1061.071V390.189L1068.252 368.399V355.379L1063.731 348.603Z" />
+                  <path class="tenant-rim" d="M1063.731 348.603H922.641L919.051 355.379V419.551H1061.071V390.189L1068.252 368.399V355.379L1063.731 348.603Z" />
+                  <path class="hit" data-id="gf-03" d="M1063.731 348.603H922.641L919.051 355.379V419.551H1061.071V390.189L1068.252 368.399V355.379L1063.731 348.603Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-15" style="--pulse-delay:1.56s;">
+                  <path class="tenant-aura" d="M980.198 559.081L977.017 539.48L961.112 528.223L950.774 525.442L939.11 528.223L930.76 537.096L927.977 550.605L930.76 587.555L939.11 601.461H950.774L961.112 596.826L980.198 570.206V559.081Z" />
+                  <path class="tenant-fill" d="M980.198 559.081L977.017 539.48L961.112 528.223L950.774 525.442L939.11 528.223L930.76 537.096L927.977 550.605L930.76 587.555L939.11 601.461H950.774L961.112 596.826L980.198 570.206V559.081Z" />
+                  <path class="tenant-rim" d="M980.198 559.081L977.017 539.48L961.112 528.223L950.774 525.442L939.11 528.223L930.76 537.096L927.977 550.605L930.76 587.555L939.11 601.461H950.774L961.112 596.826L980.198 570.206V559.081Z" />
+                  <path class="hit" data-id="gf-15" d="M980.198 559.081L977.017 539.48L961.112 528.223L950.774 525.442L939.11 528.223L930.76 537.096L927.977 550.605L930.76 587.555L939.11 601.461H950.774L961.112 596.826L980.198 570.206V559.081Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-04" style="--pulse-delay:1.68s;">
+                  <path class="tenant-aura" d="M1059.541 420.617H979.793V517.409L977.541 527.913L994.232 551.845H1002.313L1072.126 469.013V456.914L1059.541 437.37V420.617Z" />
+                  <path class="tenant-fill" d="M1059.541 420.617H979.793V517.409L977.541 527.913L994.232 551.845H1002.313L1072.126 469.013V456.914L1059.541 437.37V420.617Z" />
+                  <path class="tenant-rim" d="M1059.541 420.617H979.793V517.409L977.541 527.913L994.232 551.845H1002.313L1072.126 469.013V456.914L1059.541 437.37V420.617Z" />
+                  <path class="hit" data-id="gf-04" d="M1059.541 420.617H979.793V517.409L977.541 527.913L994.232 551.845H1002.313L1072.126 469.013V456.914L1059.541 437.37V420.617Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-06" style="--pulse-delay:1.8s;">
+                  <path class="tenant-aura" d="M895.43 566.916L798.082 573.691L795.296 576.879L800.867 670.405L903.387 626.033L908.56 619.657L914.926 607.7V590.696L911.345 581.529L906.172 573.691L895.43 566.916Z" />
+                  <path class="tenant-fill" d="M895.43 566.916L798.082 573.691L795.296 576.879L800.867 670.405L903.387 626.033L908.56 619.657L914.926 607.7V590.696L911.345 581.529L906.172 573.691L895.43 566.916Z" />
+                  <path class="tenant-rim" d="M895.43 566.916L798.082 573.691L795.296 576.879L800.867 670.405L903.387 626.033L908.56 619.657L914.926 607.7V590.696L911.345 581.529L906.172 573.691L895.43 566.916Z" />
+                  <path class="hit" data-id="gf-06" d="M895.43 566.916L798.082 573.691L795.296 576.879L800.867 670.405L903.387 626.033L908.56 619.657L914.926 607.7V590.696L911.345 581.529L906.172 573.691L895.43 566.916Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-07" style="--pulse-delay:1.92s;">
+                  <path class="tenant-aura" d="M789.604 573.718L648.893 583.95L650.884 671.654L693.761 674.046L742.479 685.208H748.851L799.162 671.654L793.586 576.508L789.604 573.718Z" />
+                  <path class="tenant-fill" d="M789.604 573.718L648.893 583.95L650.884 671.654L693.761 674.046L742.479 685.208H748.851L799.162 671.654L793.586 576.508L789.604 573.718Z" />
+                  <path class="tenant-rim" d="M789.604 573.718L648.893 583.95L650.884 671.654L693.761 674.046L742.479 685.208H748.851L799.162 671.654L793.586 576.508L789.604 573.718Z" />
+                  <path class="hit" data-id="gf-07" d="M789.604 573.718L648.893 583.95L650.884 671.654L693.761 674.046L742.479 685.208H748.851L799.162 671.654L793.586 576.508L789.604 573.718Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-09" style="--pulse-delay:2.04s;">
+                  <path class="tenant-aura" d="M643.845 583.586L496.231 591.56L500.616 699.077L543.398 683.66L584.321 678.078L620.062 672.497H647.831V586.377L643.845 583.586Z" />
+                  <path class="tenant-fill" d="M643.845 583.586L496.231 591.56L500.616 699.077L543.398 683.66L584.321 678.078L620.062 672.497H647.831V586.377L643.845 583.586Z" />
+                  <path class="tenant-rim" d="M643.845 583.586L496.231 591.56L500.616 699.077L543.398 683.66L584.321 678.078L620.062 672.497H647.831V586.377L643.845 583.586Z" />
+                  <path class="hit" data-id="gf-09" d="M643.845 583.586L496.231 591.56L500.616 699.077L543.398 683.66L584.321 678.078L620.062 672.497H647.831V586.377L643.845 583.586Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-11" style="--pulse-delay:2.16s;">
+                  <path class="tenant-aura" d="M493.171 593.189L340.764 603.145V643.099L421.755 696.593L448.752 706.548H479.34L497.958 696.593L495.564 596.375L493.171 593.189Z" />
+                  <path class="tenant-fill" d="M493.171 593.189L340.764 603.145V643.099L421.755 696.593L448.752 706.548H479.34L497.958 696.593L495.564 596.375L493.171 593.189Z" />
+                  <path class="tenant-rim" d="M493.171 593.189L340.764 603.145V643.099L421.755 696.593L448.752 706.548H479.34L497.958 696.593L495.564 596.375L493.171 593.189Z" />
+                  <path class="hit" data-id="gf-11" d="M493.171 593.189L340.764 603.145V643.099L421.755 696.593L448.752 706.548H479.34L497.958 696.593L495.564 596.375L493.171 593.189Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-30b" style="--pulse-delay:2.28s;">
+                  <path class="tenant-aura" d="M419.784 717.417L382.571 684.856L356.483 713.314V722.712L397.138 755.274L423.359 728.536L419.784 717.417Z" />
+                  <path class="tenant-fill" d="M419.784 717.417L382.571 684.856L356.483 713.314V722.712L397.138 755.274L423.359 728.536L419.784 717.417Z" />
+                  <path class="tenant-rim" d="M419.784 717.417L382.571 684.856L356.483 713.314V722.712L397.138 755.274L423.359 728.536L419.784 717.417Z" />
+                  <path class="hit" data-id="gf-30b" d="M419.784 717.417L382.571 684.856L356.483 713.314V722.712L397.138 755.274L423.359 728.536L419.784 717.417Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-31" style="--pulse-delay:2.4s;">
+                  <path class="tenant-aura" d="M271.269 567.492L230.061 593.142V603.322L253.307 628.575L291.345 603.322L289.496 593.142L271.269 567.492Z" />
+                  <path class="tenant-fill" d="M271.269 567.492L230.061 593.142V603.322L253.307 628.575L291.345 603.322L289.496 593.142L271.269 567.492Z" />
+                  <path class="tenant-rim" d="M271.269 567.492L230.061 593.142V603.322L253.307 628.575L291.345 603.322L289.496 593.142L271.269 567.492Z" />
+                  <path class="hit" data-id="gf-31" d="M271.269 567.492L230.061 593.142V603.322L253.307 628.575L291.345 603.322L289.496 593.142L271.269 567.492Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-32" style="--pulse-delay:2.52s;">
+                  <path class="tenant-aura" d="M170.629 627.746L211.002 600.572L230.063 629.999L232.71 639.543L190.087 665.921L186.646 657.172L170.629 629.999V627.746Z" />
+                  <path class="tenant-fill" d="M170.629 627.746L211.002 600.572L230.063 629.999L232.71 639.543L190.087 665.921L186.646 657.172L170.629 629.999V627.746Z" />
+                  <path class="tenant-rim" d="M170.629 627.746L211.002 600.572L230.063 629.999L232.71 639.543L190.087 665.921L186.646 657.172L170.629 629.999V627.746Z" />
+                  <path class="hit" data-id="gf-32" d="M170.629 627.746L211.002 600.572L230.063 629.999L232.71 639.543L190.087 665.921L186.646 657.172L170.629 629.999V627.746Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-atpm1" style="--pulse-delay:2.64s;">
+                  <path class="tenant-aura" d="M521.804 724.678H474.615L468.783 729.853V767.804L474.615 777.757H515.309V771.918L521.804 767.804V724.678Z" />
+                  <path class="tenant-fill" d="M521.804 724.678H474.615L468.783 729.853V767.804L474.615 777.757H515.309V771.918L521.804 767.804V724.678Z" />
+                  <path class="tenant-rim" d="M521.804 724.678H474.615L468.783 729.853V767.804L474.615 777.757H515.309V771.918L521.804 767.804V724.678Z" />
+                  <path class="hit" data-id="gf-atpm1" d="M521.804 724.678H474.615L468.783 729.853V767.804L474.615 777.757H515.309V771.918L521.804 767.804V724.678Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-atpm2" style="--pulse-delay:2.76s;">
+                  <path class="tenant-aura" d="M581.484 721.744H531.394V770.557L581.484 765.927V721.744Z" />
+                  <path class="tenant-fill" d="M581.484 721.744H531.394V770.557L581.484 765.927V721.744Z" />
+                  <path class="tenant-rim" d="M581.484 721.744H531.394V770.557L581.484 765.927V721.744Z" />
+                  <path class="hit" data-id="gf-atpm2" d="M581.484 721.744H531.394V770.557L581.484 765.927V721.744Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-atpm3" style="--pulse-delay:2.88s;">
+                  <path class="tenant-aura" d="M647.559 718.276H593.472V768.156H647.559V718.276Z" />
+                  <path class="tenant-fill" d="M647.559 718.276H593.472V768.156H647.559V718.276Z" />
+                  <path class="tenant-rim" d="M647.559 718.276H593.472V768.156H647.559V718.276Z" />
+                  <path class="hit" data-id="gf-atpm3" d="M647.559 718.276H593.472V768.156H647.559V718.276Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-atpm4" style="--pulse-delay:3s;">
+                  <path class="tenant-aura" d="M707.772 718.81H657.149V766.458L662.98 771.09H707.772V718.81Z" />
+                  <path class="tenant-fill" d="M707.772 718.81H657.149V766.458L662.98 771.09H707.772V718.81Z" />
+                  <path class="tenant-rim" d="M707.772 718.81H657.149V766.458L662.98 771.09H707.772V718.81Z" />
+                  <path class="hit" data-id="gf-atpm4" d="M707.772 718.81H657.149V766.458L662.98 771.09H707.772V718.81Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-atpm5" style="--pulse-delay:3.12s;">
+                  <path class="tenant-aura" d="M770.149 720.01H719.76V771.222H765.005L773.051 763.66L770.149 720.01Z" />
+                  <path class="tenant-fill" d="M770.149 720.01H719.76V771.222H765.005L773.051 763.66L770.149 720.01Z" />
+                  <path class="tenant-rim" d="M770.149 720.01H719.76V771.222H765.005L773.051 763.66L770.149 720.01Z" />
+                  <path class="hit" data-id="gf-atpm5" d="M770.149 720.01H719.76V771.222H765.005L773.051 763.66L770.149 720.01Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-02a" style="--pulse-delay:3.24s;">
+                  <path class="tenant-aura" d="M1017.764 337.283L1020.554 224.311H1088.707V267.639L1115.012 285.316V298.872L1081.135 341.403H1023.211L1017.764 337.283Z" />
+                  <path class="tenant-fill" d="M1017.764 337.283L1020.554 224.311H1088.707V267.639L1115.012 285.316V298.872L1081.135 341.403H1023.211L1017.764 337.283Z" />
+                  <path class="tenant-rim" d="M1017.764 337.283L1020.554 224.311H1088.707V267.639L1115.012 285.316V298.872L1081.135 341.403H1023.211L1017.764 337.283Z" />
+                  <path class="hit" data-id="gf-02a" d="M1017.764 337.283L1020.554 224.311H1088.707V267.639L1115.012 285.316V298.872L1081.135 341.403H1023.211L1017.764 337.283Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-spm01" style="--pulse-delay:3.36s;">
+                  <path class="tenant-aura" d="M1109.465 101.353H1045.04L1038.677 111.734V221.666H1090.509V264.787L1113.045 284.617V297.394L1119.408 292.869V281.955L1109.465 101.353Z" />
+                  <path class="tenant-fill" d="M1109.465 101.353H1045.04L1038.677 111.734V221.666H1090.509V264.787L1113.045 284.617V297.394L1119.408 292.869V281.955L1109.465 101.353Z" />
+                  <path class="tenant-rim" d="M1109.465 101.353H1045.04L1038.677 111.734V221.666H1090.509V264.787L1113.045 284.617V297.394L1119.408 292.869V281.955L1109.465 101.353Z" />
+                  <path class="hit" data-id="gf-spm01" d="M1109.465 101.353H1045.04L1038.677 111.734V221.666H1090.509V264.787L1113.045 284.617V297.394L1119.408 292.869V281.955L1109.465 101.353Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-spm02" style="--pulse-delay:3.48s;">
+                  <path class="tenant-aura" d="M1156.709 60.145H1111.679V128.456L1114.716 131.513V137.228H1156.709V60.145Z" />
+                  <path class="tenant-fill" d="M1156.709 60.145H1111.679V128.456L1114.716 131.513V137.228H1156.709V60.145Z" />
+                  <path class="tenant-rim" d="M1156.709 60.145H1111.679V128.456L1114.716 131.513V137.228H1156.709V60.145Z" />
+                  <path class="hit" data-id="gf-spm02" d="M1156.709 60.145H1111.679V128.456L1114.716 131.513V137.228H1156.709V60.145Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-spm03" style="--pulse-delay:3.54s;">
+                  <path class="tenant-aura" d="M1201.507 60.411H1159.769V136.962H1204.535L1201.507 60.411Z" />
+                  <path class="tenant-fill" d="M1201.507 60.411H1159.769V136.962H1204.535L1201.507 60.411Z" />
+                  <path class="tenant-rim" d="M1201.507 60.411H1159.769V136.962H1204.535L1201.507 60.411Z" />
+                  <path class="hit" data-id="gf-spm03" d="M1201.507 60.411H1159.769V136.962H1204.535L1201.507 60.411Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-spm04" style="--pulse-delay:3.57s;">
+                  <path class="tenant-aura" d="M1239.75 60.412H1203.202L1205.841 136.695H1244.236L1239.75 60.412Z" />
+                  <path class="tenant-fill" d="M1239.75 60.412H1203.202L1205.841 136.695H1244.236L1239.75 60.412Z" />
+                  <path class="tenant-rim" d="M1239.75 60.412H1203.202L1205.841 136.695H1244.236L1239.75 60.412Z" />
+                  <path class="hit" data-id="gf-spm04" d="M1239.75 60.412H1203.202L1205.841 136.695H1244.236L1239.75 60.412Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-spm05" style="--pulse-delay:3.6s;">
+                  <path class="tenant-aura" d="M1281.609 61.745H1242.77L1247.246 137.762H1281.609V132.854L1287.27 129.006L1281.609 61.745Z" />
+                  <path class="tenant-fill" d="M1281.609 61.745H1242.77L1247.246 137.762H1281.609V132.854L1287.27 129.006L1281.609 61.745Z" />
+                  <path class="tenant-rim" d="M1281.609 61.745H1242.77L1247.246 137.762H1281.609V132.854L1287.27 129.006L1281.609 61.745Z" />
+                  <path class="hit" data-id="gf-spm05" d="M1281.609 61.745H1242.77L1247.246 137.762H1281.609V132.854L1287.27 129.006L1281.609 61.745Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-spma1" style="--pulse-delay:3.72s;">
+                  <path class="tenant-aura" d="M1510.294 19.47H1283.772L1275.663 22.401L1272.738 32.258L1275.663 61.031H1283.772L1288.425 129.5L1279.119 134.162V140.023L1283.772 247.655L1288.425 252.317H1398.761L1393.577 161.07H1430.4V154.01H1484.638L1487.562 150.547L1484.638 97.797L1518.536 102.459L1525.582 97.797L1518.536 26.53L1510.294 19.47Z" />
+                  <path class="tenant-fill" d="M1510.294 19.47H1283.772L1275.663 22.401L1272.738 32.258L1275.663 61.031H1283.772L1288.425 129.5L1279.119 134.162V140.023L1283.772 247.655L1288.425 252.317H1398.761L1393.577 161.07H1430.4V154.01H1484.638L1487.562 150.547L1484.638 97.797L1518.536 102.459L1525.582 97.797L1518.536 26.53L1510.294 19.47Z" />
+                  <path class="tenant-rim" d="M1510.294 19.47H1283.772L1275.663 22.401L1272.738 32.258L1275.663 61.031H1283.772L1288.425 129.5L1279.119 134.162V140.023L1283.772 247.655L1288.425 252.317H1398.761L1393.577 161.07H1430.4V154.01H1484.638L1487.562 150.547L1484.638 97.797L1518.536 102.459L1525.582 97.797L1518.536 26.53L1510.294 19.47Z" />
+                  <path class="hit" data-id="gf-spma1" d="M1510.294 19.47H1283.772L1275.663 22.401L1272.738 32.258L1275.663 61.031H1283.772L1288.425 129.5L1279.119 134.162V140.023L1283.772 247.655L1288.425 252.317H1398.761L1393.577 161.07H1430.4V154.01H1484.638L1487.562 150.547L1484.638 97.797L1518.536 102.459L1525.582 97.797L1518.536 26.53L1510.294 19.47Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-01" style="--pulse-delay:3.84s;">
+                  <path class="tenant-aura" d="M1445.981 266.575L1324.795 263.12L1317.761 268.967L1316.035 281.723L1329.441 311.487L1339.927 338.992V365.832L1345.767 372.21H1462.307L1454.741 273.617L1445.981 266.575Z" />
+                  <path class="tenant-fill" d="M1445.981 266.575L1324.795 263.12L1317.761 268.967L1316.035 281.723L1329.441 311.487L1339.927 338.992V365.832L1345.767 372.21H1462.307L1454.741 273.617L1445.981 266.575Z" />
+                  <path class="tenant-rim" d="M1445.981 266.575L1324.795 263.12L1317.761 268.967L1316.035 281.723L1329.441 311.487L1339.927 338.992V365.832L1345.767 372.21H1462.307L1454.741 273.617L1445.981 266.575Z" />
+                  <path class="hit" data-id="gf-01" d="M1445.981 266.575L1324.795 263.12L1317.761 268.967L1316.035 281.723L1329.441 311.487L1339.927 338.992V365.832L1345.767 372.21H1462.307L1454.741 273.617L1445.981 266.575Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-14" style="--pulse-delay:3.96s;">
+                  <path class="tenant-aura" d="M1205.449 511.272L1182.575 514.865L1175.66 519.523L1215.955 601.905V615.879L1226.993 608.958L1245.079 605.365L1270.213 601.905H1294.815L1319.95 608.958L1338.568 615.879L1355.457 626.393L1363.702 622.933V608.958L1367.16 560.381L1371.814 537.623L1386.443 506.614L1406.922 482.126V465.09L1371.814 431.153H1319.95L1289.496 469.748L1255.585 493.172L1226.993 506.614L1205.449 511.272Z" />
+                  <path class="tenant-fill" d="M1205.449 511.272L1182.575 514.865L1175.66 519.523L1215.955 601.905V615.879L1226.993 608.958L1245.079 605.365L1270.213 601.905H1294.815L1319.95 608.958L1338.568 615.879L1355.457 626.393L1363.702 622.933V608.958L1367.16 560.381L1371.814 537.623L1386.443 506.614L1406.922 482.126V465.09L1371.814 431.153H1319.95L1289.496 469.748L1255.585 493.172L1226.993 506.614L1205.449 511.272Z" />
+                  <path class="tenant-rim" d="M1205.449 511.272L1182.575 514.865L1175.66 519.523L1215.955 601.905V615.879L1226.993 608.958L1245.079 605.365L1270.213 601.905H1294.815L1319.95 608.958L1338.568 615.879L1355.457 626.393L1363.702 622.933V608.958L1367.16 560.381L1371.814 537.623L1386.443 506.614L1406.922 482.126V465.09L1371.814 431.153H1319.95L1289.496 469.748L1255.585 493.172L1226.993 506.614L1205.449 511.272Z" />
+                  <path class="hit" data-id="gf-14" d="M1205.449 511.272L1182.575 514.865L1175.66 519.523L1215.955 601.905V615.879L1226.993 608.958L1245.079 605.365L1270.213 601.905H1294.815L1319.95 608.958L1338.568 615.879L1355.457 626.393L1363.702 622.933V608.958L1367.16 560.381L1371.814 537.623L1386.443 506.614L1406.922 482.126V465.09L1371.814 431.153H1319.95L1289.496 469.748L1255.585 493.172L1226.993 506.614L1205.449 511.272Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-12" style="--pulse-delay:4.08s;">
+                  <path class="tenant-aura" d="M1128.544 507.984L1058.519 586.164L1055.596 593.743V601.986L1069.016 609.565L1099.976 630.572L1108.746 645.198L1114.592 672.587L1122.697 679.102V684.288H1150.734L1156.049 679.102L1179.302 641.076L1195.114 626.451L1210.926 616.612V601.986L1175.847 518.488L1146.615 512.638L1128.544 507.984Z" />
+                  <path class="tenant-fill" d="M1128.544 507.984L1058.519 586.164L1055.596 593.743V601.986L1069.016 609.565L1099.976 630.572L1108.746 645.198L1114.592 672.587L1122.697 679.102V684.288H1150.734L1156.049 679.102L1179.302 641.076L1195.114 626.451L1210.926 616.612V601.986L1175.847 518.488L1146.615 512.638L1128.544 507.984Z" />
+                  <path class="tenant-rim" d="M1128.544 507.984L1058.519 586.164L1055.596 593.743V601.986L1069.016 609.565L1099.976 630.572L1108.746 645.198L1114.592 672.587L1122.697 679.102V684.288H1150.734L1156.049 679.102L1179.302 641.076L1195.114 626.451L1210.926 616.612V601.986L1175.847 518.488L1146.615 512.638L1128.544 507.984Z" />
+                  <path class="hit" data-id="gf-12" d="M1128.544 507.984L1058.519 586.164L1055.596 593.743V601.986L1069.016 609.565L1099.976 630.572L1108.746 645.198L1114.592 672.587L1122.697 679.102V684.288H1150.734L1156.049 679.102L1179.302 641.076L1195.114 626.451L1210.926 616.612V601.986L1175.847 518.488L1146.615 512.638L1128.544 507.984Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-28" style="--pulse-delay:4.2s;">
+                  <path class="tenant-aura" d="M1095.032 639.164L1069.715 618.799V681.483H1095.032V639.164Z" />
+                  <path class="tenant-fill" d="M1095.032 639.164L1069.715 618.799V681.483H1095.032V639.164Z" />
+                  <path class="tenant-rim" d="M1095.032 639.164L1069.715 618.799V681.483H1095.032V639.164Z" />
+                  <path class="hit" data-id="gf-28" d="M1095.032 639.164L1069.715 618.799V681.483H1095.032V639.164Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-21" style="--pulse-delay:4.32s;">
+                  <path class="tenant-aura" d="M945.577 682.537L893.608 718.191L898.792 902.849L999.274 891.673L1010.305 887.549V872.383L999.274 682.537H945.577Z" />
+                  <path class="tenant-fill" d="M945.577 682.537L893.608 718.191L898.792 902.849L999.274 891.673L1010.305 887.549V872.383L999.274 682.537H945.577Z" />
+                  <path class="tenant-rim" d="M945.577 682.537L893.608 718.191L898.792 902.849L999.274 891.673L1010.305 887.549V872.383L999.274 682.537H945.577Z" />
+                  <path class="hit" data-id="gf-21" d="M945.577 682.537L893.608 718.191L898.792 902.849L999.274 891.673L1010.305 887.549V872.383L999.274 682.537H945.577Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-20" style="--pulse-delay:4.44s;">
+                  <path class="tenant-aura" d="M887.812 718.912L837.393 751.064L843.728 858.942H894.148L887.812 718.912Z" />
+                  <path class="tenant-fill" d="M887.812 718.912L837.393 751.064L843.728 858.942H894.148L887.812 718.912Z" />
+                  <path class="tenant-rim" d="M887.812 718.912L837.393 751.064L843.728 858.942H894.148L887.812 718.912Z" />
+                  <path class="hit" data-id="gf-20" d="M887.812 718.912L837.393 751.064L843.728 858.942H894.148L887.812 718.912Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-19" style="--pulse-delay:4.56s;">
+                  <path class="tenant-aura" d="M747.778 886.114V802.015L779.95 786.18L809.063 769.281L835.385 752.914L842.963 860.964L896.138 856.972V904.211L704.041 934.018V886.114H747.778Z" />
+                  <path class="tenant-fill" d="M747.778 886.114V802.015L779.95 786.18L809.063 769.281L835.385 752.914L842.963 860.964L896.138 856.972V904.211L704.041 934.018V886.114H747.778Z" />
+                  <path class="tenant-rim" d="M747.778 886.114V802.015L779.95 786.18L809.063 769.281L835.385 752.914L842.963 860.964L896.138 856.972V904.211L704.041 934.018V886.114H747.778Z" />
+                  <path class="hit" data-id="gf-19" d="M747.778 886.114V802.015L779.95 786.18L809.063 769.281L835.385 752.914L842.963 860.964L896.138 856.972V904.211L704.041 934.018V886.114H747.778Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-18b" style="--pulse-delay:4.68s;">
+                  <path class="tenant-aura" d="M746.938 805.533L668.781 824.793V905.289H645.426V939.162L701.954 935.575V884.302H744.019L746.938 805.533Z" />
+                  <path class="tenant-fill" d="M746.938 805.533L668.781 824.793V905.289H645.426V939.162L701.954 935.575V884.302H744.019L746.938 805.533Z" />
+                  <path class="tenant-rim" d="M746.938 805.533L668.781 824.793V905.289H645.426V939.162L701.954 935.575V884.302H744.019L746.938 805.533Z" />
+                  <path class="hit" data-id="gf-18b" d="M746.938 805.533L668.781 824.793V905.289H645.426V939.162L701.954 935.575V884.302H744.019L746.938 805.533Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-18a" style="--pulse-delay:4.8s;">
+                  <path class="tenant-aura" d="M665.143 824.838L592.722 828.29L588.603 904.11H558.837V947.265L644.679 939.696V904.11H665.143V824.838Z" />
+                  <path class="tenant-fill" d="M665.143 824.838L592.722 828.29L588.603 904.11H558.837V947.265L644.679 939.696V904.11H665.143V824.838Z" />
+                  <path class="tenant-rim" d="M665.143 824.838L592.722 828.29L588.603 904.11H558.837V947.265L644.679 939.696V904.11H665.143V824.838Z" />
+                  <path class="hit" data-id="gf-18a" d="M665.143 824.838L592.722 828.29L588.603 904.11H558.837V947.265L644.679 939.696V904.11H665.143V824.838Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-17b" style="--pulse-delay:4.92s;">
+                  <path class="tenant-aura" d="M544.087 827.241L512.59 820.726L508.619 904.882L525.956 908.338L529.529 949.286L559.174 943.968V908.338L588.819 904.882V827.241H544.087Z" />
+                  <path class="tenant-fill" d="M544.087 827.241L512.59 820.726L508.619 904.882L525.956 908.338L529.529 949.286L559.174 943.968V908.338L588.819 904.882V827.241H544.087Z" />
+                  <path class="tenant-rim" d="M544.087 827.241L512.59 820.726L508.619 904.882L525.956 908.338L529.529 949.286L559.174 943.968V908.338L588.819 904.882V827.241H544.087Z" />
+                  <path class="hit" data-id="gf-17b" d="M544.087 827.241L512.59 820.726L508.619 904.882L525.956 908.338L529.529 949.286L559.174 943.968V908.338L588.819 904.882V827.241H544.087Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-17a" style="--pulse-delay:5.04s;">
+                  <path class="tenant-aura" d="M507.639 820.15L430.134 789.152L424.295 955.053L529.802 946.937V906.626H507.639V820.15Z" />
+                  <path class="tenant-fill" d="M507.639 820.15L430.134 789.152L424.295 955.053L529.802 946.937V906.626H507.639V820.15Z" />
+                  <path class="tenant-rim" d="M507.639 820.15L430.134 789.152L424.295 955.053L529.802 946.937V906.626H507.639V820.15Z" />
+                  <path class="hit" data-id="gf-17a" d="M507.639 820.15L430.134 789.152L424.295 955.053L529.802 946.937V906.626H507.639V820.15Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-16a" style="--pulse-delay:5.16s;">
+                  <path class="tenant-aura" d="M428.96 788.821L374.088 753.949L353.942 803.196L350.894 871.876H392.379L390.126 939.491L392.379 945.746L396.885 948.408V958.79L423.658 955.197V943.084L428.96 788.821Z" />
+                  <path class="tenant-fill" d="M428.96 788.821L374.088 753.949L353.942 803.196L350.894 871.876H392.379L390.126 939.491L392.379 945.746L396.885 948.408V958.79L423.658 955.197V943.084L428.96 788.821Z" />
+                  <path class="tenant-rim" d="M428.96 788.821L374.088 753.949L353.942 803.196L350.894 871.876H392.379L390.126 939.491L392.379 945.746L396.885 948.408V958.79L423.658 955.197V943.084L428.96 788.821Z" />
+                  <path class="hit" data-id="gf-16a" d="M428.96 788.821L374.088 753.949L353.942 803.196L350.894 871.876H392.379L390.126 939.491L392.379 945.746L396.885 948.408V958.79L423.658 955.197V943.084L428.96 788.821Z" />
+                </g>
+                <g class="tenant-spot" data-id="gf-16" style="--pulse-delay:5.28s;">
+                  <path class="tenant-aura" d="M372.887 752.671L307.019 696.033L207.818 749.746L203.17 759.584L266.116 868.87H347.788L351.374 799.336L372.887 752.671Z" />
+                  <path class="tenant-fill" d="M372.887 752.671L307.019 696.033L207.818 749.746L203.17 759.584L266.116 868.87H347.788L351.374 799.336L372.887 752.671Z" />
+                  <path class="tenant-rim" d="M372.887 752.671L307.019 696.033L207.818 749.746L203.17 759.584L266.116 868.87H347.788L351.374 799.336L372.887 752.671Z" />
+                  <path class="hit" data-id="gf-16" d="M372.887 752.671L307.019 696.033L207.818 749.746L203.17 759.584L266.116 868.87H347.788L351.374 799.336L372.887 752.671Z" />
+                </g>
+              </g>
+
+              <g id="f3Hits" style="display:none;">
+                <g class="tenant-spot" data-id="l3-a1" style="--pulse-delay:0s;">
+                  <path class="tenant-aura" d="M182.17 591.20L102.38 642.58V660.94L305.76 1007.93L388.03 975.80L632.13 955.85L624.36 862.91H632.13L612.25 561.19L182.17 591.20Z" />
+                  <path class="tenant-fill" d="M182.17 591.20L102.38 642.58V660.94L305.76 1007.93L388.03 975.80L632.13 955.85L624.36 862.91H632.13L612.25 561.19L182.17 591.20Z" />
+                  <path class="tenant-rim" d="M182.17 591.20L102.38 642.58V660.94L305.76 1007.93L388.03 975.80L632.13 955.85L624.36 862.91H632.13L612.25 561.19L182.17 591.20Z" />
+                  <path class="hit" data-id="l3-a1" d="M182.17 591.20L102.38 642.58V660.94L305.76 1007.93L388.03 975.80L632.13 955.85L624.36 862.91H632.13L612.25 561.19L182.17 591.20Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-05" style="--pulse-delay:.25s;">
+                  <path class="tenant-aura" d="M733.00 806.49L660.70 812.14V860.75L627.28 863.93L631.70 955.74L740.40 945.13L733.00 806.49Z" />
+                  <path class="tenant-fill" d="M733.00 806.49L660.70 812.14V860.75L627.28 863.93L631.70 955.74L740.40 945.13L733.00 806.49Z" />
+                  <path class="tenant-rim" d="M733.00 806.49L660.70 812.14V860.75L627.28 863.93L631.70 955.74L740.40 945.13L733.00 806.49Z" />
+                  <path class="hit" data-id="l3-05" d="M733.00 806.49L660.70 812.14V860.75L627.28 863.93L631.70 955.74L740.40 945.13L733.00 806.49Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-0607" style="--pulse-delay:.5s;">
+                  <path class="tenant-aura" d="M763.2 802.7L736.88 807.8L743.95 944.5L788.3 937.3L834.6 927.7L826.8 780.44L763.2 802.7Z" />
+                  <path class="tenant-fill" d="M763.2 802.7L736.88 807.8L743.95 944.5L788.3 937.3L834.6 927.7L826.8 780.44L763.2 802.7Z" />
+                  <path class="tenant-rim" d="M763.2 802.7L736.88 807.8L743.95 944.5L788.3 937.3L834.6 927.7L826.8 780.44L763.2 802.7Z" />
+                  <path class="hit" data-id="l3-0607" d="M763.2 802.7L736.88 807.8L743.95 944.5L788.3 937.3L834.6 927.7L826.8 780.44L763.2 802.7Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-08" style="--pulse-delay:.75s;">
+                  <path class="tenant-aura" d="M892.3 740.4L830.0 776.5L837.76 927.2L903.7 915.1L892.3 740.4Z" />
+                  <path class="tenant-fill" d="M892.3 740.4L830.0 776.5L837.76 927.2L903.7 915.1L892.3 740.4Z" />
+                  <path class="tenant-rim" d="M892.3 740.4L830.0 776.5L837.76 927.2L903.7 915.1L892.3 740.4Z" />
+                  <path class="hit" data-id="l3-08" d="M892.3 740.4L830.0 776.5L837.76 927.2L903.7 915.1L892.3 740.4Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-09" style="--pulse-delay:1.0s;">
+                  <path class="tenant-aura" d="M966.8 677.47L896.68 738.6L906.4 912.2L994.8 895.7L990.9 713.5L969.0 713.5L966.8 677.47Z" />
+                  <path class="tenant-fill" d="M966.8 677.47L896.68 738.6L906.4 912.2L994.8 895.7L990.9 713.5L969.0 713.5L966.8 677.47Z" />
+                  <path class="tenant-rim" d="M966.8 677.47L896.68 738.6L906.4 912.2L994.8 895.7L990.9 713.5L969.0 713.5L966.8 677.47Z" />
+                  <path class="hit" data-id="l3-09" d="M966.8 677.47L896.68 738.6L906.4 912.2L994.8 895.7L990.9 713.5L969.0 713.5L966.8 677.47Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-31" style="--pulse-delay:1.25s;">
+                  <path class="tenant-aura" d="M969.0 591.12L959.28 606.49L956.10 617.98L966.17 625.57V676.31L970.95 676.31L973.78 684.62L1014.43 684.62L1017.26 680.03L1014.43 634.24L984.74 596.95L969.0 591.12Z" />
+                  <path class="tenant-fill" d="M969.0 591.12L959.28 606.49L956.10 617.98L966.17 625.57V676.31L970.95 676.31L973.78 684.62L1014.43 684.62L1017.26 680.03L1014.43 634.24L984.74 596.95L969.0 591.12Z" />
+                  <path class="tenant-rim" d="M969.0 591.12L959.28 606.49L956.10 617.98L966.17 625.57V676.31L970.95 676.31L973.78 684.62L1014.43 684.62L1017.26 680.03L1014.43 634.24L984.74 596.95L969.0 591.12Z" />
+                  <path class="hit" data-id="l3-31" d="M969.0 591.12L959.28 606.49L956.10 617.98L966.17 625.57V676.31L970.95 676.31L973.78 684.62L1014.43 684.62L1017.26 680.03L1014.43 634.24L984.74 596.95L969.0 591.12Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-h11" style="--pulse-delay:1.5s;">
+                  <path class="tenant-aura" d="M785.78 633.08L758.92 629.90L756.09 658.53L770.23 662.06L785.78 664.72L801.34 671.27L814.77 683.10L842.70 680.98V671.27L835.45 655.52L819.54 642.62L803.28 636.08L785.78 633.08Z" />
+                  <path class="tenant-fill" d="M785.78 633.08L758.92 629.90L756.09 658.53L770.23 662.06L785.78 664.72L801.34 671.27L814.77 683.10L842.70 680.98V671.27L835.45 655.52L819.54 642.62L803.28 636.08L785.78 633.08Z" />
+                  <path class="tenant-rim" d="M785.78 633.08L758.92 629.90L756.09 658.53L770.23 662.06L785.78 664.72L801.34 671.27L814.77 683.10L842.70 680.98V671.27L835.45 655.52L819.54 642.62L803.28 636.08L785.78 633.08Z" />
+                  <path class="hit" data-id="l3-h11" d="M785.78 633.08L758.92 629.90L756.09 658.53L770.23 662.06L785.78 664.72L801.34 671.27L814.77 683.10L842.70 680.98V671.27L835.45 655.52L819.54 642.62L803.28 636.08L785.78 633.08Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-10b" style="--pulse-delay:1.75s;">
+                  <path class="tenant-aura" d="M930.4 611.72L924.2 610.31L895.78 682.95V692.85L902.14 694.62L906.56 694.62L913.09 692.85L919.81 689.32L926.17 682.95L932.54 670.76L937.49 654.69L939.79 641.94L941.03 629.75V625.68L939.79 620.02L935.01 614.90L930.4 611.72Z" />
+                  <path class="tenant-fill" d="M930.4 611.72L924.2 610.31L895.78 682.95V692.85L902.14 694.62L906.56 694.62L913.09 692.85L919.81 689.32L926.17 682.95L932.54 670.76L937.49 654.69L939.79 641.94L941.03 629.75V625.68L939.79 620.02L935.01 614.90L930.4 611.72Z" />
+                  <path class="tenant-rim" d="M930.4 611.72L924.2 610.31L895.78 682.95V692.85L902.14 694.62L906.56 694.62L913.09 692.85L919.81 689.32L926.17 682.95L932.54 670.76L937.49 654.69L939.79 641.94L941.03 629.75V625.68L939.79 620.02L935.01 614.90L930.4 611.72Z" />
+                  <path class="hit" data-id="l3-10b" d="M930.4 611.72L924.2 610.31L895.78 682.95V692.85L902.14 694.62L906.56 694.62L913.09 692.85L919.81 689.32L926.17 682.95L932.54 670.76L937.49 654.69L939.79 641.94L941.03 629.75V625.68L939.79 620.02L935.01 614.90L930.4 611.72Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-10a" style="--pulse-delay:2.0s;">
+                  <path class="tenant-aura" d="M899.7 617.23L894.0 622.53L889.4 628.00L884.66 638.97L879.71 655.58L878.48 669.54V672.19L882.19 682.81L884.66 686.17L888.02 689.17L891.73 691.46L895.27 693.05V682.81L923.72 610.51L919.12 609.28L914.00 609.28L911.00 610.51L906.40 612.46L899.7 617.23Z" />
+                  <path class="tenant-fill" d="M899.7 617.23L894.0 622.53L889.4 628.00L884.66 638.97L879.71 655.58L878.48 669.54V672.19L882.19 682.81L884.66 686.17L888.02 689.17L891.73 691.46L895.27 693.05V682.81L923.72 610.51L919.12 609.28L914.00 609.28L911.00 610.51L906.40 612.46L899.7 617.23Z" />
+                  <path class="tenant-rim" d="M899.7 617.23L894.0 622.53L889.4 628.00L884.66 638.97L879.71 655.58L878.48 669.54V672.19L882.19 682.81L884.66 686.17L888.02 689.17L891.73 691.46L895.27 693.05V682.81L923.72 610.51L919.12 609.28L914.00 609.28L911.00 610.51L906.40 612.46L899.7 617.23Z" />
+                  <path class="hit" data-id="l3-10a" d="M899.7 617.23L894.0 622.53L889.4 628.00L884.66 638.97L879.71 655.58L878.48 669.54V672.19L882.19 682.81L884.66 686.17L888.02 689.17L891.73 691.46L895.27 693.05V682.81L923.72 610.51L919.12 609.28L914.00 609.28L911.00 610.51L906.40 612.46L899.7 617.23Z" />
+                </g>
+
+                <g class="tenant-spot" data-id="l3-12" style="--pulse-delay:2.25s;">
+                  <path class="tenant-aura" d="M750.37 627.78L694.88 632.73V663.13L754.09 658.89V632.73L750.37 627.78Z" />
+                  <path class="tenant-fill" d="M750.37 627.78L694.88 632.73V663.13L754.09 658.89V632.73L750.37 627.78Z" />
+                  <path class="tenant-rim" d="M750.37 627.78L694.88 632.73V663.13L754.09 658.89V632.73L750.37 627.78Z" />
+                  <path class="hit" data-id="l3-12" d="M750.37 627.78L694.88 632.73V663.13L754.09 658.89V632.73L750.37 627.78Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h17" style="--pulse-delay:2.5s;">
+                  <path class="tenant-aura" d="M652.89 551.64L640.87 560.65L645.29 629.23L686.82 627.03L701.32 609.27V597.96L662.96 551.64L652.89 551.64Z" />
+                  <path class="tenant-fill" d="M652.89 551.64L640.87 560.65L645.29 629.23L686.82 627.03L701.32 609.27V597.96L662.96 551.64L652.89 551.64Z" />
+                  <path class="tenant-rim" d="M652.89 551.64L640.87 560.65L645.29 629.23L686.82 627.03L701.32 609.27V597.96L662.96 551.64L652.89 551.64Z" />
+                  <path class="hit" data-id="l3-h17" d="M652.89 551.64L640.87 560.65L645.29 629.23L686.82 627.03L701.32 609.27V597.96L662.96 551.64L652.89 551.64Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-03" style="--pulse-delay:2.75s;">
+                  <path class="tenant-aura" d="M863.97 451.24L804.95 451.24L807.07 528.49L812.55 528.49L815.73 606.43L899.11 602.36L930.72 575.88V564.38L905.34 538.54L901.98 499.81L866.45 499.81L863.97 451.24Z" />
+                  <path class="tenant-fill" d="M863.97 451.24L804.95 451.24L807.07 528.49L812.55 528.49L815.73 606.43L899.11 602.36L930.72 575.88V564.38L905.34 538.54L901.98 499.81L866.45 499.81L863.97 451.24Z" />
+                  <path class="tenant-rim" d="M863.97 451.24L804.95 451.24L807.07 528.49L812.55 528.49L815.73 606.43L899.11 602.36L930.72 575.88V564.38L905.34 538.54L901.98 499.81L866.45 499.81L863.97 451.24Z" />
+                  <path class="hit" data-id="l3-03" d="M863.97 451.24L804.95 451.24L807.07 528.49L812.55 528.49L815.73 606.43L899.11 602.36L930.72 575.88V564.38L905.34 538.54L901.98 499.81L866.45 499.81L863.97 451.24Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h16" style="--pulse-delay:3.0s;">
+                  <path class="tenant-aura" d="M738.99 470.69L659.99 473.34V527.78L678.71 538.73L741.39 534.48V531.83V522.82L738.99 470.69Z" />
+                  <path class="tenant-fill" d="M738.99 470.69L659.99 473.34V527.78L678.71 538.73L741.39 534.48V531.83V522.82L738.99 470.69Z" />
+                  <path class="tenant-rim" d="M738.99 470.69L659.99 473.34V527.78L678.71 538.73L741.39 534.48V531.83V522.82L738.99 470.69Z" />
+                  <path class="hit" data-id="l3-h16" d="M738.99 470.69L659.99 473.34V527.78L678.71 538.73L741.39 534.48V531.83V522.82L738.99 470.69Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-01" style="--pulse-delay:3.25s;">
+                  <path class="tenant-aura" d="M1058.21 471.89L984.15 556.38L982.03 569.29L1006.42 595.78L1025.49 616.47L1032.79 630.26L1036.85 645.45V657.47H1043.39V660.91H1083.73L1095.04 645.45L1104.83 634.85L1120.74 620.53L1129.57 614.41V595.78L1126.57 537.14L1058.21 471.89Z" />
+                  <path class="tenant-fill" d="M1058.21 471.89L984.15 556.38L982.03 569.29L1006.42 595.78L1025.49 616.47L1032.79 630.26L1036.85 645.45V657.47H1043.39V660.91H1083.73L1095.04 645.45L1104.83 634.85L1120.74 620.53L1129.57 614.41V595.78L1126.57 537.14L1058.21 471.89Z" />
+                  <path class="tenant-rim" d="M1058.21 471.89L984.15 556.38L982.03 569.29L1006.42 595.78L1025.49 616.47L1032.79 630.26L1036.85 645.45V657.47H1043.39V660.91H1083.73L1095.04 645.45L1104.83 634.85L1120.74 620.53L1129.57 614.41V595.78L1126.57 537.14L1058.21 471.89Z" />
+                  <path class="hit" data-id="l3-01" d="M1058.21 471.89L984.15 556.38L982.03 569.29L1006.42 595.78L1025.49 616.47L1032.79 630.26L1036.85 645.45V657.47H1043.39V660.91H1083.73L1095.04 645.45L1104.83 634.85L1120.74 620.53L1129.57 614.41V595.78L1126.57 537.14L1058.21 471.89Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-02" style="--pulse-delay:3.5s;">
+                  <path class="tenant-aura" d="M996.24 405.99L900.19 405.99L895.77 415.36L900.19 497.73H904.43V506.39H921.22V526.71L942.96 547.22H945.79L1031.13 450.15V442.55L996.24 405.99Z" />
+                  <path class="tenant-fill" d="M996.24 405.99L900.19 405.99L895.77 415.36L900.19 497.73H904.43V506.39H921.22V526.71L942.96 547.22H945.79L1031.13 450.15V442.55L996.24 405.99Z" />
+                  <path class="tenant-rim" d="M996.24 405.99L900.19 405.99L895.77 415.36L900.19 497.73H904.43V506.39H921.22V526.71L942.96 547.22H945.79L1031.13 450.15V442.55L996.24 405.99Z" />
+                  <path class="hit" data-id="l3-02" d="M996.24 405.99L900.19 405.99L895.77 415.36L900.19 497.73H904.43V506.39H921.22V526.71L942.96 547.22H945.79L1031.13 450.15V442.55L996.24 405.99Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h15b" style="--pulse-delay:3.75s;">
+                  <path class="tenant-aura" d="M657.33 446.47L613.68 446.47L616.50 505.58L659.62 504.00V473.27L662.80 471.50L661.38 449.47L657.33 446.47Z" />
+                  <path class="tenant-fill" d="M657.33 446.47L613.68 446.47L616.50 505.58L659.62 504.00V473.27L662.80 471.50L661.38 449.47L657.33 446.47Z" />
+                  <path class="tenant-rim" d="M657.33 446.47L613.68 446.47L616.50 505.58L659.62 504.00V473.27L662.80 471.50L661.38 449.47L657.33 446.47Z" />
+                  <path class="hit" data-id="l3-h15b" d="M657.33 446.47L613.68 446.47L616.50 505.58L659.62 504.00V473.27L662.80 471.50L661.38 449.47L657.33 446.47Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h15a" style="--pulse-delay:4.0s;">
+                  <path class="tenant-aura" d="M612.97 446.29L572.67 446.29L574.96 507.00L614.98 505.41L612.97 446.29Z" />
+                  <path class="tenant-fill" d="M612.97 446.29L572.67 446.29L574.96 507.00L614.98 505.41L612.97 446.29Z" />
+                  <path class="tenant-rim" d="M612.97 446.29L572.67 446.29L574.96 507.00L614.98 505.41L612.97 446.29Z" />
+                  <path class="hit" data-id="l3-h15a" d="M612.97 446.29L572.67 446.29L574.96 507.00L614.98 505.41L612.97 446.29Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h14" style="--pulse-delay:4.25s;">
+                  <path class="tenant-aura" d="M571.74 446.83L535.00 446.83L536.41 507.55L538.36 509.14L571.74 507.55L574.22 505.14L571.74 446.83Z" />
+                  <path class="tenant-fill" d="M571.74 446.83L535.00 446.83L536.41 507.55L538.36 509.14L571.74 507.55L574.22 505.14L571.74 446.83Z" />
+                  <path class="tenant-rim" d="M571.74 446.83L535.00 446.83L536.41 507.55L538.36 509.14L571.74 507.55L574.22 505.14L571.74 446.83Z" />
+                  <path class="hit" data-id="l3-h14" d="M571.74 446.83L535.00 446.83L536.41 507.55L538.36 509.14L571.74 507.55L574.22 505.14L571.74 446.83Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h13" style="--pulse-delay:4.5s;">
+                  <path class="tenant-aura" d="M531.94 446.65L491.92 446.65L494.74 511.01L533.59 509.06L534.47 449.47L531.94 446.65Z" />
+                  <path class="tenant-fill" d="M531.94 446.65L491.92 446.65L494.74 511.01L533.59 509.06L534.47 449.47L531.94 446.65Z" />
+                  <path class="tenant-rim" d="M531.94 446.65L491.92 446.65L494.74 511.01L533.59 509.06L534.47 449.47L531.94 446.65Z" />
+                  <path class="hit" data-id="l3-h13" d="M531.94 446.65L491.92 446.65L494.74 511.01L533.59 509.06L534.47 449.47L531.94 446.65Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h12" style="--pulse-delay:4.75s;">
+                  <path class="tenant-aura" d="M490.84 446.65L456.02 446.65L458.49 512.32L494.91 510.02L490.84 446.65Z" />
+                  <path class="tenant-fill" d="M490.84 446.65L456.02 446.65L458.49 512.32L494.91 510.02L490.84 446.65Z" />
+                  <path class="tenant-rim" d="M490.84 446.65L456.02 446.65L458.49 512.32L494.91 510.02L490.84 446.65Z" />
+                  <path class="hit" data-id="l3-h12" d="M490.84 446.65L456.02 446.65L458.49 512.32L494.91 510.02L490.84 446.65Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h10" style="--pulse-delay:5.0s;">
+                  <path class="tenant-aura" d="M415.68 447.53L384.96 447.53L386.55 515.22L417.84 513.45V449.47L415.68 447.53Z" />
+                  <path class="tenant-fill" d="M415.68 447.53L384.96 447.53L386.55 515.22L417.84 513.45V449.47L415.68 447.53Z" />
+                  <path class="tenant-rim" d="M415.68 447.53L384.96 447.53L386.55 515.22L417.84 513.45V449.47L415.68 447.53Z" />
+                  <path class="hit" data-id="l3-h10" d="M415.68 447.53L384.96 447.53L386.55 515.22L417.84 513.45V449.47L415.68 447.53Z" />
+                </g>
+                <g class="tenant-spot" data-id="l3-h09" style="--pulse-delay:5.25s;">
+                  <path class="tenant-aura" d="M381.24 447.00L350.85 447.00L353.32 516.00L385.82 513.88L383.65 448.76L381.24 447.00Z" />
+                  <path class="tenant-fill" d="M381.24 447.00L350.85 447.00L353.32 516.00L385.82 513.88L383.65 448.76L381.24 447.00Z" />
+                  <path class="tenant-rim" d="M381.24 447.00L350.85 447.00L353.32 516.00L385.82 513.88L383.65 448.76L381.24 447.00Z" />
+                  <path class="hit" data-id="l3-h09" d="M381.24 447.00L350.85 447.00L353.32 516.00L385.82 513.88L383.65 448.76L381.24 447.00Z" />
+                </g>
               </g>
 
               <!-- Path line + dots + destination marker (built dynamically) -->
@@ -1094,7 +2248,7 @@
           </div>
         </div>
 
-        <div class="hint"><kbd>Click</kbd> tenant · <kbd>Scroll</kbd> zoom · <kbd>Drag</kbd> pan</div>
+        <div class="hint" id="mapHint"><kbd>Click</kbd> tenant · <kbd>Scroll</kbd> zoom · <kbd>Drag</kbd> pan</div>
 
         <div class="controls">
           <button id="zoomIn" title="Zoom in">+</button>
@@ -1123,7 +2277,127 @@
   </div>
 
   <script>
-    const TENANTS = {
+    const TENANTS_1F = {
+      "l1-a3": {
+        code: "L1-A3", name: "OH! SOME", cat: "Lantai 1", door: [181, 776],
+        desc: "Tenant L1-A3 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-A3"
+      },
+      "l1-11": {
+        code: "L1-11", name: "SALON RUDY HADISUWARNO", cat: "Lantai 1", door: [310, 646],
+        desc: "Tenant L1-11 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-11"
+      },
+      "l1-9810": {
+        code: "L1-9810", name: "BAGS CITY", cat: "Lantai 1", door: [422, 628],
+        desc: "Tenant L1-9810 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-9810"
+      },
+      "l1-08": {
+        code: "L1-08", name: "BEATRICE CLOTHING", cat: "Lantai 1", door: [520, 620],
+        desc: "Tenant L1-08 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-08"
+      },
+      "l1-07": {
+        code: "L1-07", name: "OPTIK SEIS", cat: "Lantai 1", door: [590, 649],
+        desc: "Tenant L1-07 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-07"
+      },
+      "l1-06": {
+        code: "L1-06", name: "ARABELLE - HASYA HIJAB", cat: "Lantai 1", door: [666, 618],
+        desc: "Tenant L1-06 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-06"
+      },
+      "l1-05": {
+        code: "L1-05", name: "SKIN +", cat: "Lantai 1", door: [683, 554],
+        desc: "Tenant L1-05 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-05"
+      },
+      "l1-22a": {
+        code: "L1-22A", name: "PRETTY PASTEL", cat: "Lantai 1", door: [574, 735],
+        desc: "Tenant L1-22A berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-22A"
+      },
+      "l1-22b": {
+        code: "L1-22B", name: "MANDALIKA", cat: "Lantai 1", door: [579, 790],
+        desc: "Tenant L1-22B berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-22B"
+      },
+      "l1-24": {
+        code: "L1-24", name: "SIMPLICITY", cat: "Lantai 1", door: [654, 723],
+        desc: "Tenant L1-24 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-24"
+      },
+      "l1-29": {
+        code: "L1-29", name: "HASSYA", cat: "Lantai 1", door: [711, 694],
+        desc: "Tenant L1-29 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-29"
+      },
+      "l1-27": {
+        code: "L1-27", name: "ROOTKYS", cat: "Lantai 1", door: [771, 659],
+        desc: "Tenant L1-27 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-27"
+      },
+      "l1-04": {
+        code: "L1-04", name: "OPTIK MELAWAI", cat: "Lantai 1", door: [798, 548],
+        desc: "Tenant L1-04 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-04"
+      },
+      "l1-03a": {
+        code: "L1-03A", name: "UBS", cat: "Lantai 1", door: [846, 483],
+        desc: "Tenant L1-03A berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-03A"
+      },
+      "l1-03": {
+        code: "L1-03", name: "ONEDA", cat: "Lantai 1", door: [822, 428],
+        desc: "Tenant L1-03 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-03"
+      },
+      "l1-a1": {
+        code: "L1-A1", name: "UNIQLO", cat: "Lantai 1", door: [1043, 257],
+        desc: "Tenant L1-A1 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-A1"
+      },
+      "l1-21": {
+        code: "L1-21", name: "COLORBOX", cat: "Lantai 1", door: [1235, 476],
+        desc: "Tenant L1-21 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-21"
+      },
+      "l1-20": {
+        code: "L1-20", name: "TRISET WATCHOUT", cat: "Lantai 1", door: [1059, 570],
+        desc: "Tenant L1-20 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-20"
+      },
+      "l1-19": {
+        code: "L1-19", name: "MOC", cat: "Lantai 1", door: [995, 588],
+        desc: "Tenant L1-19 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-19"
+      },
+      "l1-18": {
+        code: "L1-18", name: "HARDWARE", cat: "Lantai 1", door: [947, 632],
+        desc: "Tenant L1-18 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-18"
+      },
+      "l1-28": {
+        code: "L1-28", name: "JETE", cat: "Lantai 1", door: [897, 703],
+        desc: "Tenant L1-28 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-28"
+      },
+      "l1-16-17": {
+        code: "L1-16&17", name: "SPORTS STATION", cat: "Lantai 1", door: [790, 846],
+        desc: "Tenant L1-16&17 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-16&17"
+      },
+      "l1-15": {
+        code: "L1-15", name: "PUMA", cat: "Lantai 1", door: [673, 870],
+        desc: "Tenant L1-15 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-15"
+      },
+      "l1-14": {
+        code: "L1-14", name: "AVE SALON", cat: "Lantai 1", door: [605, 891],
+        desc: "Tenant L1-14 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-14"
+      },
+      "l1-13": {
+        code: "L1-13", name: "THIS IS APRIL", cat: "Lantai 1", door: [536, 922],
+        desc: "Tenant L1-13 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-13"
+      },
+      "l1-12": {
+        code: "L1-12", name: "GUARDIAN", cat: "Lantai 1", door: [461, 935],
+        desc: "Tenant L1-12 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-12"
+      },
+      "l1-12a": {
+        code: "L1-12A", name: "ZOOM WATCH", cat: "Lantai 1", door: [384, 903],
+        desc: "Tenant L1-12A berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-12A"
+      },
+      "l1-23": {
+        code: "L1-23", name: "SATURDAY", cat: "Lantai 1", door: [1081, 467],
+        desc: "Tenant L1-23 berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-23"
+      },
+      "l1-2b": {
+        code: "L1-2B", name: "L1-2B", cat: "Lantai 1", door: [858, 578],
+        desc: "Tenant L1-2B berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-2B"
+      },
+      "l1-26": {
+        code: "L1-26", name: "DESTIN HOUSE", cat: "Lantai 1", door: [915, 524],
+        desc: "Tenant DESTIN HOUSE berada di lantai 1 Queen City Mall.", loc: "1F Â· L1-26"
+      },
       lilbamboe: {
         name: "Lil Bamboe", cat: "F&B · Asian Cuisine", door: [240, 320],
         desc: "Modern bamboo-themed Asian restaurant with fresh hand-rolled dim sum and signature noodle bowls.", loc: "1F · Unit 101"
@@ -1168,6 +2442,443 @@
         name: "Baleno", cat: "Fashion · Casual", door: [1318, 555],
         desc: "Casual everyday fashion for the whole family — premium cotton tees, denim, and seasonal essentials.", loc: "1F · Unit 115"
       },
+    };
+
+    const TENANTS_GF = {
+      "gf-01": { code: "GF-01", name: "FRANK & CO", loc: "GF-01" },
+      "gf-02a": { code: "GF-02A", name: "SAMSUNG", loc: "GF-02A" },
+      "gf-03": { code: "GF-03", name: "IBOX", loc: "GF-03" },
+      "gf-04": { code: "GF-04", name: "MELISSA CLUBE", loc: "GF-04" },
+      "gf-05": { code: "GF-05", name: "", loc: "GF-05" },
+      "gf-05a": { code: "GF-05A", name: "YOGURT REPUBLIC", loc: "GF-05A" },
+      "gf-05b": { code: "GF-05B", name: "CHEON", loc: "GF-05B" },
+      "gf-06": { code: "GF-06", name: "KOI THE", loc: "GF-06" },
+      "gf-07": { code: "GF-07", name: "GION SUSHI", loc: "GF-07" },
+      "gf-08": { code: "GF-08", name: "GION SUSHI", loc: "GF-08" },
+      "gf-09": { code: "GF-09", name: "BAKOEL BAMBOE", loc: "GF-09" },
+      "gf-10": { code: "GF-10", name: "BAKOEL BAMBOE", loc: "GF-10" },
+      "gf-11": { code: "GF-11", name: "ANTARA KATA", loc: "GF-11" },
+      "gf-12": { code: "GF-12", name: "THE PALACE", loc: "GF-12" },
+      "gf-13": { code: "GF-13", name: "THE PALACE", loc: "GF-13" },
+      "gf-14": { code: "GF-14", name: "TOBY'S ESTATE", loc: "GF-14" },
+      "gf-15": { code: "GF-15", name: "BOOST", loc: "GF-15" },
+      "gf-16": { code: "GF-16", name: "CROCO BY MS", loc: "GF-16" },
+      "gf-16a": { code: "GF-16 A", name: "ALDO", loc: "GF-16 A" },
+      "gf-17a": { code: "GF-17 A", name: "STEVE MADDEN", loc: "GF-17 A" },
+      "gf-17b": { code: "GF-17 B", name: "CLARKS", loc: "GF-17 B" },
+      "gf-18a": { code: "GF-18 A", name: "CONVERSE", loc: "GF-18 A" },
+      "gf-18b": { code: "GF-18 B", name: "CROCS", loc: "GF-18 B" },
+      "gf-19": { code: "GF-19", name: "SKECHERS", loc: "GF-19" },
+      "gf-20": { code: "GF-20", name: "DIGIPLUS", loc: "GF-20" },
+      "gf-21": { code: "GF-21", name: "BALENO", loc: "GF-21" },
+      "gf-22": { code: "GF-22", name: "RELX", loc: "GF-22" },
+      "gf-23": { code: "GF-23", name: "", loc: "GF-23" },
+      "gf-24": { code: "GF-24", name: "", loc: "GF-24" },
+      "gf-25": { code: "GF-25", name: "", loc: "GF-25" },
+      "gf-26": { code: "GF-26", name: "", loc: "GF-26" },
+      "gf-27": { code: "GF-27", name: "", loc: "GF-27" },
+      "gf-28": { code: "GF-28", name: "", loc: "GF-28" },
+      "gf-29a": { code: "GF-29A", name: "", loc: "GF-29A" },
+      "gf-29b": { code: "GF-29B", name: "", loc: "GF-29B" },
+      "gf-29": { code: "GF-29", name: "", loc: "GF-29" },
+      "gf-30": { code: "GF-30", name: "", loc: "GF-30" },
+      "gf-30b": { code: "GF-30B", name: "", loc: "GF-30B" },
+      "gf-31": { code: "GF-31", name: "", loc: "GF-31" },
+      "gf-32": { code: "GF-32", name: "", loc: "GF-32" },
+      "gf-pro1": { code: "GF - PRO 1", name: "U-BEATZ", loc: "GF - PRO 1" },
+      "gf-pro2": { code: "GF - PRO 2", name: "RAMEN 1", loc: "GF - PRO 2" },
+      "gf-pro3a": { code: "GF - PRO 3A", name: "PEPPERLUNCH", loc: "GF - PRO 3A" },
+      "gf-pro3b": { code: "GF - PRO 3B", name: "ES TELER 77", loc: "GF - PRO 3B" },
+      "gf-pro4a": { code: "GF - PRO 4A", name: "BLOOMERY", loc: "GF - PRO 4A" },
+      "gf-pro4b": { code: "GF - PRO 4B", name: "ALCHEMY", loc: "GF - PRO 4B" },
+      "gf-pro5": { code: "GF - PRO 5", name: "", loc: "GF - PRO 5" },
+      "gf-spm01": { code: "GF - SPM 01", name: "WATSONS", loc: "GF - SPM 01" },
+      "gf-spm02": { code: "GF - SPM 02", name: "ITOYA", loc: "GF - SPM 02" },
+      "gf-spm03": { code: "GF - SPM 03", name: "", loc: "GF - SPM 03" },
+      "gf-spm04": { code: "GF - SPM 04", name: "", loc: "GF - SPM 04" },
+      "gf-spm05": { code: "GF - SPM 05", name: "", loc: "GF - SPM 05" },
+      "gf-spma1": { code: "GF - SPMA1", name: "HERO", loc: "GF - SPMA1" },
+      "gf-spmexth": { code: "GF - SPM EXTH", name: "", loc: "GF - SPM EXTH" },
+      "gf-sl01": { code: "GF-SL01", name: "HMNS", loc: "GF-SL01" },
+      "gf-atpm1": { code: "ATPM-1", name: "SECRET GARDEN", loc: "ATPM-1" },
+      "gf-atpm2": { code: "ATPM-2", name: "SEMBADA GOLD", loc: "ATPM-2" },
+      "gf-atpm3": { code: "ATPM-3", name: "", loc: "ATPM-3" },
+      "gf-atpm4": { code: "ATPM-4", name: "BOTANICAL ESSENTIALS", loc: "ATPM-4" },
+      "gf-atpm5": { code: "ATPM-5", name: "CRUSITA", loc: "ATPM-5" }
+    };
+
+    const TENANTS_2F = {
+      "l2-22a": {
+        code: "L2-22A", name: "SOL", cat: "Lantai 2", door: [480, 950],
+        desc: "SOL berada di lantai 2 Queen City Mall.", loc: "2F · L2-22A"
+      },
+      "l2-22b": {
+        code: "L2-22B", name: "MINOSHE", cat: "Lantai 2", door: [520, 947],
+        desc: "MINOSHE berada di lantai 2 Queen City Mall.", loc: "2F · L2-22B"
+      },
+      "l2-23a": {
+        code: "L2-23A", name: "PANLAND WOO", cat: "Lantai 2", door: [560, 946],
+        desc: "PANLAND WOO berada di lantai 2 Queen City Mall.", loc: "2F · L2-23A"
+      },
+      "l2-23b": {
+        code: "L2-23B", name: "HAPPY DENTAL", cat: "Lantai 2", door: [600, 944],
+        desc: "HAPPY DENTAL berada di lantai 2 Queen City Mall.", loc: "2F · L2-23B"
+      },
+      "l2-24-25-26": {
+        code: "L2-24,25,26", name: "MINISO", cat: "Lantai 2", door: [773, 916],
+        desc: "MINISO berada di lantai 2 Queen City Mall.", loc: "2F · L2-24,25,26"
+      },
+      "l2-27": {
+        code: "L2-27", name: "VIVO", cat: "Lantai 2", door: [881, 812],
+        desc: "VIVO berada di lantai 2 Queen City Mall.", loc: "2F · L2-27"
+      },
+      "l2-32": {
+        code: "L2-32", name: "OPPO", cat: "Lantai 2", door: [756, 761],
+        desc: "OPPO berada di lantai 2 Queen City Mall.", loc: "2F · L2-32"
+      },
+      "l2-42": {
+        code: "L2-42", name: "BFIT", cat: "Lantai 2", door: [941, 713],
+        desc: "BFIT berada di lantai 2 Queen City Mall.", loc: "2F · L2-42"
+      },
+      "l2-28": {
+        code: "L2-28", name: "XIAOMI", cat: "Lantai 2", door: [995, 643],
+        desc: "XIAOMI berada di lantai 2 Queen City Mall.", loc: "2F · L2-28"
+      },
+      "l2-29": {
+        code: "L2-29", name: "MY STYLE", cat: "Lantai 2", door: [1083, 622],
+        desc: "MY STYLE berada di lantai 2 Queen City Mall.", loc: "2F · L2-29"
+      },
+      "l2-29b": {
+        code: "L2-29B", name: "L2-29B", cat: "Lantai 2", door: [1167, 607],
+        desc: "Tenant L2-29B berada di lantai 2 Queen City Mall.", loc: "2F · L2-29B"
+      },
+      "l2-30": {
+        code: "L2-30", name: "KIDDY CUTS", cat: "Lantai 2", door: [1177, 547],
+        desc: "KIDDY CUTS berada di lantai 2 Queen City Mall.", loc: "2F · L2-30"
+      },
+      "l2-a2": {
+        code: "L2-A2", name: "KIDZLANDIA", cat: "Lantai 2", door: [1298, 561],
+        desc: "KIDZLANDIA berada di lantai 2 Queen City Mall.", loc: "2F · L2-A2"
+      },
+      "l2-a1": {
+        code: "L2-A1", name: "FUN WORLD", cat: "Lantai 2", door: [1146, 196],
+        desc: "FUN WORLD berada di lantai 2 Queen City Mall.", loc: "2F · L2-A1"
+      },
+      "l2-a48": {
+        code: "L2-A48", name: "L2-A48", cat: "Lantai 2", door: [986, 295],
+        desc: "Tenant L2-A48 berada di lantai 2 Queen City Mall.", loc: "2F · L2-A48"
+      },
+      "l2-a44": {
+        code: "L2-A44", name: "L2-A44", cat: "Lantai 2", door: [961, 313],
+        desc: "Tenant L2-A44 berada di lantai 2 Queen City Mall.", loc: "2F · L2-A44"
+      },
+      "l2-02": {
+        code: "L2-02", name: "DOOR FRIES", cat: "Lantai 2", door: [923, 251],
+        desc: "DOOR FRIES berada di lantai 2 Queen City Mall.", loc: "2F · L2-02"
+      },
+      "l2-02a": {
+        code: "L2-02A", name: "SHIHLIN", cat: "Lantai 2", door: [883, 250],
+        desc: "SHIHLIN berada di lantai 2 Queen City Mall.", loc: "2F · L2-02A"
+      },
+      "l2-fp25": {
+        code: "L2-FP25", name: "OO BAKSO HERITAGE", cat: "Lantai 2", door: [756, 132],
+        desc: "OO BAKSO HERITAGE berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP25"
+      },
+      "l2-fp26": {
+        code: "L2-FP26", name: "SHIGERU", cat: "Lantai 2", door: [771, 206],
+        desc: "SHIGERU berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP26"
+      },
+      "l2-fp27": {
+        code: "L2-FP27", name: "SUSHIKUN", cat: "Lantai 2", door: [765, 472],
+        desc: "SUSHIKUN berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP27"
+      },
+      "l2-09": {
+        code: "L2-09", name: "KIMUKATSU", cat: "Lantai 2", door: [883, 361],
+        desc: "KIMUKATSU berada di lantai 2 Queen City Mall.", loc: "2F · L2-09"
+      },
+      "l2-10": {
+        code: "L2-10", name: "MARUGAME UDON", cat: "Lantai 2", door: [881, 473],
+        desc: "MARUGAME UDON berada di lantai 2 Queen City Mall.", loc: "2F · L2-10"
+      },
+      "l2-11": {
+        code: "L2-11", name: "DR SPECS", cat: "Lantai 2", door: [872, 538],
+        desc: "DR SPECS berada di lantai 2 Queen City Mall.", loc: "2F · L2-11"
+      },
+      "l2-12": {
+        code: "L2-12", name: "CAVALLO", cat: "Lantai 2", door: [831, 612],
+        desc: "CAVALLO berada di lantai 2 Queen City Mall.", loc: "2F · L2-12"
+      },
+      "l2-13-14": {
+        code: "L2-13&14", name: "PALADIO", cat: "Lantai 2", door: [731, 635],
+        desc: "PALADIO berada di lantai 2 Queen City Mall.", loc: "2F · L2-13&14"
+      },
+      "l2-46": {
+        code: "L2-46", name: "POKEMON", cat: "Lantai 2", door: [870, 642],
+        desc: "POKEMON berada di lantai 2 Queen City Mall.", loc: "2F · L2-46"
+      },
+      "l2-39": {
+        code: "L2-39", name: "JACO", cat: "Lantai 2", door: [915, 592],
+        desc: "JACO berada di lantai 2 Queen City Mall.", loc: "2F · L2-39"
+      },
+      "l2-40": {
+        code: "L2-40", name: "PLAYWORKS", cat: "Lantai 2", door: [958, 551],
+        desc: "PLAYWORKS berada di lantai 2 Queen City Mall.", loc: "2F · L2-40"
+      },
+      "l2-15": {
+        code: "L2-15", name: "WACOAL", cat: "Lantai 2", door: [634, 667],
+        desc: "WACOAL berada di lantai 2 Queen City Mall.", loc: "2F · L2-15"
+      },
+      "l2-16": {
+        code: "L2-16", name: "SCOOP", cat: "Lantai 2", door: [567, 659],
+        desc: "SCOOP berada di lantai 2 Queen City Mall.", loc: "2F · L2-16"
+      },
+      "l2-17": {
+        code: "L2-17", name: "BONJOUR", cat: "Lantai 2", door: [504, 659],
+        desc: "BONJOUR berada di lantai 2 Queen City Mall.", loc: "2F · L2-17"
+      },
+      "l2-18a": {
+        code: "L2-18A", name: "PHOTOIS", cat: "Lantai 2", door: [452, 665],
+        desc: "PHOTOIS berada di lantai 2 Queen City Mall.", loc: "2F · L2-18A"
+      },
+      "l2-18b": {
+        code: "L2-18B", name: "WAXHAUSE", cat: "Lantai 2", door: [408, 672],
+        desc: "WAXHAUSE berada di lantai 2 Queen City Mall.", loc: "2F · L2-18B"
+      },
+      "l2-18c": {
+        code: "L2-18C", name: "NUSANTARA TOUR", cat: "Lantai 2", door: [336, 675],
+        desc: "NUSANTARA TOUR berada di lantai 2 Queen City Mall.", loc: "2F · L2-18C"
+      },
+      "l2-19": {
+        code: "L2-19", name: "ANYTIME FITNESS", cat: "Lantai 2", door: [174, 777],
+        desc: "ANYTIME FITNESS berada di lantai 2 Queen City Mall.", loc: "2F · L2-19"
+      },
+      "l2-20-21": {
+        code: "L2-20&21", name: "OHARANG", cat: "Lantai 2", door: [296, 923],
+        desc: "OHARANG berada di lantai 2 Queen City Mall.", loc: "2F · L2-20&21"
+      },
+      "l2-fp24": {
+        code: "L2-FP24", name: "DIMDIMSUM", cat: "Lantai 2", door: [672, 112],
+        desc: "DIMDIMSUM berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP24"
+      },
+      "l2-fp23": {
+        code: "L2-FP23", name: "SOLO STEAK", cat: "Lantai 2", door: [526, 151],
+        desc: "SOLO STEAK berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP23"
+      },
+      "l2-fp22": {
+        code: "L2-FP22", name: "SOLO STEAK", cat: "Lantai 2", door: [526, 182],
+        desc: "SOLO STEAK berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP22"
+      },
+      "l2-fp21": {
+        code: "L2-FP21", name: "KOI TEPPANYAKI", cat: "Lantai 2", door: [526, 217],
+        desc: "KOI TEPPANYAKI berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP21"
+      },
+      "l2-fp01": {
+        code: "L2-FP01", name: "PENMO", cat: "Lantai 2", door: [562, 267],
+        desc: "PENMO berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP01"
+      },
+      "l2-fp03": {
+        code: "L2-FP03", name: "CFC", cat: "Lantai 2", door: [562, 298],
+        desc: "CFC berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP03"
+      },
+      "l2-fp05": {
+        code: "L2-FP05", name: "PENYETAN COK", cat: "Lantai 2", door: [562, 333],
+        desc: "PENYETAN COK berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP05"
+      },
+      "l2-fp02": {
+        code: "L2-FP02", name: "MASTER HOTPOT", cat: "Lantai 2", door: [650, 266],
+        desc: "MASTER HOTPOT berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP02"
+      },
+      "l2-fp04": {
+        code: "L2-FP04", name: "CFC", cat: "Lantai 2", door: [650, 299],
+        desc: "CFC berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP04"
+      },
+      "l2-fp07": {
+        code: "L2-FP07", name: "PEMPEK FARINA", cat: "Lantai 2", door: [649, 333],
+        desc: "PEMPEK FARINA berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP07"
+      },
+      "l2-fp06": {
+        code: "L2-FP06", name: "BEBEK SEMANGAT", cat: "Lantai 2", door: [522, 441],
+        desc: "BEBEK SEMANGAT berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP06"
+      },
+      "l2-fp0s": {
+        code: "L2-FP0S", name: "L2-FP0S", cat: "Lantai 2", door: [522, 476],
+        desc: "Tenant L2-FP0S berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP0S"
+      },
+      "l2-fp09": {
+        code: "L2-FP09", name: "MALADANG", cat: "Lantai 2", door: [741, 268],
+        desc: "MALADANG berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP09"
+      },
+      "l2-fp12": {
+        code: "L2-FP12", name: "CINERY", cat: "Lantai 2", door: [740, 333],
+        desc: "CINERY berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP12"
+      },
+      "l2-fp08": {
+        code: "L2-FP08", name: "HORAI COCONUT", cat: "Lantai 2", door: [523, 377],
+        desc: "HORAI COCONUT berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP08"
+      },
+      "l2-fp10": {
+        code: "L2-FP10", name: "TEH JAWA", cat: "Lantai 2", door: [741, 298],
+        desc: "TEH JAWA berada di lantai 2 Queen City Mall.", loc: "2F · L2-FP10"
+      },
+    };
+    const TENANTS_3F = {
+      "l3-a1": {
+        code: "L3-A1", name: "CINEMA XXI", cat: "Lantai 3", door: [367, 784],
+        desc: "Cinema XXI berada di lantai 3 Queen City Mall.", loc: "3F · L3-A1"
+      },
+      "l3-05": {
+        code: "L3-05", name: "TOM SUSHI", cat: "Lantai 3", door: [686, 910],
+        desc: "Tom Sushi berada di lantai 3 Queen City Mall.", loc: "3F · L3-05"
+      },
+      "l3-0607": {
+        code: "L3-06&07", name: "TAWAN", cat: "Lantai 3", door: [785, 941],
+        desc: "Tawan berada di lantai 3 Queen City Mall.", loc: "3F · L3-06&07"
+      },
+      "l3-08": {
+        code: "L3-08", name: "TEH JAWA RESTO", cat: "Lantai 3", door: [866, 921],
+        desc: "Teh Jawa Resto berada di lantai 3 Queen City Mall.", loc: "3F · L3-08"
+      },
+      "l3-09": {
+        code: "L3-09", name: "SOLARIA", cat: "Lantai 3", door: [945, 904],
+        desc: "Solaria berada di lantai 3 Queen City Mall.", loc: "3F · L3-09"
+      },
+      "l3-31": {
+        code: "L3-31", name: "SOUR SALLY", cat: "Lantai 3", door: [990, 682],
+        desc: "Sour Sally berada di lantai 3 Queen City Mall.", loc: "3F · L3-31"
+      },
+      "l3-h11": {
+        code: "L3-H11", name: "PAWON LANGGENG", cat: "Lantai 3", door: [800, 672],
+        desc: "Pawon Langgeng berada di lantai 3 Queen City Mall.", loc: "3F · L3-H11"
+      },
+      "l3-10b": {
+        code: "L3-10B", name: "SHAKE SHAKE", cat: "Lantai 3", door: [916, 693],
+        desc: "Shake Shake berada di lantai 3 Queen City Mall.", loc: "3F · L3-10B"
+      },
+      "l3-10a": {
+        code: "L3-10A", name: "D'CREPES", cat: "Lantai 3", door: [887, 687],
+        desc: "D'Crepes berada di lantai 3 Queen City Mall.", loc: "3F · L3-10A"
+      },
+      "l3-12": {
+        code: "L3-12", name: "TREAT", cat: "Lantai 3", door: [724, 658],
+        desc: "Treat berada di lantai 3 Queen City Mall.", loc: "3F · L3-12"
+      },
+      "l3-h17": {
+        code: "L3-H17", name: "MONTATO X DUMDUM", cat: "Lantai 3", door: [653, 572],
+        desc: "Montato X Dumdum berada di lantai 3 Queen City Mall.", loc: "3F · L3-H17"
+      },
+      "l3-03": {
+        code: "L3-03", name: "ISTANA MIE & ES", cat: "Lantai 3", door: [870, 530],
+        desc: "Istana Mie & Es berada di lantai 3 Queen City Mall.", loc: "3F · L3-03"
+      },
+      "l3-h16": {
+        code: "L3-H16", name: "SANCHA", cat: "Lantai 3", door: [700, 505],
+        desc: "Sancha berada di lantai 3 Queen City Mall.", loc: "3F · L3-H16"
+      },
+      "l3-01": {
+        code: "L3-01", name: "INDOMOBIL", cat: "Lantai 3", door: [1058, 580],
+        desc: "Indomobil berada di lantai 3 Queen City Mall.", loc: "3F · L3-01"
+      },
+      "l3-02": {
+        code: "L3-02", name: "TONG TJI", cat: "Lantai 3", door: [950, 480],
+        desc: "Tong Tji berada di lantai 3 Queen City Mall.", loc: "3F · L3-02"
+      },
+      "l3-h15b": {
+        code: "L3-H15B", name: "KYSO", cat: "Lantai 3", door: [638, 475],
+        desc: "Kyso berada di lantai 3 Queen City Mall.", loc: "3F · L3-H15B"
+      },
+      "l3-h15a": {
+        code: "L3-H15A", name: "JUSTFLUFF", cat: "Lantai 3", door: [594, 476],
+        desc: "Justfluff berada di lantai 3 Queen City Mall.", loc: "3F · L3-H15A"
+      },
+      "l3-h14": {
+        code: "L3-H14", name: "BABAHKUNG", cat: "Lantai 3", door: [554, 477],
+        desc: "Babahkung berada di lantai 3 Queen City Mall.", loc: "3F · L3-H14"
+      },
+      "l3-h13": {
+        code: "L3-H13", name: "TRIXIE", cat: "Lantai 3", door: [513, 478],
+        desc: "Trixie berada di lantai 3 Queen City Mall.", loc: "3F · L3-H13"
+      },
+      "l3-h12": {
+        code: "L3-H12", name: "KATOEN", cat: "Lantai 3", door: [474, 479],
+        desc: "Katoen berada di lantai 3 Queen City Mall.", loc: "3F · L3-H12"
+      },
+      "l3-h10": {
+        code: "L3-H10", name: "GENDHIZ", cat: "Lantai 3", door: [401, 480],
+        desc: "Gendhiz berada di lantai 3 Queen City Mall.", loc: "3F · L3-H10"
+      },
+      "l3-h09": {
+        code: "L3-H09", name: "GENDHIZ", cat: "Lantai 3", door: [368, 481],
+        desc: "Gendhiz berada di lantai 3 Queen City Mall.", loc: "3F · L3-H09"
+      },
+    };
+
+    let TENANTS = TENANTS_1F;
+
+    const FLOOR_CONFIG = {
+      gf: {
+        eyebrow: "Floor Directory · GF",
+        title: "<em>Ground Floor</em> — Main Lobby & Promenade",
+        subtitle: "Peta Ground Floor Queen City Mall.",
+        image: "GF FLOOR-ultra.png",
+        imageAlt: "Ground Floor floor plan",
+        aspectRatio: "6308/3988",
+        overlayViewBox: "0 0 1577 997",
+        hasInteractiveMap: false,
+        hasTenantHotspots: true,
+        hotspotIds: ["gf-pro1", "gf-pro2", "gf-29a", "gf-29b", "gf-pro3a", "gf-pro3b", "gf-pro4a", "gf-pro4b", "gf-pro5", "gf-22", "gf-05", "gf-05a", "gf-03", "gf-15", "gf-04", "gf-06", "gf-07", "gf-09", "gf-11", "gf-30b", "gf-31", "gf-32", "gf-atpm1", "gf-atpm2", "gf-atpm3", "gf-atpm4", "gf-atpm5", "gf-02a", "gf-spm01", "gf-spm02", "gf-spm03", "gf-spm04", "gf-spm05", "gf-spma1", "gf-01", "gf-14", "gf-12", "gf-28", "gf-21", "gf-20", "gf-19", "gf-18b", "gf-18a", "gf-17b", "gf-17a", "gf-16a", "gf-16"],
+        showEntrance: false,
+        crispImage: true,
+        renderScale: 3,
+        tenants: TENANTS_GF
+      },
+      "1f": {
+        eyebrow: "Floor Directory · 1F",
+        title: "<em>Lantai 1</em> — Fashion, Tech & Dining",
+        subtitle: "Klik tenant untuk melihat detail dan rute jalan dari pintu masuk.",
+        image: "1st FLOOR.png",
+        imageAlt: "Lantai 1 floor plan",
+        aspectRatio: "1448/1086",
+        overlayViewBox: "0 0 1448 1086",
+        hasInteractiveMap: false,
+        hasTenantHotspots: true,
+        hotspotIds: ["l1-a3", "l1-11", "l1-9810", "l1-08", "l1-07", "l1-06", "l1-05", "l1-22a", "l1-22b", "l1-24", "l1-29", "l1-27", "l1-04", "l1-03a", "l1-03", "l1-a1", "l1-21", "l1-20", "l1-19", "l1-18", "l1-28", "l1-2b", "l1-26", "l1-16-17", "l1-15", "l1-14", "l1-13", "l1-12", "l1-12a", "l1-23"],
+        showEntrance: false,
+        crispImage: true,
+        renderScale: 3,
+        tenants: TENANTS_1F
+      },
+      "2f": {
+        eyebrow: "Floor Directory · 2F",
+        title: "<em>Lantai 2</em> — Queen City Mall",
+        subtitle: "Peta lantai 2 Queen City Mall.",
+        image: "2nd Floor.png",
+        imageAlt: "Lantai 2 floor plan",
+        aspectRatio: "1447/1087",
+        overlayViewBox: "0 0 1447 1087",
+        hasInteractiveMap: false,
+        hasTenantHotspots: true,
+        hotspotIds: ["l2-22a", "l2-22b", "l2-23a", "l2-23b", "l2-24-25-26", "l2-27", "l2-32", "l2-42", "l2-28", "l2-29", "l2-29b", "l2-30", "l2-a2", "l2-a1", "l2-a48", "l2-a44", "l2-02", "l2-02a", "l2-fp25", "l2-fp26", "l2-fp27", "l2-09", "l2-10", "l2-11", "l2-12", "l2-13-14", "l2-46", "l2-39", "l2-40", "l2-15", "l2-16", "l2-17", "l2-18a", "l2-18b", "l2-18c", "l2-19", "l2-20-21", "l2-fp24", "l2-fp23", "l2-fp22", "l2-fp21", "l2-fp01", "l2-fp03", "l2-fp05", "l2-fp02", "l2-fp04", "l2-fp07", "l2-fp06", "l2-fp0s", "l2-fp09", "l2-fp12", "l2-fp08", "l2-fp10"],
+        showEntrance: false,
+        crispImage: true,
+        renderScale: 3,
+        tenants: TENANTS_2F
+      },
+      "3f": {
+        eyebrow: "Floor Directory · 3F",
+        title: "<em>Lantai 3</em> — Queen City Mall",
+        subtitle: "Peta lantai 3 Queen City Mall.",
+        image: "3rd Floor.png",
+        imageAlt: "Lantai 3 floor plan",
+        aspectRatio: "1448/1086",
+        overlayViewBox: "0 0 1448 1086",
+        hasInteractiveMap: false,
+        hasTenantHotspots: true,
+        hotspotIds: ["l3-a1", "l3-05", "l3-0607", "l3-08", "l3-09", "l3-31", "l3-h11", "l3-10b", "l3-10a", "l3-12", "l3-h17", "l3-03", "l3-h16", "l3-01", "l3-02", "l3-h15b", "l3-h15a", "l3-h14", "l3-h13", "l3-h12", "l3-h10", "l3-h09"],
+        showEntrance: false,
+        crispImage: true,
+        renderScale: 3,
+        tenants: TENANTS_3F
+      }
     };
 
     // Koordinat Lobby Masuk di sebelah Kanan
@@ -1236,6 +2947,16 @@
     const panel = document.getElementById("infoPanel");
     const stageShell = document.querySelector(".stage");
     const sweep = document.getElementById("lightSweep");
+    const mapImage = document.getElementById("mapImage");
+    const mapHint = document.getElementById("mapHint");
+    const floorEyebrow = document.getElementById("floorEyebrow");
+    const floorTitle = document.getElementById("floorTitle");
+    const floorSubtitle = document.getElementById("floorSubtitle");
+    const hitsGroup = document.getElementById("hits");
+    const f2HitsGroup = document.getElementById("f2Hits");
+    const gfHitsGroup = document.getElementById("gfHits");
+    const f3HitsGroup = document.getElementById("f3Hits");
+    const entranceGroup = document.getElementById("entranceGroup");
     const hits = overlay.querySelectorAll(".hit");
 
     hits.forEach(h => {
@@ -1328,15 +3049,30 @@
     function selectTenant(id) {
       const t = TENANTS[id];
       if (!t) return;
+      const floorConfig = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["1f"];
+      const floorLabel = activeFloorId === "gf"
+        ? "ground floor"
+        : activeFloorId === "2f"
+          ? "lantai 2"
+          : activeFloorId === "3f"
+            ? "lantai 3"
+            : activeFloorId === "4f"
+              ? "lantai 4"
+              : "lantai 1";
+      const descLooksGeneric = !t.desc || (t.code && t.desc.includes(`Tenant ${t.code}`));
+      const resolvedDesc = descLooksGeneric
+        ? (t.name ? `Tenant ${t.name} berada di ${floorLabel} Queen City Mall.` : "Tenant belum tersedia untuk unit ini.")
+        : t.desc;
       selectedId = id;
       panel.classList.remove("panel-top", "panel-bottom");
-      panel.classList.add(t.door[1] <= 430 ? "panel-bottom" : "panel-top");
+      panel.classList.add(t.door && t.door[1] <= 430 ? "panel-bottom" : "panel-top");
       openInfoPanel();
 
-      document.getElementById("infoCat").textContent = t.cat;
-      document.getElementById("infoName").textContent = t.name;
-      document.getElementById("infoDesc").textContent = t.desc;
-      document.getElementById("infoLoc").textContent = t.loc;
+      document.getElementById("infoCat").textContent = t.cat || "Ground Floor";
+      document.getElementById("infoName").textContent = t.name || t.code || "Tenant";
+      document.getElementById("infoDesc").textContent = resolvedDesc;
+      document.getElementById("infoLoc").textContent = t.loc || t.code || "GF";
+      document.getElementById("infoDist").textContent = "—";
 
       clearTenantRunners();
       document.querySelectorAll(".tenant-spot").forEach(spot => {
@@ -1372,11 +3108,15 @@
         else c.classList.remove("active");
       });
 
-      drawPath(id);
+      if (floorConfig.hasInteractiveMap && t.door) {
+        drawPath(id);
+      } else {
+        clearPath();
+      }
     }
 
-    document.getElementById("closeInfo").onclick = () => {
-      closeInfoPanel();
+    function clearSelection({ closePanel = true } = {}) {
+      if (closePanel) closeInfoPanel();
       panel.classList.remove("panel-top", "panel-bottom");
       selectedId = null;
       clearTenantRunners();
@@ -1384,6 +3124,7 @@
         const hit = spot.querySelector(".hit");
         const rim = spot.querySelector(".tenant-rim");
         spot.classList.remove("active", "is-hovered");
+        spot.style.removeProperty("opacity");
         if (hit) hit.classList.remove("active");
         if (rim) {
           rim.style.transition = "stroke .35s ease";
@@ -1394,10 +3135,14 @@
       overlay.classList.remove("has-hover");
       document.querySelectorAll(".tenant-chip").forEach(c => c.classList.remove("active"));
       clearPath();
-    };
+    }
+
+    document.getElementById("closeInfo").onclick = () => clearSelection();
 
     document.getElementById("navigateBtn").onclick = () => {
-      if (selectedId) drawPath(selectedId);
+      const t = selectedId ? TENANTS[selectedId] : null;
+      const floorConfig = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["1f"];
+      if (selectedId && floorConfig.hasInteractiveMap && t?.door) drawPath(selectedId);
     };
 
     // ─── PATH DRAWING ────────────────────────────────────────
@@ -1564,9 +3309,12 @@
     const mapWrap = document.getElementById("mapWrap");
     const mapInner = document.getElementById("mapInner");
     let scale = 1, panX = 0, panY = 0;
+    let renderScale = 1;
+    let activeFloorId = "1f";
+    let revealTimers = [];
 
     function applyTransform() {
-      mapInner.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      mapInner.style.transform = `translate(${panX}px, ${panY}px) scale(${scale / renderScale})`;
     }
 
     document.getElementById("zoomIn").onclick = () => { scale = Math.min(2.5, scale + 0.2); applyTransform(); };
@@ -1607,20 +3355,122 @@
 
     // ─── TENANT STRIP ─────────────────────────────────────────
     const stripEl = document.getElementById("tenantStrip");
-    Object.entries(TENANTS).forEach(([id, t]) => {
-      const chip = document.createElement("button");
-      chip.className = "tenant-chip";
-      chip.textContent = t.name;
-      chip.dataset.id = id;
-      chip.onclick = () => selectTenant(id);
-      stripEl.appendChild(chip);
-    });
+    function renderTenantStrip() {
+      const config = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["1f"];
+      stripEl.replaceChildren();
+      Object.entries(TENANTS).forEach(([id, t]) => {
+        const tenantName = t.name || "";
+        const chipLabel = tenantName || t.code || id;
+        const hasHotspot = !config.hotspotIds || config.hotspotIds.includes(id);
+        const chip = document.createElement("button");
+        chip.className = "tenant-chip";
+        if (!config.hasTenantHotspots || !tenantName || !hasHotspot) chip.classList.add("tenant-chip--static");
+        if (!tenantName) chip.classList.add("tenant-chip--empty");
+        chip.textContent = chipLabel;
+        chip.dataset.id = id;
+        chip.title = tenantName && t.code ? `${t.code} · ${tenantName}` : `${t.code || id} · Tenant belum tersedia`;
+        if (config.hasTenantHotspots && tenantName && hasHotspot) {
+          chip.onclick = () => selectTenant(id);
+        }
+        stripEl.appendChild(chip);
+      });
+
+      stripEl.hidden = Object.keys(TENANTS).length === 0;
+    }
 
     // ─── FLOOR TOGGLE ─────────────────────────────────────────
+    function focusMapDisplay() {
+      if (!stageShell) return;
+
+      const top = stageShell.getBoundingClientRect().top + window.scrollY + 72;
+      window.scrollTo({
+        top: Math.max(0, top),
+        behavior: "smooth"
+      });
+    }
+
+    function switchFloor(floorId, options = {}) {
+      const config = FLOOR_CONFIG[floorId];
+      if (!config) return;
+
+      activeFloorId = floorId;
+      clearSelection({ closePanel: false });
+      closeInfoPanel();
+
+      TENANTS = config.tenants || {};
+      floorEyebrow.textContent = config.eyebrow;
+      floorTitle.innerHTML = config.title;
+      floorSubtitle.textContent = config.subtitle;
+      mapImage.src = config.image;
+      mapImage.alt = config.imageAlt;
+      mapImage.classList.toggle("map-img--crisp", Boolean(config.crispImage));
+      mapWrap.style.setProperty("--map-aspect-ratio", config.aspectRatio);
+      overlay.setAttribute("viewBox", config.overlayViewBox || "0 0 1648 954");
+      renderScale = config.renderScale || 1;
+      mapWrap.style.setProperty("--map-render-scale", renderScale);
+      mapWrap.classList.toggle("map-wrap--static", !config.hasInteractiveMap);
+      mapWrap.classList.toggle("map-wrap--tenant-hotspots", Boolean(config.hasTenantHotspots));
+      mapHint.innerHTML = config.hasInteractiveMap
+        ? "<kbd>Click</kbd> tenant · <kbd>Scroll</kbd> zoom · <kbd>Drag</kbd> pan"
+        : "<kbd>Click</kbd> tenant · <kbd>Scroll</kbd> zoom · <kbd>Drag</kbd> pan";
+
+      if (hitsGroup) hitsGroup.hidden = floorId !== "1f";
+      if (f2HitsGroup) f2HitsGroup.hidden = floorId !== "2f";
+      if (gfHitsGroup) gfHitsGroup.hidden = floorId !== "gf";
+      if (f3HitsGroup) f3HitsGroup.hidden = floorId !== "3f";
+      if (hitsGroup) hitsGroup.style.display = floorId === "1f" ? "" : "none";
+      if (f2HitsGroup) f2HitsGroup.style.display = floorId === "2f" ? "" : "none";
+      if (gfHitsGroup) gfHitsGroup.style.display = floorId === "gf" ? "" : "none";
+      if (f3HitsGroup) f3HitsGroup.style.display = floorId === "3f" ? "" : "none";
+      [hitsGroup, f2HitsGroup, gfHitsGroup, f3HitsGroup].forEach(group => {
+        if (!group) return;
+        group.querySelectorAll(".tenant-spot").forEach(spot => {
+          const id = spot.dataset.id;
+          const isCurrentGroup =
+            (group === hitsGroup && floorId === "1f") ||
+            (group === f2HitsGroup && floorId === "2f") ||
+            (group === gfHitsGroup && floorId === "gf") ||
+            (group === f3HitsGroup && floorId === "3f");
+          const isAllowed = !config.hotspotIds || config.hotspotIds.includes(id);
+          spot.style.display = isCurrentGroup && isAllowed ? "" : "none";
+        });
+      });
+      if (entranceGroup) entranceGroup.hidden = !config.showEntrance;
+      document.querySelectorAll(".floor-toggle button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.floor === floorId);
+      });
+
+      scale = 1;
+      panX = 0;
+      panY = 0;
+      applyTransform();
+      renderTenantStrip();
+
+      const replayCurrentFloor = () => {
+        mapWrap.dataset.played = "1";
+        if (options.focusMap) {
+          window.setTimeout(playReveal, 1050);
+        } else {
+          playReveal();
+        }
+      };
+
+      if (mapImage.complete) {
+        window.requestAnimationFrame(replayCurrentFloor);
+      } else {
+        mapImage.addEventListener("load", replayCurrentFloor, { once: true });
+      }
+
+      if (options.focusMap) {
+        window.requestAnimationFrame(() => {
+          window.setTimeout(focusMapDisplay, 40);
+        });
+      }
+    }
+
     document.querySelectorAll(".floor-toggle button").forEach(btn => {
       btn.onclick = () => {
-        document.querySelectorAll(".floor-toggle button").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+        switchFloor(btn.dataset.floor, { focusMap: true });
       };
     });
 
@@ -1628,16 +3478,29 @@
     const stage = document.getElementById("mapStage");
 
     function playReveal() {
-      // Reset
+      const isStaticFloor = mapWrap.classList.contains("map-wrap--static");
+      revealTimers.forEach(timer => window.clearTimeout(timer));
+      revealTimers = [];
+
       stage.classList.remove("flying");
       sweep.classList.remove("show");
+      stage.classList.add("reveal-prep");
+      stage.getBoundingClientRect();
 
-      // Phase 1: camera tilts back (flying isometric view)
-      setTimeout(() => stage.classList.add("flying"), 500);
+      const tiltDelay = isStaticFloor ? 1500 : 430;
+      const sweepDelay = isStaticFloor ? 6500 : 2100;
 
-      // Phase 2: light sweep starts
-      setTimeout(() => sweep.classList.add("show"), 2000);
+      revealTimers.push(window.setTimeout(() => {
+        stage.classList.remove("reveal-prep");
+        stage.classList.add("flying");
+      }, tiltDelay));
+
+      revealTimers.push(window.setTimeout(() => {
+        sweep.classList.add("show");
+      }, sweepDelay));
     }
+
+    switchFloor(activeFloorId);
 
     // Trigger when map scrolls into view
     const mapObserver = new IntersectionObserver((entries) => {
@@ -1654,7 +3517,7 @@
     document.getElementById("replayAnim").onclick = () => {
       delete mapWrap.dataset.played;
       playReveal();
-      setTimeout(() => mapWrap.dataset.played = "1", 100);
+      mapWrap.dataset.played = "1";
     };
 
     // Demo: auto-select first tenant after a moment to show path animation

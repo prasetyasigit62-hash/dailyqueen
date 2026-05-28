@@ -1,6 +1,6 @@
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Cormorant_Garamond as CormorantGaramond, Fraunces, Inter, JetBrains_Mono, Manrope } from 'next/font/google';
 import React, { Suspense } from 'react';
 import PrimaryNavbar from '@/app/_components/_primaryNavbar';
 import CustomFooter from '@/app/_components/customFooter';
@@ -13,6 +13,26 @@ import getInfoMall from '../_lib/getInfoMall';
 import PrimaryLoading from './loading';
 
 const inter = Inter({ subsets: ['latin'] });
+const cormorantGaramond = CormorantGaramond({
+    subsets: ['latin'],
+    variable: '--font-mall-display',
+    weight: ['500', '600', '700'],
+});
+const manrope = Manrope({
+    subsets: ['latin'],
+    variable: '--font-mall-sans',
+    weight: ['400', '500', '600', '700', '800'],
+});
+const fraunces = Fraunces({
+    subsets: ['latin'],
+    variable: '--font-floor-banner-display',
+    weight: ['300', '400'],
+});
+const jetBrainsMono = JetBrains_Mono({
+    subsets: ['latin'],
+    variable: '--font-floor-banner-mono',
+    weight: ['400', '500'],
+});
 
 export interface mall {
     mall: infoMallInterface;
@@ -54,7 +74,9 @@ export default async function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <head>{isReleased && <meta name="robots" content="noindex" />}</head>
-            <body className={`${inter.className} bg-[#FFFDFA] max-full overflow-x-hidden antialiased z-30`}>
+            <body
+                className={`${inter.className} ${cormorantGaramond.variable} ${manrope.variable} ${fraunces.variable} ${jetBrainsMono.variable} bg-[#FFFDFA] max-full overflow-x-hidden antialiased z-30`}
+            >
                 {isReleased ? (
                     <Maintenance />
                 ) : (

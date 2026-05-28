@@ -103,7 +103,7 @@ function Navbar(props: navbarProps) {
                     >
                         <div className="text-right">
                             <Menu as="div" className="inherit text-left">
-                                <Menu.Button onClick={() => handleItemClick('whatson')} className="menu-item text-lg">
+                                <Menu.Button id="primary-nav-whats-on-button" onClick={() => handleItemClick('whatson')} className="menu-item text-lg">
                                     What's On
                                 </Menu.Button>
 
@@ -117,7 +117,10 @@ function Navbar(props: navbarProps) {
                                     leaveFrom="transform scale-100 opacity-100"
                                     leaveTo="transform scale-95 opacity-0"
                                 >
-                                    <Menu.Items className="absolute left-[-8px] text-center mt-[0.72rem] w-48 bg-[#536368]/90 origin-top-left rounded-b-xl  shadow-lg focus:outline-none py-3">
+                                    <Menu.Items
+                                        id="primary-nav-whats-on-items"
+                                        className="absolute left-[-8px] text-center mt-[0.72rem] w-48 bg-[#536368]/90 origin-top-left rounded-b-xl  shadow-lg focus:outline-none py-3"
+                                    >
                                         <div className="py-1 hover:bg-[#0f2632] w-full">
                                             <Menu.Item>
                                                 {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
@@ -163,7 +166,7 @@ function Navbar(props: navbarProps) {
                         <div className="text-right">
                             <Menu>
                                 <div>
-                                    <Menu.Button onClick={() => handleItemClick('etc')} className="menu-item">
+                                    <Menu.Button id="primary-nav-more-button" onClick={() => handleItemClick('etc')} className="menu-item">
                                         <Bars3Icon className="w-12 h-6" />
                                     </Menu.Button>
                                 </div>
@@ -178,7 +181,10 @@ function Navbar(props: navbarProps) {
                                         leaveFrom="transform opacity-100 scale-100"
                                         leaveTo="transform opacity-0 scale-95"
                                     >
-                                        <Menu.Items className="absolute right-[-16px] text-center mt-3 w-60 bg-[#536368]/90 origin-top-right rounded-b-xl shadow-lgfocus:outline-none py-3">
+                                        <Menu.Items
+                                            id="primary-nav-more-items"
+                                            className="absolute right-[-16px] text-center mt-3 w-60 bg-[#536368]/90 origin-top-right rounded-b-xl shadow-lgfocus:outline-none py-3"
+                                        >
                                             <div className="py-1 hover:bg-[#0f2632] w-full">
                                                 <Menu.Item>
                                                     <a href="/download" className="text-white text-base uppercase w-full">

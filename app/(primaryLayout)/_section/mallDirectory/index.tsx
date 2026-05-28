@@ -254,22 +254,17 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
         });
         setSearchQuery('');
         setActiveFloor(floorId);
+        window.requestAnimationFrame(() => {
+            document.getElementById('mall-directory')?.scrollIntoView({ block: 'start' });
+        });
     };
 
-    const openFloorFromPointer = (event: React.PointerEvent<HTMLDivElement>) => {
-        const { target } = event;
-
-        if (!(target instanceof Element)) {
+    const handleFloorCardKeyboard = (event: React.KeyboardEvent<HTMLDivElement>, floorId: string) => {
+        if (event.key !== 'Enter' && event.key !== ' ') {
             return;
         }
 
-        const floorCard = target.closest<HTMLElement>('[data-floor-id]');
-        const { floorId } = floorCard?.dataset || {};
-
-        if (!floorId) {
-            return;
-        }
-
+        event.preventDefault();
         openFloor(floorId);
     };
 
@@ -428,23 +423,24 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                         </form>
                     </div>
 
-                    <div
-                        className="grid grid-cols-1 gap-[10px] bg-[#0a0a0a] px-5 pb-5 md:grid-cols-2 lg:grid-cols-4"
-                        onPointerDownCapture={openFloorFromPointer}
-                    >
+                    <div className="grid grid-cols-1 gap-[10px] bg-[#0a0a0a] px-5 pb-5 md:grid-cols-2 lg:grid-cols-4">
                         {floorDesign.map((design, index) => {
                             const floorId = getFloorId(design.label);
 
                             return (
-                                <div key={design.label} className="block h-full">
-                                    <button
+                                <div
+                                    key={design.label}
+                                    role="button"
+                                    tabIndex={0}
+                                    data-floor-id={floorId}
+                                    onPointerUp={() => openFloor(floorId)}
+                                    onClick={() => openFloor(floorId)}
+                                    onKeyDown={(event) => handleFloorCardKeyboard(event, floorId)}
+                                    className="block h-full focus:outline-none"
+                                    aria-label={`Open ${design.label} tenant directory`}
+                                >
+                                    <div
                                         data-floor-id={floorId}
-                                        type="button"
-                                        onPointerUp={() => openFloor(floorId)}
-                                        onClick={(event) => {
-                                            event.preventDefault();
-                                            openFloor(floorId);
-                                        }}
                                         className={classNames(
                                             'group relative h-full aspect-[9/14] w-full cursor-pointer overflow-hidden rounded-2xl text-left transition duration-[600ms] ease-out',
                                             'animate-[rise_0.65s_ease-out_backwards] before:pointer-events-none before:absolute before:bottom-0 before:top-0 before:z-10 before:w-[55px] before:-translate-x-[120%] before:-skew-x-12 before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] before:content-[""] hover:z-20 hover:-translate-y-[3px] hover:scale-[1.022] hover:shadow-[0_24px_50px_rgba(0,0,0,0.7)] hover:before:animate-[shine_1s_ease-out_forwards]'
@@ -476,12 +472,16 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                                             <div className="absolute bottom-2.5 right-2.5 transition duration-[480ms] ease-out group-hover:-translate-y-1">
                                                 <div className="inline-flex h-[17px] items-center justify-center rounded-full border border-white/16 bg-black/55 px-2 backdrop-blur-md">
                                                     <span className="block text-center text-[8px] font-semibold leading-none tracking-normal text-white lg:text-[9px]">
-                                                        {(FLOORS[index]?.cats as any[])?.reduce((acc, cat) => acc + (cat.count || 0), 0) || 0} Tenants
+                                                        {(FLOORS[index]?.cats as unknown as { count?: number }[])?.reduce(
+                                                            (acc, cat) => acc + (cat.count || 0),
+                                                            0
+                                                        ) || 0}{' '}
+                                                        Tenants
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
-                                    </button>
+                                    </div>
                                 </div>
                             );
                         })}

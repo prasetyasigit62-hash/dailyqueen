@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Floor, mallDirectoryInterface } from '@/types/mallDirectoryInterface';
 import TenantDetailView from './TenantDetailView';
 
@@ -13,10 +13,53 @@ const T = {
     accent: '#dca556',
     navy: '#ffffff',
     shadow: '#000000',
-    serif: '"Playfair Display", "Times New Roman", serif',
-    sans: '"Inter", system-ui, sans-serif',
-    mono: '"JetBrains Mono", ui-monospace, monospace',
+    serif: 'var(--font-floor-banner-display), var(--font-mall-display), "Times New Roman", serif',
+    sans: 'var(--font-mall-sans), "Inter", system-ui, sans-serif',
+    mono: 'var(--font-floor-banner-mono), "JetBrains Mono", ui-monospace, monospace',
 };
+
+const FLOOR_PALETTES = {
+    gf: {
+        glow: 'rgba(220,165,86,0.22)',
+        glowSoft: 'rgba(198,86,127,0.16)',
+        panel: 'rgba(19,9,30,0.72)',
+        panelStrong: 'rgba(19,9,30,0.88)',
+        border: 'rgba(220,165,86,0.26)',
+        borderSoft: 'rgba(255,255,255,0.08)',
+        accent: '#dca556',
+        accentSoft: '#f0c98a',
+    },
+    f1: {
+        glow: 'rgba(119,163,231,0.24)',
+        glowSoft: 'rgba(255,180,197,0.14)',
+        panel: 'rgba(11,17,34,0.72)',
+        panelStrong: 'rgba(11,17,34,0.88)',
+        border: 'rgba(129,176,255,0.26)',
+        borderSoft: 'rgba(255,255,255,0.08)',
+        accent: '#8fb8ff',
+        accentSoft: '#d7e4ff',
+    },
+    f2: {
+        glow: 'rgba(102,195,203,0.22)',
+        glowSoft: 'rgba(143,225,167,0.14)',
+        panel: 'rgba(9,23,28,0.72)',
+        panelStrong: 'rgba(9,23,28,0.88)',
+        border: 'rgba(111,212,220,0.24)',
+        borderSoft: 'rgba(255,255,255,0.08)',
+        accent: '#74cfd6',
+        accentSoft: '#c0eef2',
+    },
+    f3: {
+        glow: 'rgba(225,116,94,0.24)',
+        glowSoft: 'rgba(241,182,92,0.16)',
+        panel: 'rgba(29,14,16,0.72)',
+        panelStrong: 'rgba(29,14,16,0.88)',
+        border: 'rgba(237,152,104,0.24)',
+        borderSoft: 'rgba(255,255,255,0.08)',
+        accent: '#f0a86d',
+        accentSoft: '#ffd7b2',
+    },
+} as const;
 
 const MALL_DIRECTORY_SESSION_KEY = 'queen-city:mall-directory:last-view';
 
@@ -31,9 +74,9 @@ export const FLOORS = [
     {
         id: 'gf',
         label: 'Ground Floor',
-        num: '00',
+        titleLabel: 'Ground Floor',
         caption: 'Daily essentials & supermarket',
-        cover: '/1.jpg',
+        cover: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1800&q=85&auto=format&fit=crop',
         cats: [
             {
                 id: 'supermarket',
@@ -64,9 +107,9 @@ export const FLOORS = [
     {
         id: 'f1',
         label: '1st Floor',
-        num: '01',
+        titleLabel: 'First Floor',
         caption: 'Fashion, beauty & lifestyle',
-        cover: '/1stfloor.jpg',
+        cover: '/gambar1.jpg',
         cats: [
             {
                 id: 'fashion',
@@ -97,9 +140,9 @@ export const FLOORS = [
     {
         id: 'f2',
         label: '2nd Floor',
-        num: '02',
+        titleLabel: 'Second Floor',
         caption: 'Tech, gadget & accessories',
-        cover: '/3.jpg',
+        cover: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1800&q=85&auto=format&fit=crop',
         cats: [
             {
                 id: 'tech',
@@ -130,9 +173,9 @@ export const FLOORS = [
     {
         id: 'f3',
         label: '3rd Floor',
-        num: '03',
+        titleLabel: 'Third Floor',
         caption: 'Food court, dining & entertainment',
-        cover: '/4.jpg',
+        cover: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1800&q=85&auto=format&fit=crop',
         cats: [
             {
                 id: 'fnb',
@@ -170,6 +213,12 @@ type DynamicCategory = {
     count: number;
     accent: string;
     originalTenants: TenantRecord[];
+};
+
+type TenantCategoryGroup = {
+    id: string;
+    label: string;
+    tenants: TenantRecord[];
 };
 
 type FloorMeta = (typeof FLOORS)[number];
@@ -227,6 +276,23 @@ const FLOOR_NAME_MAP: Record<string, string[]> = {
     f2: ['2nd floor', 'second floor', 'lantai 2', 'f2'],
     f3: ['3rd floor', 'third floor', 'lantai 3', 'f3'],
 };
+
+function splitFloorLabel(label: string) {
+    const trimmedLabel = label.trim();
+    const floorSuffix = ' Floor';
+
+    if (!trimmedLabel.endsWith(floorSuffix)) {
+        return {
+            name: trimmedLabel,
+            suffix: '',
+        };
+    }
+
+    return {
+        name: trimmedLabel.slice(0, -floorSuffix.length),
+        suffix: 'Floor',
+    };
+}
 
 function CategoryButton({ cat, isSelected, onClick }: { cat: DynamicCategory; isSelected: boolean; onClick: () => void }) {
     const [isHover, setIsHover] = useState(false);
@@ -600,10 +666,10 @@ function TenantCard({ tenant, idx, onClick }: { tenant: TenantRecord; idx: numbe
 }
 
 function extractAllTenants(mallDirectory?: mallDirectoryInterface) {
-    const tenants: TenantRecord[] = [];
+    const tenantMap = new Map<string, TenantRecord>();
 
     if (!mallDirectory) {
-        return tenants;
+        return [] as TenantRecord[];
     }
 
     Object.values(mallDirectory).forEach((mallSections) => {
@@ -613,19 +679,70 @@ function extractAllTenants(mallDirectory?: mallDirectoryInterface) {
 
         mallSections.forEach((mallSection) => {
             if (Array.isArray(mallSection.tenant)) {
-                tenants.push(...mallSection.tenant);
+                mallSection.tenant.forEach((tenant) => {
+                    const tenantKey = tenant.id ? String(tenant.id) : `${tenant.nama}-${tenant.lantai?.nama || ''}`;
+                    tenantMap.set(tenantKey, tenant);
+                });
             }
         });
     });
 
-    return tenants;
+    return Array.from(tenantMap.values());
 }
 
-function buildDynamicCategories(mallDirectory: mallDirectoryInterface | undefined, currentFloorAliases: string[]) {
-    const defaultAccents = ['#b08446', '#a85a4a', '#7a4a8a', '#4a6b8a', '#5a8a6b'];
+function normalizeCategoryToken(token: string) {
+    if (token.endsWith('ies') && token.length > 4) {
+        return `${token.slice(0, -3)}y`;
+    }
 
+    if (token.endsWith('es') && token.length > 4) {
+        return token.slice(0, -2);
+    }
+
+    if (token.endsWith('s') && token.length > 3 && !token.endsWith('ss')) {
+        return token.slice(0, -1);
+    }
+
+    return token;
+}
+
+function normalizeCategoryLabel(value?: string) {
+    return (value || '')
+        .toLowerCase()
+        .replace(/&/g, ' and ')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .split(' ')
+        .map((token) => normalizeCategoryToken(token.trim()))
+        .filter(Boolean);
+}
+
+function areCategoryLabelsRelated(left?: string, right?: string) {
+    const leftTokens = normalizeCategoryLabel(left);
+    const rightTokens = normalizeCategoryLabel(right);
+
+    if (leftTokens.length === 0 || rightTokens.length === 0) {
+        return false;
+    }
+
+    const leftValue = leftTokens.join(' ');
+    const rightValue = rightTokens.join(' ');
+
+    if (leftValue === rightValue || leftValue.includes(rightValue) || rightValue.includes(leftValue)) {
+        return true;
+    }
+
+    const leftSet = new Set(leftTokens);
+    const rightSet = new Set(rightTokens);
+    const smallerSet = leftSet.size <= rightSet.size ? leftSet : rightSet;
+    const largerSet = leftSet.size <= rightSet.size ? rightSet : leftSet;
+    const overlapCount = Array.from(smallerSet).filter((token) => largerSet.has(token)).length;
+
+    return overlapCount > 0 && overlapCount >= Math.max(1, Math.ceil(smallerSet.size * 0.75));
+}
+
+function getFloorSections(mallDirectory: mallDirectoryInterface | undefined, currentFloorAliases: string[]) {
     if (!mallDirectory) {
-        return [] as DynamicCategory[];
+        return [] as Floor[];
     }
 
     const floorKey = Object.keys(mallDirectory).find((key) => {
@@ -634,82 +751,156 @@ function buildDynamicCategories(mallDirectory: mallDirectoryInterface | undefine
     });
 
     if (!floorKey || !Array.isArray(mallDirectory[floorKey])) {
+        return [] as Floor[];
+    }
+
+    return mallDirectory[floorKey];
+}
+
+function groupTenantsByCategory(tenants: TenantRecord[]) {
+    const groupedCategories = new Map<string, TenantCategoryGroup>();
+
+    tenants.forEach((tenant) => {
+        const categoryLabel = tenant.kategori?.nama?.trim() || 'Other';
+        const categoryId = tenant.kategori?.id
+            ? `kategori-${tenant.kategori.id}`
+            : `kategori-${normalizeCategoryLabel(categoryLabel).join('-') || 'other'}`;
+        const existingGroup = groupedCategories.get(categoryId);
+
+        if (existingGroup) {
+            existingGroup.tenants.push(tenant);
+            return;
+        }
+
+        groupedCategories.set(categoryId, {
+            id: categoryId,
+            label: categoryLabel,
+            tenants: [tenant],
+        });
+    });
+
+    return Array.from(groupedCategories.values());
+}
+
+function buildDynamicCategories(floorTenants: TenantRecord[], floorSections: Floor[]) {
+    const defaultAccents = ['#b08446', '#a85a4a', '#7a4a8a', '#4a6b8a', '#5a8a6b'];
+    const tenantCategoryGroups = groupTenantsByCategory(floorTenants);
+    const usedGroupIds = new Set<string>();
+
+    if (tenantCategoryGroups.length === 0) {
         return [] as DynamicCategory[];
     }
 
-    return mallDirectory[floorKey].map((category, index) => ({
-        id: category.nama.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-        label: category.nama,
-        count: Array.isArray(category.tenant) ? category.tenant.length : 0,
-        accent: defaultAccents[index % defaultAccents.length],
-        originalTenants: Array.isArray(category.tenant) ? category.tenant : [],
-    }));
+    const orderedCategories = floorSections
+        .map((section, index) => {
+            const matchedGroup = tenantCategoryGroups.find(
+                (group) => !usedGroupIds.has(group.id) && areCategoryLabelsRelated(section.nama, group.label)
+            );
+
+            if (!matchedGroup) {
+                return null;
+            }
+
+            usedGroupIds.add(matchedGroup.id);
+
+            return {
+                id: matchedGroup.id,
+                label: section.nama || matchedGroup.label,
+                count: matchedGroup.tenants.length,
+                accent: defaultAccents[index % defaultAccents.length],
+                originalTenants: matchedGroup.tenants,
+            } satisfies DynamicCategory;
+        })
+        .filter(Boolean) as DynamicCategory[];
+
+    const remainingCategories = tenantCategoryGroups
+        .filter((group) => !usedGroupIds.has(group.id))
+        .map((group, index) => ({
+            id: group.id,
+            label: group.label,
+            count: group.tenants.length,
+            accent: defaultAccents[(orderedCategories.length + index) % defaultAccents.length],
+            originalTenants: group.tenants,
+        }));
+
+    return [...orderedCategories, ...remainingCategories];
 }
 
 type FloorSwitcherProps = {
     active: string;
     onChange: React.Dispatch<string>;
-    onBack: () => void;
 };
 
-function FloorNavUnderline({ active }: { active: boolean }) {
-    return (
-        <svg
-            aria-hidden="true"
-            viewBox="0 0 120 8"
-            preserveAspectRatio="none"
-            className={`absolute -bottom-[3px] left-1/2 h-[7px] w-[118px] -translate-x-1/2 transition duration-300 ${
-                active ? 'opacity-100' : 'opacity-0 translate-y-1 group-hover:translate-y-0 group-hover:opacity-90'
-            }`}
-        >
-            <defs>
-                <linearGradient id="floorNavUnderline" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0" stopColor="rgba(255,255,255,0)" />
-                    <stop offset="0.16" stopColor="rgba(255,255,255,0.28)" />
-                    <stop offset="0.5" stopColor="rgba(255,255,255,0.96)" />
-                    <stop offset="0.84" stopColor="rgba(255,255,255,0.28)" />
-                    <stop offset="1" stopColor="rgba(255,255,255,0)" />
-                </linearGradient>
-            </defs>
-            <path
-                d="M2 5.4 C30 3.5 54 3.4 73 4.5 C89 5.4 102 4.7 118 3.1"
-                fill="none"
-                stroke="url(#floorNavUnderline)"
-                strokeLinecap="round"
-                strokeWidth="2.1"
-                vectorEffect="non-scaling-stroke"
-            />
-        </svg>
-    );
-}
+function FloorSwitcher({ active, onChange }: FloorSwitcherProps) {
+    const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
+    const pillRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-function FloorSwitcher({ active, onChange, onBack }: FloorSwitcherProps) {
+    const updatePill = useCallback(() => {
+        const activeIdx = FLOORS.findIndex((f) => f.id === active);
+        const activeTab = tabsRef.current[activeIdx];
+        const container = containerRef.current;
+        const pill = pillRef.current;
+        if (!activeTab || !container || !pill) return;
+        const tabRect = activeTab.getBoundingClientRect();
+        const contRect = container.getBoundingClientRect();
+        pill.style.left = `${tabRect.left - contRect.left - 6}px`;
+        pill.style.width = `${tabRect.width}px`;
+    }, [active]);
+
+    useEffect(() => {
+        const frame = requestAnimationFrame(updatePill);
+        return () => cancelAnimationFrame(frame);
+    }, [updatePill]);
+
+    useEffect(() => {
+        window.addEventListener('resize', updatePill);
+        return () => window.removeEventListener('resize', updatePill);
+    }, [updatePill]);
+
+    const activeIdx = FLOORS.findIndex((f) => f.id === active);
+    const prevFloorId = FLOORS[(activeIdx - 1 + FLOORS.length) % FLOORS.length]?.id;
+    const nextFloorId = FLOORS[(activeIdx + 1) % FLOORS.length]?.id;
+
     return (
-        <div className="flex flex-wrap items-center justify-center gap-5">
-            <button
-                type="button"
-                onClick={onBack}
-                aria-label="Back to floor panels"
-                className="tenant-floor-menu-item group relative flex h-[31px] items-center px-1 pb-3 pt-1 text-[16px] font-bold leading-none text-white/90 transition duration-500 [text-shadow:0_2px_12px_rgba(0,0,0,0.95)] hover:-translate-x-0.5 hover:text-white"
-            >
+        <div ref={containerRef} className="floor-banner-tabs">
+            <button type="button" onClick={() => onChange(prevFloorId)} aria-label="Previous floor" className="floor-banner-nav-arr">
                 ←
             </button>
-            {FLOORS.filter((floorItem) => floorItem.id !== active).map((floorItem) => (
+
+            <div
+                ref={pillRef}
+                aria-hidden="true"
+                className="floor-banner-tab-pill"
+                style={{
+                    transition: 'left 0.5s cubic-bezier(0.7,0,0.2,1), width 0.5s cubic-bezier(0.7,0,0.2,1)',
+                }}
+            />
+
+            {FLOORS.map((floorItem, idx) => (
                 <button
-                    key={`${active}-${floorItem.id}`}
+                    key={floorItem.id}
+                    ref={(el) => {
+                        tabsRef.current[idx] = el;
+                    }}
                     type="button"
                     onClick={() => onChange(floorItem.id)}
-                    className="tenant-floor-menu-item group relative px-3 pb-3 pt-1 text-[13px] font-bold text-white/90 transition duration-500 [text-shadow:0_2px_12px_rgba(0,0,0,0.95)] hover:text-white"
+                    className={`floor-banner-tab${active === floorItem.id ? ' is-active' : ''}`}
                 >
                     {floorItem.label}
-                    <FloorNavUnderline active={false} />
                 </button>
             ))}
+
+            <button type="button" onClick={() => onChange(nextFloorId)} aria-label="Next floor" className="floor-banner-nav-arr">
+                →
+            </button>
         </div>
     );
 }
 
 export default function TenantView({ initialFloor, onClose, mallDirectory, initialSearch }: TenantViewProps) {
+    const tenantPageSize = 8;
+    const bannerHeight = 'clamp(340px, 44vw, 580px)';
     const [active, setActive] = useState(initialFloor || 'gf');
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedTenant, setSelectedTenant] = useState<TenantRecord | null>(null);
@@ -719,37 +910,55 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [hasRestoredTenant, setHasRestoredTenant] = useState(false);
     const [floorMotionKey, setFloorMotionKey] = useState(0);
+    const [tenantPage, setTenantPage] = useState(0);
     const [previousFloorCover, setPreviousFloorCover] = useState<FloorMeta | null>(null);
+    const [isSweeping, setIsSweeping] = useState(false);
+    const [animatedTenantCount, setAnimatedTenantCount] = useState(0);
+    const [animatedCategoryCount, setAnimatedCategoryCount] = useState(0);
+    const bannerRef = useRef<HTMLDivElement | null>(null);
     const floorCoverTimeoutRef = useRef<number | null>(null);
+    const sweepTimeoutRef = useRef<number | null>(null);
+    const touchStartXRef = useRef(0);
+    const animatedCountsRef = useRef({ tenants: 0, categories: 0 });
     const floor = FLOORS.find((item) => item.id === active) || FLOORS[0];
+    const floorPalette = FLOOR_PALETTES[active as keyof typeof FLOOR_PALETTES] || FLOOR_PALETTES.gf;
     const floorMotionId = `${floor.id}-${floorMotionKey}`;
-    const searchWidth = isSearchFocused || tenantSearch ? 180 : 120;
-    const searchContainerWidth = searchWidth + 28;
     const normalizedTenantSearch = tenantSearch.trim().toLowerCase();
     const isSearchActive = normalizedTenantSearch.length > 0;
 
-    const handleFloorChange = (floorId: string) => {
-        if (floorId === active) {
-            return;
-        }
+    const handleFloorChange = useCallback(
+        (floorId: string) => {
+            if (floorId === active) {
+                return;
+            }
 
-        if (floorCoverTimeoutRef.current) {
-            window.clearTimeout(floorCoverTimeoutRef.current);
-        }
+            if (floorCoverTimeoutRef.current) {
+                window.clearTimeout(floorCoverTimeoutRef.current);
+            }
 
-        setPreviousFloorCover(floor);
-        floorCoverTimeoutRef.current = window.setTimeout(() => {
-            setPreviousFloorCover(null);
-            floorCoverTimeoutRef.current = null;
-        }, 2100);
+            setPreviousFloorCover(floor);
+            floorCoverTimeoutRef.current = window.setTimeout(() => {
+                setPreviousFloorCover(null);
+                floorCoverTimeoutRef.current = null;
+            }, 2100);
 
-        setActive(floorId);
-        setSelectedCategory(null);
-        setTenantSearch('');
-        setSelectedTenant(null);
-        setFloorMotionKey((currentKey) => currentKey + 1);
-        updateStoredMallDirectoryState({ activeFloor: floorId, selectedTenantId: null, selectedTenantName: null });
-    };
+            // trigger light sweep
+            if (sweepTimeoutRef.current) window.clearTimeout(sweepTimeoutRef.current);
+            setIsSweeping(false);
+            sweepTimeoutRef.current = window.setTimeout(() => {
+                setIsSweeping(true);
+                sweepTimeoutRef.current = window.setTimeout(() => setIsSweeping(false), 1500);
+            }, 20);
+
+            setActive(floorId);
+            setSelectedCategory(null);
+            setTenantSearch('');
+            setSelectedTenant(null);
+            setFloorMotionKey((currentKey) => currentKey + 1);
+            updateStoredMallDirectoryState({ activeFloor: floorId, selectedTenantId: null, selectedTenantName: null });
+        },
+        [active, floor]
+    );
 
     useEffect(() => {
         if (initialFloor && FLOORS.some((item) => item.id === initialFloor)) {
@@ -765,6 +974,9 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
         () => () => {
             if (floorCoverTimeoutRef.current) {
                 window.clearTimeout(floorCoverTimeoutRef.current);
+            }
+            if (sweepTimeoutRef.current) {
+                window.clearTimeout(sweepTimeoutRef.current);
             }
         },
         []
@@ -783,8 +995,8 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
     });
 
     const filteredFloorTenants = floorTenants;
-
-    const dynamicCats = buildDynamicCategories(mallDirectory, currentFloorAliases);
+    const floorSections = getFloorSections(mallDirectory, currentFloorAliases);
+    const dynamicCats = buildDynamicCategories(filteredFloorTenants, floorSections);
     const fallbackCats: DynamicCategory[] = (floor.cats as readonly FloorMeta['cats'][number][]).map((cat) => ({
         id: cat.id,
         label: cat.label,
@@ -794,7 +1006,8 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
     }));
     const categoriesToRender = dynamicCats.length > 0 ? dynamicCats : fallbackCats;
     const filteredCats = isSearchActive ? [] : categoriesToRender;
-    const selectedCategoryTenants = selectedCategory ? dynamicCats.find((cat) => cat.id === selectedCategory)?.originalTenants || [] : null;
+    const selectedCategoryRecord = selectedCategory ? categoriesToRender.find((cat) => cat.id === selectedCategory) || null : null;
+    const selectedCategoryTenants = selectedCategoryRecord?.originalTenants || null;
     let displayTenants = filteredFloorTenants;
 
     if (isSearchActive) {
@@ -802,6 +1015,15 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
     } else if (selectedCategoryTenants) {
         displayTenants = selectedCategoryTenants;
     }
+
+    const totalTenantPages = Math.max(1, Math.ceil(displayTenants.length / tenantPageSize));
+    const safeTenantPage = Math.min(tenantPage, totalTenantPages - 1);
+    const pagedTenants = displayTenants.slice(safeTenantPage * tenantPageSize, safeTenantPage * tenantPageSize + tenantPageSize);
+    const activeFloorIndex = Math.max(
+        0,
+        FLOORS.findIndex((floorItem) => floorItem.id === active)
+    );
+    const { name: floorTitleMain, suffix: floorTitleSuffix } = splitFloorLabel((floor as (typeof FLOORS)[0]).titleLabel || floor.label);
 
     let emptyTenantMessage = 'No tenants registered on this floor yet.';
 
@@ -840,6 +1062,128 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
             window.clearTimeout(searchTimer);
         };
     }, [allTenants, isSearchActive, normalizedTenantSearch]);
+
+    useEffect(() => {
+        setTenantPage(0);
+    }, [active, selectedCategory, normalizedTenantSearch]);
+
+    useEffect(() => {
+        if (tenantPage > totalTenantPages - 1) {
+            setTenantPage(Math.max(0, totalTenantPages - 1));
+        }
+    }, [tenantPage, totalTenantPages]);
+
+    useEffect(() => {
+        const nextTenantCount = displayTenants.length;
+        const nextCategoryCount = categoriesToRender.length;
+        const fromTenantCount = animatedCountsRef.current.tenants;
+        const fromCategoryCount = animatedCountsRef.current.categories;
+
+        if (fromTenantCount === nextTenantCount && fromCategoryCount === nextCategoryCount) {
+            setAnimatedTenantCount(nextTenantCount);
+            setAnimatedCategoryCount(nextCategoryCount);
+            return undefined;
+        }
+
+        const animationStart = window.performance.now();
+        const animationDuration = 700;
+        let frameId = 0;
+
+        const step = (timestamp: number) => {
+            const progress = Math.min((timestamp - animationStart) / animationDuration, 1);
+            const eased = 1 - (1 - progress) ** 3;
+
+            setAnimatedTenantCount(Math.round(fromTenantCount + (nextTenantCount - fromTenantCount) * eased));
+            setAnimatedCategoryCount(Math.round(fromCategoryCount + (nextCategoryCount - fromCategoryCount) * eased));
+
+            if (progress < 1) {
+                frameId = window.requestAnimationFrame(step);
+                return;
+            }
+
+            animatedCountsRef.current = {
+                tenants: nextTenantCount,
+                categories: nextCategoryCount,
+            };
+        };
+
+        frameId = window.requestAnimationFrame(step);
+
+        return () => {
+            if (frameId) {
+                window.cancelAnimationFrame(frameId);
+            }
+        };
+    }, [categoriesToRender.length, displayTenants.length]);
+
+    useEffect(() => {
+        const sweepStartTimeout = window.setTimeout(() => {
+            setIsSweeping(true);
+            sweepTimeoutRef.current = window.setTimeout(() => {
+                setIsSweeping(false);
+                sweepTimeoutRef.current = null;
+            }, 1400);
+        }, 300);
+
+        return () => {
+            window.clearTimeout(sweepStartTimeout);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleKeyNavigation = (event: KeyboardEvent) => {
+            if (selectedTenant) {
+                return;
+            }
+
+            if (event.key === 'ArrowLeft') {
+                handleFloorChange(FLOORS[(activeFloorIndex - 1 + FLOORS.length) % FLOORS.length].id);
+            }
+
+            if (event.key === 'ArrowRight') {
+                handleFloorChange(FLOORS[(activeFloorIndex + 1) % FLOORS.length].id);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyNavigation);
+        return () => window.removeEventListener('keydown', handleKeyNavigation);
+    }, [activeFloorIndex, handleFloorChange, selectedTenant]);
+
+    useEffect(() => {
+        const bannerElement = bannerRef.current;
+
+        if (!bannerElement) {
+            return undefined;
+        }
+
+        const handleTouchStart = (event: TouchEvent) => {
+            touchStartXRef.current = event.touches[0]?.clientX || 0;
+        };
+
+        const handleTouchEnd = (event: TouchEvent) => {
+            const touchEndX = event.changedTouches[0]?.clientX || 0;
+            const swipeDistance = touchStartXRef.current - touchEndX;
+
+            if (Math.abs(swipeDistance) <= 50) {
+                return;
+            }
+
+            if (swipeDistance > 0) {
+                handleFloorChange(FLOORS[(activeFloorIndex + 1) % FLOORS.length].id);
+                return;
+            }
+
+            handleFloorChange(FLOORS[(activeFloorIndex - 1 + FLOORS.length) % FLOORS.length].id);
+        };
+
+        bannerElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+        bannerElement.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+        return () => {
+            bannerElement.removeEventListener('touchstart', handleTouchStart);
+            bannerElement.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, [activeFloorIndex, handleFloorChange]);
 
     useEffect(() => {
         if (hasRestoredTenant) {
@@ -896,12 +1240,9 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
     return (
         <>
             <section
-                className="pt-24 lg:pt-[7.9rem]"
                 style={{
                     position: 'relative',
                     paddingBottom: '96px',
-                    paddingLeft: '5%',
-                    paddingRight: '5%',
                     background: T.paper,
                     backgroundImage: `radial-gradient(circle at 20% 0%, ${T.accent}06 0%, transparent 50%),
           radial-gradient(circle at 80% 100%, ${T.navy}08 0%, transparent 50%)`,
@@ -910,22 +1251,270 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                 }}
             >
                 <style jsx global>{`
+                    .floor-banner-shell {
+                        position: relative;
+                        width: 100%;
+                        height: clamp(340px, 44vw, 580px);
+                        overflow: hidden;
+                        background: #0a0516;
+                    }
+
+                    .floor-banner-bg-overlay {
+                        position: absolute;
+                        inset: 0;
+                        z-index: 1;
+                        background: linear-gradient(90deg, rgba(10, 5, 22, 0.88) 0%, rgba(10, 5, 22, 0.35) 45%, rgba(10, 5, 22, 0.55) 100%),
+                            linear-gradient(0deg, rgba(10, 5, 22, 0.7) 0%, transparent 50%);
+                        pointer-events: none;
+                    }
+
+                    .floor-banner-topbar {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        z-index: 20;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 16px;
+                        padding: clamp(16px, 2vw, 20px) clamp(20px, 4vw, 48px) 18px;
+                        background: linear-gradient(180deg, rgba(10, 5, 22, 0.7) 0%, transparent 100%);
+                    }
+
+                    .floor-banner-tabs {
+                        position: absolute;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        display: flex;
+                        align-items: center;
+                        gap: 2px;
+                        padding: 4px 6px;
+                        border-radius: 999px;
+                        background: rgba(255, 255, 255, 0.07);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        backdrop-filter: blur(16px);
+                        -webkit-backdrop-filter: blur(16px);
+                        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+                    }
+
+                    .floor-banner-nav-arr {
+                        position: relative;
+                        z-index: 1;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 28px;
+                        height: 28px;
+                        padding: 0;
+                        font-size: 0;
+                        color: rgba(255, 255, 255, 0.5);
+                        border-radius: 999px;
+                        white-space: nowrap;
+                        transition: color 0.3s, background 0.3s;
+                    }
+
+                    .floor-banner-nav-arr::before {
+                        content: '←';
+                        font-size: 14px;
+                        line-height: 1;
+                    }
+
+                    .floor-banner-tabs > .floor-banner-nav-arr:last-child::before {
+                        content: '→';
+                    }
+
+                    .floor-banner-nav-arr:hover {
+                        color: rgba(255, 255, 255, 0.9);
+                        background: rgba(255, 255, 255, 0.1);
+                    }
+
+                    .floor-banner-nav-arr svg {
+                        width: 16px;
+                        height: 16px;
+                    }
+
+                    .floor-banner-tab-pill {
+                        position: absolute;
+                        top: 3px;
+                        z-index: 0;
+                        height: calc(100% - 6px);
+                        border-radius: 999px;
+                        background: linear-gradient(135deg, #e8b864, #c99248);
+                        box-shadow: 0 4px 18px rgba(232, 184, 100, 0.45);
+                        pointer-events: none;
+                    }
+
+                    .floor-banner-tab {
+                        position: relative;
+                        z-index: 1;
+                        padding: 8px 18px;
+                        border-radius: 999px;
+                        font-family: ${T.sans};
+                        font-size: 12px;
+                        font-weight: 600;
+                        letter-spacing: 0.02em;
+                        color: rgba(255, 255, 255, 0.6);
+                        white-space: nowrap;
+                        transition: color 0.35s ease;
+                    }
+
+                    .floor-banner-tab::after {
+                        content: '';
+                        position: absolute;
+                        bottom: 3px;
+                        left: 18px;
+                        right: 18px;
+                        height: 2px;
+                        border-radius: 999px;
+                        background: linear-gradient(
+                            90deg,
+                            rgba(255, 255, 255, 0) 0%,
+                            rgba(255, 255, 255, 0.22) 12%,
+                            rgba(255, 255, 255, 0.9) 50%,
+                            rgba(255, 255, 255, 0.22) 88%,
+                            rgba(255, 255, 255, 0) 100%
+                        );
+                        opacity: 0;
+                        transform: scaleX(0.4);
+                        transform-origin: center;
+                        transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+                    }
+
+                    .floor-banner-tab:hover::after {
+                        opacity: 1;
+                        transform: scaleX(1);
+                    }
+
+                    .floor-banner-tab:hover {
+                        color: rgba(255, 255, 255, 0.9);
+                    }
+
+                    .floor-banner-tab.is-active {
+                        color: #0a0516;
+                    }
+
+                    .floor-banner-tab.is-active::after {
+                        opacity: 0;
+                    }
+
+                    .floor-banner-search {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 6px 2px 8px;
+                        cursor: text;
+                    }
+
+                    .floor-banner-bottom-block {
+                        position: absolute;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        z-index: 10;
+                        padding: 0 clamp(20px, 4vw, 48px) 40px;
+                    }
+
+                    .floor-banner-bottom-inner {
+                        max-width: 1280px;
+                        margin: 0 auto;
+                        display: flex;
+                        align-items: flex-end;
+                        justify-content: space-between;
+                        gap: 24px;
+                    }
+
+                    .floor-banner-headline {
+                        max-width: 640px;
+                        overflow: visible;
+                    }
+
+                    .floor-banner-kicker {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin-bottom: 14px;
+                        font-family: ${T.mono};
+                        font-size: 10px;
+                        font-weight: 500;
+                        letter-spacing: 0.28em;
+                        color: rgba(232, 184, 100, 0.8);
+                        text-transform: uppercase;
+                    }
+
+                    .floor-banner-title-wrap {
+                        margin-bottom: 14px;
+                        padding-top: 16px;
+                        overflow: visible;
+                        padding-right: 0.18em;
+                    }
+
+                    .floor-banner-sub {
+                        font-size: 15px;
+                        color: rgba(255, 255, 255, 0.55);
+                        font-weight: 400;
+                        letter-spacing: 0.01em;
+                    }
+
+                    .floor-banner-stats {
+                        display: flex;
+                        align-items: center;
+                        gap: 24px;
+                    }
+
+                    .floor-banner-stat-line {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        font-family: ${T.mono};
+                        font-size: 11px;
+                        font-weight: 500;
+                        letter-spacing: 0.24em;
+                        text-transform: uppercase;
+                    }
+
+                    .floor-banner-stat-num {
+                        color: #e8b864;
+                        font-weight: 700;
+                    }
+
+                    .floor-banner-stat-sep {
+                        color: rgba(255, 255, 255, 0.25);
+                    }
+
+                    .floor-banner-stat-label {
+                        color: rgba(255, 255, 255, 0.55);
+                    }
+
+                    .floor-banner-stat-divider {
+                        width: 1px;
+                        height: 20px;
+                        background: rgba(255, 255, 255, 0.18);
+                    }
+
+                    .floor-banner-progress {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        z-index: 15;
+                        height: 2px;
+                        background: rgba(255, 255, 255, 0.08);
+                        overflow: hidden;
+                    }
+
                     .tenant-floor-search::placeholder {
-                        color: rgba(255, 255, 255, 0.78);
+                        color: rgba(255, 255, 255, 0.85);
+                        font-style: italic;
                         opacity: 1;
                     }
 
-                    .tenant-floor-menu-item {
-                        animation: tenantFloorMenuIn 1.05s cubic-bezier(0.16, 1, 0.3, 1) both;
-                    }
-
-                    .tenant-active-floor-label {
-                        animation: tenantActiveFloorIn 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
-                    }
-
                     .tenant-floor-cover-motion {
-                        animation: tenantFloorCoverIn 2100ms cubic-bezier(0.16, 1, 0.3, 1) both;
-                        transform-origin: center top;
+                        animation:
+                            tenantFloorCoverIn 2100ms cubic-bezier(0.16, 1, 0.3, 1) both,
+                            bgBreathe 8s 2100ms ease-in-out infinite;
+                        transform-origin: center center;
                         will-change: transform, opacity, filter;
                     }
 
@@ -950,67 +1539,18 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         will-change: transform, opacity, filter;
                     }
 
-                    .tenant-floor-menu-item:first-child {
-                        min-width: 28px;
-                        height: 31px;
-                        justify-content: center;
-                        font-size: 0;
-                    }
-
-                    .tenant-floor-menu-item:first-child::before {
-                        content: '';
-                        position: absolute;
-                        left: 7px;
-                        top: 10px;
-                        width: 15px;
-                        height: 2px;
-                        border-radius: 999px;
-                        background: currentColor;
-                        transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.48s ease;
-                    }
-
-                    .tenant-floor-menu-item:first-child::after {
-                        content: '';
-                        position: absolute;
-                        left: 7px;
-                        top: 7px;
-                        width: 8px;
-                        height: 8px;
-                        border-bottom: 2px solid currentColor;
-                        border-left: 2px solid currentColor;
-                        transform: rotate(45deg);
-                        transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.48s ease;
-                    }
-
-                    .tenant-floor-menu-item:first-child:hover::before {
-                        opacity: 1;
-                        transform: translateX(-5px) scaleX(1.12);
-                    }
-
-                    .tenant-floor-menu-item:first-child:hover::after {
-                        opacity: 1;
-                        transform: translateX(-5px) rotate(45deg) scale(1.08);
-                    }
-
-                    @keyframes tenantFloorMenuIn {
-                        from {
-                            opacity: 0;
-                            transform: translateX(24px);
-                        }
-                        to {
-                            opacity: 1;
-                            transform: translateX(0);
-                        }
+                    .tenant-active-floor-label {
+                        animation: tenantActiveFloorIn 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
                     }
 
                     @keyframes tenantActiveFloorIn {
                         from {
                             opacity: 0;
-                            transform: translateX(30px);
+                            transform: translateY(10px);
                         }
                         to {
                             opacity: 1;
-                            transform: translateX(0);
+                            transform: translateY(0);
                         }
                     }
 
@@ -1021,7 +1561,7 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                             transform: scale(1.07);
                         }
                         to {
-                            opacity: 0.95;
+                            opacity: 1;
                             filter: saturate(1.06) contrast(1.08) blur(0);
                             transform: scale(1);
                         }
@@ -1037,6 +1577,16 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                             opacity: 0;
                             filter: saturate(0.88) contrast(1) blur(10px);
                             transform: scale(0.985);
+                        }
+                    }
+
+                    @keyframes bgBreathe {
+                        0%,
+                        100% {
+                            transform: scale(1);
+                        }
+                        50% {
+                            transform: scale(1.04);
                         }
                     }
 
@@ -1077,6 +1627,92 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         }
                     }
 
+                    /* Gold shimmer for floor title */
+                    @keyframes goldShimmer {
+                        0%,
+                        100% {
+                            background-position: 0% 50%;
+                        }
+                        50% {
+                            background-position: 100% 50%;
+                        }
+                    }
+                    .floor-title-gold {
+                        background: linear-gradient(90deg, #e8b864, #ffd998, #e8b864);
+                        background-size: 200% 100%;
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                        animation: goldShimmer 4s ease-in-out infinite;
+                    }
+
+                    /* Light sweep on floor change */
+                    @keyframes lightSweep {
+                        0% {
+                            left: -40%;
+                            opacity: 0;
+                        }
+                        10% {
+                            opacity: 1;
+                        }
+                        90% {
+                            opacity: 0.7;
+                        }
+                        100% {
+                            left: 140%;
+                            opacity: 0;
+                        }
+                    }
+                    .floor-light-sweep::before {
+                        content: '';
+                        position: absolute;
+                        top: -20%;
+                        left: -40%;
+                        width: 35%;
+                        height: 150%;
+                        background: linear-gradient(
+                            100deg,
+                            transparent 0%,
+                            rgba(255, 245, 210, 0) 25%,
+                            rgba(255, 245, 210, 0.35) 50%,
+                            rgba(255, 240, 200, 0) 75%,
+                            transparent 100%
+                        );
+                        filter: blur(8px);
+                        transform: skewX(-22deg);
+                        animation: lightSweep 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                        mix-blend-mode: screen;
+                        pointer-events: none;
+                    }
+
+                    /* Animated dot on active floor */
+                    @keyframes activeDotPulse {
+                        0%,
+                        100% {
+                            transform: scale(1);
+                            box-shadow: 0 0 12px #e84545;
+                        }
+                        50% {
+                            transform: scale(0.8);
+                            box-shadow: 0 0 4px #e84545;
+                        }
+                    }
+                    .active-floor-dot {
+                        display: inline-block;
+                        width: 13px;
+                        height: 13px;
+                        border-radius: 50%;
+                        background: #e84545;
+                        box-shadow: 0 0 16px #e84545, 0 0 6px rgba(232, 69, 69, 0.6);
+                        animation: activeDotPulse 2s ease-in-out infinite;
+                        flex-shrink: 0;
+                    }
+
+                    /* Progress bar fill transition */
+                    .floor-progress-fill {
+                        transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+                    }
+
                     .mall-directory-tenant-card-shell {
                         opacity: var(--tenant-reveal-opacity, 1);
                         filter: blur(var(--tenant-reveal-blur, 0px));
@@ -1107,178 +1743,261 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         opacity: 0;
                         transform: translateX(135%) skewX(-14deg);
                     }
+
+                    @media (max-width: 768px) {
+                        .floor-banner-shell {
+                            height: clamp(420px, 80vw, 560px);
+                        }
+
+                        .floor-banner-topbar {
+                            flex-wrap: wrap;
+                            gap: 12px;
+                            padding: 16px 20px 18px;
+                        }
+
+                        .floor-banner-tabs {
+                            position: static;
+                            transform: none;
+                            order: 2;
+                            width: 100%;
+                            justify-content: center;
+                        }
+
+                        .floor-banner-search {
+                            order: 1;
+                            width: auto;
+                            margin-left: auto;
+                        }
+
+                        .floor-banner-bottom-block {
+                            padding: 0 20px 28px;
+                        }
+
+                        .floor-banner-bottom-inner {
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 14px;
+                        }
+
+                        .floor-banner-stats {
+                            gap: 18px;
+                        }
+                    }
+
+                    @media (max-width: 480px) {
+                        .floor-banner-tab {
+                            padding: 8px 11px;
+                            font-size: 11px;
+                        }
+
+                        .floor-banner-nav-arr {
+                            display: none;
+                        }
+
+                        .floor-banner-topbar {
+                            gap: 10px;
+                        }
+                    }
                 `}</style>
-                <div
-                    key={`${floorMotionId}-cover`}
-                    className="tenant-floor-cover-motion"
-                    aria-hidden="true"
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: 360,
-                        backgroundImage: `linear-gradient(90deg, ${T.paper} 0%, rgba(11,5,18,0.9) 20%, rgba(11,5,18,0.38) 52%, rgba(11,5,18,0.72) 100%),
-                        linear-gradient(180deg, rgba(11,5,18,0.04) 0%, rgba(11,5,18,0.32) 58%, ${T.paper} 100%),
-                        url(${floor.cover})`,
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                        opacity: 0.95,
-                        filter: 'saturate(1.06) contrast(1.08)',
-                    }}
-                />
-                {previousFloorCover && (
+
+                {/* ── BACKGROUND SLIDES ── */}
+                <div ref={bannerRef} className="floor-banner-shell">
+                    {FLOORS.map((floorItem) => {
+                        const isActive = floorItem.id === active;
+                        const isExiting = previousFloorCover?.id === floorItem.id;
+                        let motionClass = '';
+                        if (isActive) motionClass = 'tenant-floor-cover-motion';
+                        else if (isExiting) motionClass = 'tenant-floor-cover-motion-out';
+                        let slideOpacity = 0;
+                        if (isActive) slideOpacity = 1;
+                        else if (isExiting) slideOpacity = 0.86;
+                        return (
+                            <div
+                                key={floorItem.id}
+                                aria-hidden="true"
+                                className={motionClass}
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: bannerHeight,
+                                    backgroundImage: `url(${floorItem.cover})`,
+                                    backgroundPosition: 'center',
+                                    backgroundSize: 'cover',
+                                    opacity: slideOpacity,
+                                    filter: isActive ? 'saturate(1.04) contrast(1.02) brightness(1)' : undefined,
+                                    transition: !isActive && !isExiting ? 'opacity 0.4s' : undefined,
+                                    pointerEvents: 'none',
+                                }}
+                            />
+                        );
+                    })}
+
+                    {/* ── COLOR TINT per floor ── */}
+                    <div aria-hidden="true" className="floor-banner-bg-overlay" />
+
                     <div
-                        key={`${floorMotionId}-${previousFloorCover.id}-cover-out`}
-                        className="tenant-floor-cover-motion-out"
                         aria-hidden="true"
                         style={{
                             position: 'absolute',
                             top: 0,
                             left: 0,
-                            width: '100%',
-                            height: 360,
-                            backgroundImage: `linear-gradient(90deg, ${T.paper} 0%, rgba(11,5,18,0.9) 20%, rgba(11,5,18,0.38) 52%, rgba(11,5,18,0.72) 100%),
-                        linear-gradient(180deg, rgba(11,5,18,0.04) 0%, rgba(11,5,18,0.32) 58%, ${T.paper} 100%),
-                        url(${previousFloorCover.cover})`,
-                            backgroundPosition: 'center',
-                            backgroundSize: 'cover',
+                            right: 0,
+                            height: bannerHeight,
+                            background: `radial-gradient(ellipse at 30% 50%, ${floorPalette.glow}, transparent 55%)`,
+                            opacity: 0.25,
+                            transition: 'background 1.2s ease',
                             pointerEvents: 'none',
                         }}
                     />
-                )}
-                <div
-                    aria-hidden="true"
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: 365,
-                        backgroundImage: `radial-gradient(circle at 74% 18%, ${T.accent}18 0%, transparent 34%),
-                        linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 35%, ${T.paper} 100%)`,
-                        pointerEvents: 'none',
-                    }}
-                />
-                <div style={{ position: 'relative', maxWidth: 1280, margin: '0 auto', padding: '0 4px' }}>
-                    <div
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'minmax(220px, 1fr) auto minmax(220px, 1fr)',
-                            alignItems: 'start',
-                            marginBottom: 58,
-                            paddingTop: 12,
-                            paddingBottom: 16,
-                            gap: 20,
-                        }}
-                    >
-                        <button
-                            type="button"
-                            onClick={onClose}
+
+                    {/* ── LIGHT SWEEP ── */}
+                    {isSweeping && (
+                        <div
+                            key={floorMotionId}
+                            aria-hidden="true"
+                            className="floor-light-sweep"
                             style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-start',
-                                cursor: 'pointer',
-                                opacity: 0.9,
-                                background: 'transparent',
-                                border: 0,
-                                padding: 0,
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                height: bannerHeight,
+                                overflow: 'hidden',
+                                zIndex: 8,
+                                pointerEvents: 'none',
                             }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.opacity = '1';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.opacity = '0.9';
-                            }}
-                        >
+                        />
+                    )}
+
+                    {/* ── TOP BAR ── */}
+                    <div className="floor-banner-topbar">
+                        {/* Left: back button + active floor */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                aria-label="Back"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: '50%',
+                                    background: 'rgba(255,255,255,0.08)',
+                                    border: '1px solid rgba(255,255,255,0.15)',
+                                    backdropFilter: 'blur(14px)',
+                                    color: 'rgba(255,255,255,0.9)',
+                                    cursor: 'pointer',
+                                    flexShrink: 0,
+                                    transition: 'background 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = 'rgba(232,184,100,0.25)';
+                                    e.currentTarget.style.borderColor = 'rgba(232,184,100,0.6)';
+                                    e.currentTarget.style.transform = 'translateX(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 0 18px rgba(232,184,100,0.3)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                                    e.currentTarget.style.transform = 'translateX(0)';
+                                    e.currentTarget.style.boxShadow = 'none';
+                                }}
+                            >
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.4"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M19 12H5M12 5l-7 7 7 7" />
+                                </svg>
+                            </button>
+                            <div style={{ position: 'relative' }}>
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                                    <span className="active-floor-dot" />
+                                    <span
+                                        key={floor.id}
+                                        className="tenant-active-floor-label"
+                                        style={{ fontFamily: T.sans, fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: '0.02em' }}
+                                    >
+                                        {floor.label}
+                                    </span>
+                                </div>
+                                <svg
+                                    aria-hidden="true"
+                                    viewBox="0 0 160 6"
+                                    preserveAspectRatio="none"
+                                    style={{ position: 'absolute', top: '100%', left: -6, marginTop: 3, height: 6, width: 160, overflow: 'visible', pointerEvents: 'none' }}
+                                >
+                                    <defs>
+                                        <linearGradient id="floorLabelUnderline" x1="0" y1="0" x2="1" y2="0">
+                                            <stop offset="0" stopColor="rgba(255,255,255,0)" />
+                                            <stop offset="0.12" stopColor="rgba(255,255,255,0.22)" />
+                                            <stop offset="0.5" stopColor="rgba(255,255,255,0.95)" />
+                                            <stop offset="0.86" stopColor="rgba(255,255,255,0.24)" />
+                                            <stop offset="1" stopColor="rgba(255,255,255,0)" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path
+                                        d="M0 4.4 C42 2.7 118 2.7 160 4.4"
+                                        fill="none"
+                                        stroke="url(#floorLabelUnderline)"
+                                        strokeLinecap="round"
+                                        strokeWidth="2.15"
+                                        vectorEffect="non-scaling-stroke"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+
+                        {/* Center: sliding pill tabs */}
+                        <FloorSwitcher active={active} onChange={handleFloorChange} />
+
+                        {/* Right: search */}
+                        <div className="floor-banner-search">
+                            {/* underline base */}
                             <div
                                 style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 10,
-                                    fontFamily: T.sans,
-                                    fontSize: 16,
-                                    fontWeight: 600,
-                                    color: '#fff',
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: 2,
+                                    background: 'rgba(255,255,255,0.9)',
+                                    transition: 'background 0.4s',
                                 }}
-                            >
-                                <span
-                                    className="animate-pulse"
-                                    style={{
-                                        height: 9,
-                                        width: 9,
-                                        borderRadius: '50%',
-                                        border: '2px solid #fff',
-                                        background: '#e53e3e',
-                                    }}
-                                />
-                                <span key={floor.id} className="tenant-active-floor-label">
-                                    {floor.label}
-                                </span>
-                            </div>
-                            <svg
-                                aria-hidden="true"
-                                viewBox="0 0 220 8"
-                                preserveAspectRatio="none"
+                            />
+                            {/* gold focus line */}
+                            <div
                                 style={{
-                                    marginLeft: 4,
-                                    marginTop: 3,
-                                    display: 'block',
-                                    height: 6,
-                                    width: 180,
-                                    maxWidth: 'calc(100vw-7rem)',
-                                    overflow: 'visible',
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    left: 0,
+                                    zIndex: 1,
+                                    height: 1.5,
+                                    background: 'linear-gradient(90deg, #E8B864, #FFD998)',
+                                    boxShadow: '0 0 8px rgba(232,184,100,0.5)',
+                                    width: isSearchFocused || tenantSearch ? '100%' : '0%',
+                                    transition: 'width 0.55s cubic-bezier(0.2,0.8,0.2,1)',
                                 }}
-                            >
-                                <defs>
-                                    <linearGradient id="backUnderline" x1="0" y1="0" x2="1" y2="0">
-                                        <stop offset="0" stopColor="rgba(255,255,255,0)" />
-                                        <stop offset="0.12" stopColor="rgba(255,255,255,0.22)" />
-                                        <stop offset="0.5" stopColor="rgba(255,255,255,0.95)" />
-                                        <stop offset="0.86" stopColor="rgba(255,255,255,0.24)" />
-                                        <stop offset="1" stopColor="rgba(255,255,255,0)" />
-                                    </linearGradient>
-                                </defs>
-                                <path
-                                    d="M0 5.4 C58 3.7 158 3.7 220 5.4"
-                                    fill="none"
-                                    stroke="url(#backUnderline)"
-                                    strokeLinecap="round"
-                                    strokeWidth="2"
-                                    vectorEffect="non-scaling-stroke"
-                                />
-                            </svg>
-                        </button>
-
-                        <FloorSwitcher active={active} onBack={onClose} onChange={handleFloorChange} />
-
-                        <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 8,
-                                justifySelf: 'end',
-                                width: searchContainerWidth,
-                                borderBottom: '1.5px solid rgba(255,255,255,0.72)',
-                                padding: '4px 0',
-                                transition: 'width 0.3s ease, border-color 0.3s ease',
-                                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.65))',
-                            }}
-                            onFocusCapture={(e) => {
-                                e.currentTarget.style.borderBottom = '1.5px solid #fff';
-                            }}
-                            onBlurCapture={(e) => {
-                                e.currentTarget.style.borderBottom = '1.5px solid rgba(255,255,255,0.72)';
-                            }}
-                        >
+                            />
                             <svg
                                 aria-hidden="true"
+                                width="14"
+                                height="14"
                                 viewBox="0 0 24 24"
-                                style={{ height: 17, width: 17, color: 'rgba(255,255,255,0.92)' }}
                                 fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
+                                stroke="rgba(255,255,255,0.95)"
+                                strokeWidth="2.2"
+                                style={{ flexShrink: 0, opacity: 1 }}
                             >
                                 <circle cx="11" cy="11" r="7" />
                                 <path d="M21 21l-5-5" />
@@ -1292,90 +2011,116 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                                     background: 'transparent',
                                     border: 'none',
                                     outline: 'none',
-                                    color: 'rgba(255,255,255,0.96)',
-                                    fontSize: 15,
-                                    fontWeight: 500,
-                                    fontFamily: T.sans,
-                                    width: searchWidth,
-                                    transition: 'width 0.3s ease',
-                                    textShadow: '0 2px 8px rgba(0,0,0,0.65)',
+                                    color: '#fff',
+                                    fontFamily: T.serif,
+                                    fontSize: 14,
+                                    fontWeight: 400,
+                                    fontStyle: 'italic',
+                                    letterSpacing: '0.03em',
+                                    width: isSearchFocused || tenantSearch ? 180 : 110,
+                                    transition: 'width 0.45s cubic-bezier(0.2,0.8,0.2,1)',
                                 }}
-                                onFocus={() => {
-                                    setIsSearchFocused(true);
-                                }}
-                                onBlur={() => {
-                                    setIsSearchFocused(false);
-                                }}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setIsSearchFocused(false)}
                             />
                         </div>
                     </div>
-                </div>
 
-                <div
-                    key={`${floorMotionId}-cap`}
-                    className="tenant-floor-content-motion"
-                    style={{
-                        position: 'relative',
-                        maxWidth: 1280,
-                        margin: '0 auto 22px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'baseline',
-                        flexWrap: 'wrap',
-                        gap: 16,
-                    }}
-                >
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
-                        <span
-                            style={{
-                                fontFamily: T.serif,
-                                fontSize: 70,
-                                fontWeight: 400,
-                                color: T.ink,
-                                letterSpacing: '-.04em',
-                                lineHeight: 1,
-                            }}
-                        >
-                            {floor.num}
-                        </span>
-                        <div>
-                            <h2
-                                style={{
-                                    fontFamily: T.serif,
-                                    fontSize: 30,
-                                    fontWeight: 400,
-                                    color: T.ink,
-                                    letterSpacing: '-.02em',
-                                    lineHeight: 1,
-                                    margin: 0,
-                                }}
-                            >
-                                <em style={{ color: T.accent }}>{floor.label}</em>
-                            </h2>
-                            <p
-                                style={{
-                                    fontFamily: T.sans,
-                                    fontSize: 12,
-                                    color: T.inkDim,
-                                    fontWeight: 400,
-                                    margin: '8px 0 0',
-                                }}
-                            >
-                                {floor.caption}
-                            </p>
-                        </div>
-                    </div>
+                    {/* ── BOTTOM CONTENT BLOCK (floor title + stats) ── */}
                     <div
+                        key={`${floorMotionId}-cap`}
+                        className="tenant-floor-content-motion floor-banner-bottom-block"
                         style={{
-                            fontFamily: T.mono,
-                            fontSize: 11,
-                            letterSpacing: '.22em',
-                            color: T.inkDim,
-                            textTransform: 'uppercase',
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 10,
+                            display: 'flex',
+                            alignItems: 'flex-end',
+                            justifyContent: 'space-between',
+                            gap: 24,
+                            flexWrap: 'wrap',
+                            padding: '0 clamp(20px, 4vw, 48px) 40px',
                         }}
                     >
-                        {displayTenants.length} tenants ·
-                        <span style={{ color: T.accent, marginLeft: 6 }}>{categoriesToRender.length} categories</span>
+                        {/* Floor headline */}
+                        <div className="floor-banner-headline" style={{ maxWidth: 640, overflow: 'visible' }}>
+                            <div className="floor-banner-kicker">
+                                <span style={{ width: 20, height: 1, background: '#E8B864', flexShrink: 0 }} />
+                                <span>{`Section 0${FLOORS.findIndex((f) => f.id === active) + 1} · ${floor.caption.toUpperCase()}`}</span>
+                            </div>
+                            <div className="floor-banner-title-wrap" style={{ marginBottom: 12, paddingTop: 8 }}>
+                                <h2
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'baseline',
+                                        gap: 14,
+                                        fontFamily: T.serif,
+                                        fontSize: 'clamp(44px, 5.8vw, 78px)',
+                                        fontWeight: 300,
+                                        lineHeight: 1.18,
+                                        letterSpacing: 0,
+                                        color: '#fff',
+                                        margin: 0,
+                                        overflow: 'visible',
+                                    }}
+                                >
+                                    <em
+                                        className="floor-title-gold"
+                                        style={{ display: 'inline-block', fontStyle: 'italic', fontWeight: 300, paddingRight: '0.08em' }}
+                                    >
+                                        {floorTitleMain}
+                                    </em>
+                                    {floorTitleSuffix ? (
+                                        <span
+                                            style={{
+                                                fontFamily: T.serif,
+                                                fontSize: 'clamp(24px, 3.1vw, 42px)',
+                                                fontWeight: 300,
+                                                fontStyle: 'italic',
+                                                color: 'rgba(255,255,255,0.75)',
+                                                letterSpacing: 0,
+                                            }}
+                                        >{` ${floorTitleSuffix}`}</span>
+                                    ) : null}
+                                </h2>
+                            </div>
+                            <div
+                                className="floor-banner-sub"
+                                style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', fontWeight: 400, letterSpacing: '0.01em' }}
+                            >
+                                {floor.caption}
+                            </div>
+                        </div>
+
+                        {/* Stats — right-aligned, with | separator, matching reference */}
+                        <div className="floor-banner-stats" style={{ marginBottom: 4 }}>
+                            <div className="floor-banner-stat-line">
+                                <span className="floor-banner-stat-num">{animatedTenantCount}</span>
+                                <span style={{ color: 'rgba(255,255,255,0.45)' }}>·</span>
+                                <span style={{ color: 'rgba(255,255,255,0.6)' }}>TENANTS</span>
+                            </div>
+                            <div className="floor-banner-stat-divider" />
+                            <div className="floor-banner-stat-line">
+                                <span className="floor-banner-stat-num">{animatedCategoryCount}</span>
+                                <span style={{ color: 'rgba(255,255,255,0.45)' }}>·</span>
+                                <span style={{ color: 'rgba(255,255,255,0.6)' }}>CATEGORIES</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── PROGRESS BAR ── */}
+                    <div aria-hidden="true" className="floor-banner-progress">
+                        <div
+                            className="floor-progress-fill"
+                            style={{
+                                height: '100%',
+                                width: `${((activeFloorIndex + 1) / FLOORS.length) * 100}%`,
+                                background: 'linear-gradient(90deg, #E8B864, #FFD998)',
+                                boxShadow: '0 0 8px rgba(232,184,100,0.6)',
+                            }}
+                        />
                     </div>
                 </div>
 
@@ -1385,12 +2130,12 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                     style={{
                         position: 'relative',
                         maxWidth: 1280,
-                        margin: '0 auto 34px',
+                        margin: '24px auto 34px',
                         display: 'flex',
                         flexWrap: 'wrap',
                         gap: 12,
                         alignItems: 'center',
-                        padding: '0 4px',
+                        padding: '0 48px',
                     }}
                 >
                     {filteredCats.map((cat) => (
@@ -1406,14 +2151,204 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                 <div
                     key={`${floorMotionId}-tenant-list`}
                     className="tenant-floor-tenants-motion"
-                    style={{ position: 'relative', maxWidth: 1280, margin: '36px auto 0' }}
+                    style={{ position: 'relative', maxWidth: 1280, margin: '36px auto 0', padding: '0 48px 96px' }}
                 >
                     {displayTenants.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                            {displayTenants.map((tenant, index) => (
-                                <TenantCard key={tenant.id || index} tenant={tenant} idx={index} onClick={() => openTenantDetail(tenant)} />
-                            ))}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                                {pagedTenants.map((tenant, index) => (
+                                    <TenantCard
+                                        key={tenant.id || `${safeTenantPage}-${index}`}
+                                        tenant={tenant}
+                                        idx={safeTenantPage * tenantPageSize + index}
+                                        onClick={() => openTenantDetail(tenant)}
+                                    />
+                                ))}
+                            </div>
+
+                            {totalTenantPages > 1 ? (
+                                <>
+                                    <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-between md:flex">
+                                        <button
+                                            type="button"
+                                            onClick={() => setTenantPage((currentPage) => Math.max(0, currentPage - 1))}
+                                            disabled={safeTenantPage === 0}
+                                            aria-label="Previous tenant slide"
+                                            className="pointer-events-auto"
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 52,
+                                                height: 52,
+                                                borderRadius: '50%',
+                                                border: `1px solid ${safeTenantPage === 0 ? `${T.ink}12` : `${T.ink}26`}`,
+                                                background: safeTenantPage === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(12,7,20,0.78)',
+                                                color: safeTenantPage === 0 ? 'rgba(255,255,255,0.28)' : T.ink,
+                                                cursor: safeTenantPage === 0 ? 'not-allowed' : 'pointer',
+                                                transition:
+                                                    'transform .32s ease, background .32s ease, border-color .32s ease, color .32s ease, box-shadow .32s ease, opacity .32s ease',
+                                                backdropFilter: 'blur(10px)',
+                                                boxShadow: safeTenantPage === 0 ? 'none' : '0 14px 30px rgba(0,0,0,0.28)',
+                                                transform: 'translateX(-64px)',
+                                                opacity: safeTenantPage === 0 ? 0.45 : 0.92,
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (safeTenantPage === 0) return;
+                                                e.currentTarget.style.transform = 'translateX(-68px) scale(1.06)';
+                                                e.currentTarget.style.background = 'rgba(22,14,34,0.92)';
+                                                e.currentTarget.style.boxShadow = '0 18px 36px rgba(0,0,0,0.34)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'translateX(-64px) scale(1)';
+                                                e.currentTarget.style.background =
+                                                    safeTenantPage === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(12,7,20,0.78)';
+                                                e.currentTarget.style.boxShadow = safeTenantPage === 0 ? 'none' : '0 14px 30px rgba(0,0,0,0.28)';
+                                            }}
+                                        >
+                                            <svg
+                                                aria-hidden="true"
+                                                viewBox="0 0 24 24"
+                                                style={{ width: 22, height: 22 }}
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2.1"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 5l-7 7 7 7" />
+                                            </svg>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setTenantPage((currentPage) => Math.min(totalTenantPages - 1, currentPage + 1))}
+                                            disabled={safeTenantPage >= totalTenantPages - 1}
+                                            aria-label="Next tenant slide"
+                                            className="pointer-events-auto"
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 52,
+                                                height: 52,
+                                                borderRadius: '50%',
+                                                border: `1px solid ${safeTenantPage >= totalTenantPages - 1 ? `${T.accent}16` : `${T.accent}3A`}`,
+                                                background: safeTenantPage >= totalTenantPages - 1 ? 'rgba(220,165,86,0.07)' : 'rgba(36,19,8,0.88)',
+                                                color: safeTenantPage >= totalTenantPages - 1 ? 'rgba(255,255,255,0.32)' : T.accent,
+                                                cursor: safeTenantPage >= totalTenantPages - 1 ? 'not-allowed' : 'pointer',
+                                                transition:
+                                                    'transform .32s ease, background .32s ease, border-color .32s ease, color .32s ease, box-shadow .32s ease, opacity .32s ease',
+                                                backdropFilter: 'blur(10px)',
+                                                boxShadow: safeTenantPage >= totalTenantPages - 1 ? 'none' : `0 16px 34px ${T.accent}24`,
+                                                transform: 'translateX(64px)',
+                                                opacity: safeTenantPage >= totalTenantPages - 1 ? 0.45 : 0.96,
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (safeTenantPage >= totalTenantPages - 1) return;
+                                                e.currentTarget.style.transform = 'translateX(68px) scale(1.06)';
+                                                e.currentTarget.style.background = 'rgba(58,31,10,0.98)';
+                                                e.currentTarget.style.boxShadow = `0 20px 40px ${T.accent}2C`;
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'translateX(64px) scale(1)';
+                                                e.currentTarget.style.background =
+                                                    safeTenantPage >= totalTenantPages - 1 ? 'rgba(220,165,86,0.07)' : 'rgba(36,19,8,0.88)';
+                                                e.currentTarget.style.boxShadow =
+                                                    safeTenantPage >= totalTenantPages - 1 ? 'none' : `0 16px 34px ${T.accent}24`;
+                                            }}
+                                        >
+                                            <svg
+                                                aria-hidden="true"
+                                                viewBox="0 0 24 24"
+                                                style={{ width: 22, height: 22 }}
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2.1"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div
+                                        className="flex items-center justify-center gap-4 md:hidden"
+                                        style={{
+                                            marginTop: 24,
+                                        }}
+                                    >
+                                        <button
+                                            type="button"
+                                            onClick={() => setTenantPage((currentPage) => Math.max(0, currentPage - 1))}
+                                            disabled={safeTenantPage === 0}
+                                            aria-label="Previous tenant slide"
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 46,
+                                                height: 46,
+                                                borderRadius: '50%',
+                                                border: `1px solid ${safeTenantPage === 0 ? `${T.ink}12` : `${T.ink}26`}`,
+                                                background: safeTenantPage === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(12,7,20,0.78)',
+                                                color: safeTenantPage === 0 ? 'rgba(255,255,255,0.28)' : T.ink,
+                                            }}
+                                        >
+                                            <svg
+                                                aria-hidden="true"
+                                                viewBox="0 0 24 24"
+                                                style={{ width: 20, height: 20 }}
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2.1"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 5l-7 7 7 7" />
+                                            </svg>
+                                        </button>
+
+                                        <div
+                                            style={{
+                                                minWidth: 64,
+                                                textAlign: 'center',
+                                                fontFamily: T.mono,
+                                                fontSize: 11,
+                                                letterSpacing: '.16em',
+                                                color: T.accent,
+                                            }}
+                                        >
+                                            {safeTenantPage + 1} / {totalTenantPages}
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setTenantPage((currentPage) => Math.min(totalTenantPages - 1, currentPage + 1))}
+                                            disabled={safeTenantPage >= totalTenantPages - 1}
+                                            aria-label="Next tenant slide"
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 46,
+                                                height: 46,
+                                                borderRadius: '50%',
+                                                border: `1px solid ${safeTenantPage >= totalTenantPages - 1 ? `${T.accent}16` : `${T.accent}3A`}`,
+                                                background: safeTenantPage >= totalTenantPages - 1 ? 'rgba(220,165,86,0.07)' : 'rgba(36,19,8,0.88)',
+                                                color: safeTenantPage >= totalTenantPages - 1 ? 'rgba(255,255,255,0.32)' : T.accent,
+                                            }}
+                                        >
+                                            <svg
+                                                aria-hidden="true"
+                                                viewBox="0 0 24 24"
+                                                style={{ width: 20, height: 20 }}
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2.1"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </>
+                            ) : null}
+                        </>
                     ) : (
                         <div
                             style={{
