@@ -2577,7 +2577,7 @@
     function selectTenant(id) {
       const t = TENANTS[id];
       if (!t) return;
-      const floorConfig = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["1f"];
+      const floorConfig = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["gf"];
       const floorLabel = activeFloorId === "gf"
         ? "ground floor"
         : activeFloorId === "2f"
@@ -2636,11 +2636,13 @@
           c.classList.add("active");
           const strip = document.getElementById("tenantStrip");
           if (strip) {
-            const chipTop = c.offsetTop - strip.offsetTop;
-            const chipBottom = chipTop + c.offsetHeight;
+            const stripRect = strip.getBoundingClientRect();
+            const chipRect = c.getBoundingClientRect();
+            const chipRelTop = chipRect.top - stripRect.top + strip.scrollTop;
+            const chipRelBottom = chipRelTop + c.offsetHeight;
             const visible = strip.scrollTop + strip.clientHeight;
-            if (chipTop < strip.scrollTop || chipBottom > visible) {
-              strip.scrollTo({ top: chipTop - 8, behavior: "smooth" });
+            if (chipRelTop < strip.scrollTop || chipRelBottom > visible) {
+              strip.scrollTo({ top: chipRelTop - 8, behavior: "smooth" });
             }
           }
         } else {
