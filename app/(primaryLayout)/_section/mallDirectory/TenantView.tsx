@@ -567,6 +567,7 @@ function TenantCard({ tenant, idx, onClick }: { tenant: TenantRecord; idx: numbe
                 />
 
                 <div
+                    className="mall-directory-tenant-card-info"
                     style={{
                         position: 'absolute',
                         bottom: 0,
@@ -582,6 +583,7 @@ function TenantCard({ tenant, idx, onClick }: { tenant: TenantRecord; idx: numbe
                     }}
                 >
                     <h4
+                        className="mall-directory-tenant-card-title"
                         style={{
                             fontFamily: T.sans,
                             fontWeight: 800,
@@ -610,6 +612,7 @@ function TenantCard({ tenant, idx, onClick }: { tenant: TenantRecord; idx: numbe
                         }}
                     >
                         <div
+                            className="mall-directory-tenant-card-badge"
                             style={{
                                 fontFamily: T.mono,
                                 fontSize: isLarge ? 11 : 10,
@@ -628,6 +631,7 @@ function TenantCard({ tenant, idx, onClick }: { tenant: TenantRecord; idx: numbe
                         </div>
                         {tenant.lokasi?.nama_mall && (
                             <div
+                                className="mall-directory-tenant-card-mall"
                                 style={{
                                     fontFamily: T.sans,
                                     fontSize: isLarge ? 13 : 11,
@@ -1882,6 +1886,33 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         .tenant-floor-tenants-motion > .grid {
                             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                             gap: 12px !important;
+                        }
+                        /* Force all cards to square aspect on mobile (override bento 2/1) */
+                        .tenant-floor-tenants-motion .mall-directory-tenant-card-shell {
+                            aspect-ratio: 1 / 1 !important;
+                            grid-column: span 1 !important;
+                        }
+                        /* Compact card content for mobile */
+                        .mall-directory-tenant-card-info {
+                            padding: 14px !important;
+                            gap: 5px !important;
+                        }
+                        .mall-directory-tenant-card-title {
+                            font-size: 14.5px !important;
+                            white-space: normal !important;
+                            display: -webkit-box !important;
+                            -webkit-line-clamp: 2 !important;
+                            -webkit-box-orient: vertical !important;
+                            overflow: hidden !important;
+                            line-height: 1.2 !important;
+                        }
+                        .mall-directory-tenant-card-badge {
+                            font-size: 8.5px !important;
+                            padding: 3px 7px !important;
+                            letter-spacing: 0.08em !important;
+                        }
+                        .mall-directory-tenant-card-mall {
+                            font-size: 10px !important;
                         }
                     }
 
