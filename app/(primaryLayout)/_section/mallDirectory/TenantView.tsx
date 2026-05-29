@@ -323,6 +323,7 @@ function CategoryButton({ cat, isSelected, onClick }: { cat: DynamicCategory; is
     return (
         <button
             type="button"
+            className="tenant-category-button"
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
             onClick={onClick}
@@ -1802,6 +1803,57 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
 
                         .floor-banner-topbar {
                             gap: 10px;
+                        }
+                    }
+
+                    /* Mobile category chips — horizontal scroll, compact padding */
+                    @media (max-width: 768px) {
+                        .tenant-floor-filters-motion {
+                            margin: 14px auto 18px !important;
+                            padding: 0 14px !important;
+                            flex-wrap: nowrap !important;
+                            overflow-x: auto;
+                            scroll-snap-type: x mandatory;
+                            -webkit-overflow-scrolling: touch;
+                            scrollbar-width: none;
+                            gap: 8px !important;
+                        }
+                        .tenant-floor-filters-motion::-webkit-scrollbar {
+                            display: none;
+                        }
+                        .tenant-floor-filters-motion > * {
+                            flex: 0 0 auto;
+                            scroll-snap-align: start;
+                        }
+
+                        /* Mobile tenant grid — 2 columns, tighter gap, smaller padding */
+                        .tenant-floor-tenants-motion {
+                            margin: 18px auto 0 !important;
+                            padding: 0 14px 48px !important;
+                        }
+                        .tenant-floor-tenants-motion > .grid {
+                            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                            gap: 12px !important;
+                        }
+                    }
+
+                    @media (max-width: 768px) {
+                        .tenant-category-button {
+                            font-size: 11.5px !important;
+                            padding: 7px 12px 7px 10px !important;
+                            gap: 7px !important;
+                        }
+                        .tenant-category-button > span:last-child {
+                            min-width: 18px !important;
+                            height: 18px !important;
+                            font-size: 10.5px !important;
+                            padding: 0 5px !important;
+                        }
+                    }
+
+                    @media (max-width: 380px) {
+                        .tenant-floor-tenants-motion > .grid {
+                            grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
                         }
                     }
                 `}</style>
