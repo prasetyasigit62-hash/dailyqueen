@@ -82,12 +82,12 @@
     },
     "gf-15": {
       "code": "GF-15",
-      "name": "BOOST",
+      "name": "BOOST JUICE",
       "cat": ""
     },
     "gf-16": {
       "code": "GF-16",
-      "name": "CROCO BY MS",
+      "name": "CROCO BY MONSIEUR SPOON",
       "cat": ""
     },
     "gf-16a": {
@@ -202,7 +202,7 @@
     },
     "gf-pro1": {
       "code": "GF - PRO 1",
-      "name": "U-BEATZ",
+      "name": "U BEATZ CAFE CABIN",
       "cat": ""
     },
     "gf-pro2": {
@@ -212,7 +212,7 @@
     },
     "gf-pro3a": {
       "code": "GF - PRO 3A",
-      "name": "PEPPERLUNCH",
+      "name": "PEPPER LUNCH",
       "cat": ""
     },
     "gf-pro3b": {
@@ -222,12 +222,12 @@
     },
     "gf-pro4a": {
       "code": "GF - PRO 4A",
-      "name": "BLOOMERY",
+      "name": "BLOOMERY JOY-MART",
       "cat": ""
     },
     "gf-pro4b": {
       "code": "GF - PRO 4B",
-      "name": "ALCHEMY",
+      "name": "ALCHEMY TEA",
       "cat": ""
     },
     "gf-pro5": {
@@ -262,7 +262,7 @@
     },
     "gf-spma1": {
       "code": "GF - SPMA1",
-      "name": "HERO",
+      "name": "HERO SUPER MARKET",
       "cat": ""
     },
     "gf-spmexth": {
@@ -313,7 +313,7 @@
     },
     "l1-11": {
       "code": "L1-11",
-      "name": "SALON RUDY HADISUWARNO",
+      "name": "RUDY HADISUWARNO SALON",
       "cat": "Lantai 1",
       "door": [
         310,
@@ -322,7 +322,7 @@
     },
     "l1-9810": {
       "code": "L1-9810",
-      "name": "BAGS CITY",
+      "name": "BAG'S CITY",
       "cat": "Lantai 1",
       "door": [
         422,
@@ -349,7 +349,7 @@
     },
     "l1-06": {
       "code": "L1-06",
-      "name": "ARABELLE - HASYA HIJAB",
+      "name": "ARABELLE",
       "cat": "Lantai 1",
       "door": [
         666,
@@ -358,7 +358,7 @@
     },
     "l1-05": {
       "code": "L1-05",
-      "name": "SKIN +",
+      "name": "SKIN+",
       "cat": "Lantai 1",
       "door": [
         683,
@@ -376,7 +376,7 @@
     },
     "l1-22b": {
       "code": "L1-22B",
-      "name": "MANDALIKA",
+      "name": "MANDALIKA PARFUM",
       "cat": "Lantai 1",
       "door": [
         579,
@@ -394,7 +394,7 @@
     },
     "l1-29": {
       "code": "L1-29",
-      "name": "HASSYA",
+      "name": "HASSYA HIJAB",
       "cat": "Lantai 1",
       "door": [
         711,
@@ -457,7 +457,7 @@
     },
     "l1-20": {
       "code": "L1-20",
-      "name": "TRISET WATCHOUT",
+      "name": "WATCHOUT TRISET",
       "cat": "Lantai 1",
       "door": [
         1059,
@@ -547,7 +547,7 @@
     },
     "l1-23": {
       "code": "L1-23",
-      "name": "SATURDAY",
+      "name": "SATURDAYS",
       "cat": "Lantai 1",
       "door": [
         1081,
@@ -576,7 +576,7 @@
   "2f": {
     "l2-22a": {
       "code": "L2-22A",
-      "name": "SOL",
+      "name": "SOL SNEAKERS & APPAREL",
       "cat": "Lantai 2",
       "door": [
         480,
@@ -594,7 +594,7 @@
     },
     "l2-23a": {
       "code": "L2-23A",
-      "name": "PANLAND WOO",
+      "name": "PANLANDWOO",
       "cat": "Lantai 2",
       "door": [
         560,
@@ -630,7 +630,7 @@
     },
     "l2-32": {
       "code": "L2-32",
-      "name": "OPPO",
+      "name": "OPPO EXPERIENCE STORE",
       "cat": "Lantai 2",
       "door": [
         756,
@@ -639,7 +639,7 @@
     },
     "l2-42": {
       "code": "L2-42",
-      "name": "BFIT",
+      "name": "B-FIT",
       "cat": "Lantai 2",
       "door": [
         941,
@@ -648,7 +648,7 @@
     },
     "l2-28": {
       "code": "L2-28",
-      "name": "XIAOMI",
+      "name": "XIAOMI STORE",
       "cat": "Lantai 2",
       "door": [
         995,
@@ -693,7 +693,7 @@
     },
     "l2-a1": {
       "code": "L2-A1",
-      "name": "FUN WORLD",
+      "name": "FUNWORLD",
       "cat": "Lantai 2",
       "door": [
         1146,
@@ -792,7 +792,7 @@
     },
     "l2-12": {
       "code": "L2-12",
-      "name": "CAVALLO",
+      "name": "CAVALLO ACC",
       "cat": "Lantai 2",
       "door": [
         831,
@@ -810,7 +810,7 @@
     },
     "l2-46": {
       "code": "L2-46",
-      "name": "POKEMON",
+      "name": "POKEMON MEZASTAR",
       "cat": "Lantai 2",
       "door": [
         870,
@@ -873,7 +873,7 @@
     },
     "l2-18b": {
       "code": "L2-18B",
-      "name": "WAXHAUSE",
+      "name": "WAXHAUS",
       "cat": "Lantai 2",
       "door": [
         408,
@@ -945,7 +945,7 @@
     },
     "l2-fp01": {
       "code": "L2-FP01",
-      "name": "PENMO",
+      "name": "PENMO PENTOL BASO SOLO",
       "cat": "Lantai 2",
       "door": [
         562,
@@ -1035,7 +1035,7 @@
     },
     "l2-fp08": {
       "code": "L2-FP08",
-      "name": "HORAI COCONUT",
+      "name": "HORAI COCONUT SHAKE",
       "cat": "Lantai 2",
       "door": [
         523,
