@@ -2669,6 +2669,56 @@
       }
     }
 
+    // Refetch live API only (skip re-reading static JSON) and re-render chips
+    async function refreshLiveTenants() {
+      try {
+        const apiRes = await fetch('/api/maps-tenants?_=' + Date.now(), {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
+        if (!apiRes.ok) return;
+        const api = await apiRes.json();
+        LIVE_API_DATA = api;
+        mergeApiData(TENANTS_GF, api);
+        mergeApiData(TENANTS_1F, api);
+        mergeApiData(TENANTS_2F, api);
+        mergeApiData(TENANTS_3F, api);
+        if (typeof FLOOR_CONFIG !== 'undefined') {
+          FLOOR_CONFIG.gf.tenants  = TENANTS_GF;
+          FLOOR_CONFIG['1f'].tenants = TENANTS_1F;
+          FLOOR_CONFIG['2f'].tenants = TENANTS_2F;
+          FLOOR_CONFIG['3f'].tenants = TENANTS_3F;
+          const currentConfig = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG.gf;
+          TENANTS = currentConfig.tenants || {};
+          if (typeof renderTenantStrip === 'function') renderTenantStrip();
+        }
+      } catch (e) {
+        console.warn('[Maps] Live tenant refresh failed', e);
+      }
+    }
+
+    // Refresh tenant names on tab focus and every 20s while tab visible
+    let liveTenantPoller = null;
+    function startLiveTenantPolling() {
+      if (liveTenantPoller) return;
+      liveTenantPoller = window.setInterval(() => {
+        if (document.visibilityState === 'visible') refreshLiveTenants();
+      }, 20000);
+    }
+    function stopLiveTenantPolling() {
+      if (liveTenantPoller) { window.clearInterval(liveTenantPoller); liveTenantPoller = null; }
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        refreshLiveTenants();
+        startLiveTenantPolling();
+      } else {
+        stopLiveTenantPolling();
+      }
+    });
+    window.addEventListener('focus', refreshLiveTenants);
+    startLiveTenantPolling();
+
 
     let TENANTS = TENANTS_1F;
 

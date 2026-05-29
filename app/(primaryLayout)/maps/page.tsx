@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 
 export default function MapsPage() {
     const iframeRef = useRef<HTMLIFrameElement>(null);
+    const iframeSrc = useMemo(() => `/maps/index.html?v=${Date.now()}#mapWrap`, []);
 
     const focusMapArea = () => {
         window.setTimeout(() => {
@@ -27,7 +28,7 @@ export default function MapsPage() {
             <iframe
                 ref={iframeRef}
                 title="Queen City Mall Maps"
-                src="/maps/index.html#mapWrap"
+                src={iframeSrc}
                 className="w-full border-0"
                 style={{ height: 'calc(100svh - 4rem)' }}
                 onLoad={focusMapArea}
