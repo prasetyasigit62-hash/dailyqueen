@@ -36,7 +36,7 @@ const DEFAULT_OPENING_HOURS = '10.00 - 22.00 WIB';
 const MAP_IMAGE = '/maps/1st FLOOR.png';
 const SECOND_F_MAP_IMAGE = '/maps/2nd Floor.png';
 const GF_MAP_IMAGE = '/maps/GF FLOOR-ultra.png';
-const THIRD_F_MAP_IMAGE = '/maps/3rd Floor.png';
+const THIRD_F_MAP_IMAGE = '/maps/FLOOR3.png';
 const QUEEN_CITY_INSTAGRAM_URL = 'https://www.instagram.com/queencitymall/';
 const MAP_SIZE = {
     width: 1448,
