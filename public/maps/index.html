@@ -3349,7 +3349,6 @@
         const hasHotspot = item.id && (!config.hotspotIds || config.hotspotIds.includes(item.id));
         const chip = document.createElement("button");
         chip.className = "tenant-chip";
-        if (!config.hasTenantHotspots || !hasHotspot) chip.classList.add("tenant-chip--static");
         chip.textContent = item.name;
         if (item.id) chip.dataset.id = item.id;
         chip.title = item.name;
@@ -3357,6 +3356,24 @@
           chip.onclick = () => {
             selectTenant(item.id);
             focusTenantOnMap(item.id);
+          };
+        } else {
+          chip.onclick = () => {
+            const floorLabel = FLOOR_LABEL[activeFloorId] || '';
+            selectedId = null;
+            panel.classList.remove("panel-top", "panel-bottom");
+            panel.classList.add("panel-top");
+            openInfoPanel();
+            document.getElementById("infoCat").textContent = item.cat || floorLabel || "Tenant";
+            document.getElementById("infoName").textContent = item.name;
+            document.getElementById("infoDesc").textContent = `${item.name} berada di ${floorLabel.toLowerCase()} Queen City Mall.`;
+            document.getElementById("infoLoc").textContent = floorLabel || "—";
+            document.getElementById("infoDist").textContent = "—";
+            clearTenantRunners();
+            document.querySelectorAll(".tenant-spot").forEach(spot => spot.classList.remove("active"));
+            document.querySelectorAll(".tenant-chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            focusMapDisplay();
           };
         }
         stripEl.appendChild(chip);
