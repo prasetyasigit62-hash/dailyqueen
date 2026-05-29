@@ -141,8 +141,8 @@ function renderFloorTitle(label: string, variant: 'default' | 'hover') {
             <span
                 className={classNames(
                     variant === 'default'
-                        ? 'font-sans text-[35px] font-medium leading-none tracking-normal text-white drop-shadow-[0_3px_14px_rgba(0,0,0,0.55)] lg:text-[37px]'
-                        : 'text-[24px] font-extrabold leading-none tracking-normal text-white drop-shadow-[0_3px_16px_rgba(0,0,0,0.6)]'
+                        ? 'font-sans text-[18px] font-medium leading-none tracking-normal text-white drop-shadow-[0_3px_14px_rgba(0,0,0,0.55)] md:text-[28px] lg:text-[37px]'
+                        : 'text-[14px] font-extrabold leading-none tracking-normal text-white drop-shadow-[0_3px_16px_rgba(0,0,0,0.6)] md:text-[20px] lg:text-[24px]'
                 )}
             >
                 Ground Floor
@@ -155,15 +155,15 @@ function renderFloorTitle(label: string, variant: 'default' | 'hover') {
             className={classNames(
                 'leading-none tracking-normal',
                 variant === 'default'
-                    ? 'font-sans text-[35px] font-medium text-white drop-shadow-[0_3px_14px_rgba(0,0,0,0.55)] lg:text-[37px]'
-                    : 'text-[24px] font-extrabold text-white drop-shadow-[0_3px_16px_rgba(0,0,0,0.6)]'
+                    ? 'font-sans text-[18px] font-medium text-white drop-shadow-[0_3px_14px_rgba(0,0,0,0.55)] md:text-[28px] lg:text-[37px]'
+                    : 'text-[14px] font-extrabold text-white drop-shadow-[0_3px_16px_rgba(0,0,0,0.6)] md:text-[20px] lg:text-[24px]'
             )}
         >
             {label.charAt(0)}
             <sup
                 className={classNames(
                     'mr-0.5 align-super italic',
-                    variant === 'default' ? 'text-[17px] font-medium lg:text-[19px]' : 'text-[11px] font-semibold'
+                    variant === 'default' ? 'text-[10px] font-medium md:text-[14px] lg:text-[19px]' : 'text-[8px] font-semibold md:text-[10px] lg:text-[11px]'
                 )}
             >
                 {getFloorSuffix(label)}
@@ -378,7 +378,7 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                             </svg>
                         </div>
                         <form onSubmit={submitSearch} className="relative mr-2 lg:mr-4">
-                            <div className="flex min-w-[220px] items-center gap-3 border-b border-white/55 pb-1 text-[15px] italic text-white/68 drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)] transition duration-300 focus-within:border-white/90 focus-within:text-white hover:border-white/85 hover:text-white lg:min-w-[250px] lg:text-[16px]">
+                            <div className="flex w-[140px] min-w-0 items-center gap-2 border-b border-white/55 pb-1 text-[13px] italic text-white/68 drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)] transition duration-300 focus-within:border-white/90 focus-within:text-white hover:border-white/85 hover:text-white md:w-auto md:min-w-[220px] md:gap-3 md:text-[15px] lg:min-w-[250px] lg:text-[16px]">
                                 <button type="submit" aria-label="Search tenants" className="shrink-0">
                                     <svg
                                         aria-hidden="true"
@@ -424,7 +424,7 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                         </form>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-[10px] bg-[#0a0a0a] px-5 pb-5 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-[8px] bg-[#0a0a0a] px-3 pb-4 md:grid-cols-2 md:gap-[10px] md:px-5 md:pb-5 lg:grid-cols-4">
                         {floorDesign.map((design, index) => {
                             const floorId = getFloorId(design.label);
 
@@ -443,7 +443,7 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                                     <div
                                         data-floor-id={floorId}
                                         className={classNames(
-                                            'group relative h-full aspect-[9/14] w-full cursor-pointer overflow-hidden rounded-2xl text-left transition duration-[600ms] ease-out',
+                                            'group relative h-full aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-xl text-left transition duration-[600ms] ease-out md:aspect-[9/14] md:rounded-2xl',
                                             'animate-[rise_0.65s_ease-out_backwards] before:pointer-events-none before:absolute before:bottom-0 before:top-0 before:z-10 before:w-[55px] before:-translate-x-[120%] before:-skew-x-12 before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] before:content-[""] hover:z-20 hover:-translate-y-[3px] hover:scale-[1.022] hover:shadow-[0_24px_50px_rgba(0,0,0,0.7)] hover:before:animate-[shine_1s_ease-out_forwards]'
                                         )}
                                         style={{ animationDelay: `${0.05 + index * 0.09}s` }}
