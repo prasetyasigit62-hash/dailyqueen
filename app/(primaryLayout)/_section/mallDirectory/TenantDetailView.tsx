@@ -812,7 +812,7 @@ export default function TenantDetailView({ tenant, onBack }: TenantDetailViewPro
                 </div>
 
                 <div className="relative min-h-[245px] bg-black px-6 pb-14 pt-6 md:px-12 md:pb-16 lg:px-[60px] lg:pb-16 lg:pt-7">
-                    <div className="ml-auto grid max-w-[1320px] gap-9 lg:grid-cols-[minmax(260px,0.68fr)_minmax(620px,1.12fr)] xl:grid-cols-[minmax(280px,0.62fr)_minmax(720px,1.18fr)]">
+                    <div className="mx-auto grid max-w-[1320px] gap-9 lg:grid-cols-[minmax(260px,0.68fr)_minmax(620px,1.12fr)] xl:grid-cols-[minmax(280px,0.62fr)_minmax(720px,1.18fr)]">
                         <div className="pt-2 lg:pt-5">
                             <div className="mb-3 flex items-center gap-[7px] text-[10px] font-semibold uppercase text-white/82">
                                 <span className="h-[7px] w-[7px] rounded-full border border-white bg-[#e0141e]" />
@@ -860,7 +860,7 @@ export default function TenantDetailView({ tenant, onBack }: TenantDetailViewPro
                             </div>
                         </div>
 
-                        <div className="w-full max-w-[920px] self-start pt-2 lg:ml-auto lg:translate-x-8 lg:pt-5 xl:max-w-[980px] xl:translate-x-12">
+                        <div className="w-full max-w-[920px] self-start pt-2 lg:pt-5 xl:max-w-[980px]">
                             <div className="mb-2 flex items-center justify-between">
                                 <h2 className="text-[17px] font-light leading-none text-white md:text-[19px]">Find your way</h2>
                                 <span className="-rotate-45 text-white/78">
