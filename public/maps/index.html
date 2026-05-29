@@ -3270,31 +3270,30 @@
       stripEl.classList.remove("expanded");
       if (stripToggleEl) stripToggleEl.textContent = "Show more";
 
-      // Source of truth: LIVE_API_DATA.byFloor[activeFloorId] (real-time from database)
-      // Fallback: TENANTS (from static JSON)
+      // Merge live API list (source of truth for active tenants) with JSON entries (fallback for tenants not in API)
       const liveList = (LIVE_API_DATA.byFloor && LIVE_API_DATA.byFloor[activeFloorId]) || [];
       const seen = new Set();
       const uniqueEntries = [];
 
-      if (liveList.length > 0) {
-        liveList.forEach(item => {
-          const name = (item.name || '').trim();
-          if (!name) return;
-          const key = name.toUpperCase();
-          if (seen.has(key)) return;
-          seen.add(key);
-          const hotspotId = findHotspotIdByName(name);
-          uniqueEntries.push({ id: hotspotId, name, apiId: item.id, cat: item.cat });
-        });
-      } else {
-        Object.entries(TENANTS).forEach(([id, t]) => {
-          if (!t.name || !t.name.trim()) return;
-          const key = t.name.trim().toUpperCase();
-          if (seen.has(key)) return;
-          seen.add(key);
-          uniqueEntries.push({ id, name: t.name, apiId: t.apiId, cat: t.cat });
-        });
-      }
+      // 1) Live API tenants first
+      liveList.forEach(item => {
+        const name = (item.name || '').trim();
+        if (!name) return;
+        const key = name.toUpperCase().replace(/\s+/g, ' ').trim();
+        if (seen.has(key)) return;
+        seen.add(key);
+        const hotspotId = findHotspotIdByName(name);
+        uniqueEntries.push({ id: hotspotId, name, apiId: item.id, cat: item.cat });
+      });
+
+      // 2) JSON-only tenants (in static map but not in API response — likely filtered as inactive)
+      Object.entries(TENANTS).forEach(([id, t]) => {
+        if (!t.name || !t.name.trim()) return;
+        const key = t.name.trim().toUpperCase().replace(/\s+/g, ' ');
+        if (seen.has(key)) return;
+        seen.add(key);
+        uniqueEntries.push({ id, name: t.name, apiId: t.apiId, cat: t.cat });
+      });
 
       uniqueEntries.forEach(item => {
         const hasHotspot = item.id && (!config.hotspotIds || config.hotspotIds.includes(item.id));
