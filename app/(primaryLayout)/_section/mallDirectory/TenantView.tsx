@@ -1861,14 +1861,15 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                     /* Mobile category chips — horizontal scroll, compact padding */
                     @media (max-width: 768px) {
                         .tenant-floor-filters-motion {
-                            margin: 14px auto 18px !important;
-                            padding: 0 14px !important;
+                            margin: 12px auto 14px !important;
+                            padding: 8px 14px 10px !important;
                             flex-wrap: nowrap !important;
                             overflow-x: auto;
+                            overflow-y: visible;
                             scroll-snap-type: x mandatory;
                             -webkit-overflow-scrolling: touch;
                             scrollbar-width: none;
-                            gap: 8px !important;
+                            gap: 7px !important;
                         }
                         .tenant-floor-filters-motion::-webkit-scrollbar {
                             display: none;
@@ -1876,6 +1877,10 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         .tenant-floor-filters-motion > * {
                             flex: 0 0 auto;
                             scroll-snap-align: start;
+                        }
+                        /* Kill the lift/scale animation that overflows the container on mobile */
+                        .tenant-category-button {
+                            transform: none !important;
                         }
 
                         /* Mobile tenant grid — 2 columns, tighter gap, smaller padding */
@@ -1918,15 +1923,21 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
 
                     @media (max-width: 768px) {
                         .tenant-category-button {
-                            font-size: 11.5px !important;
-                            padding: 7px 12px 7px 10px !important;
-                            gap: 7px !important;
+                            font-size: 10.5px !important;
+                            padding: 5px 9px 5px 8px !important;
+                            gap: 6px !important;
+                            letter-spacing: 0 !important;
+                        }
+                        /* Indicator dot — second child after the sheen overlay (nth-child 2) */
+                        .tenant-category-button > span:nth-child(2) {
+                            width: 6px !important;
+                            height: 6px !important;
+                            box-shadow: none !important;
                         }
                         .tenant-category-button > span:last-child {
                             min-width: 18px !important;
-                            height: 18px !important;
-                            font-size: 10.5px !important;
-                            padding: 0 5px !important;
+                            font-size: 9px !important;
+                            padding: 2px 5px !important;
                         }
                     }
 
