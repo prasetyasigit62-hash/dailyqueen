@@ -1758,22 +1758,58 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
 
                         .floor-banner-topbar {
                             flex-wrap: wrap;
-                            gap: 12px;
-                            padding: 16px 20px 18px;
+                            gap: 10px 12px;
+                            padding: 14px 16px 14px;
+                            background: linear-gradient(180deg, rgba(10, 5, 22, 0.78) 0%, rgba(10, 5, 22, 0.15) 100%);
                         }
 
-                        .floor-banner-tabs {
-                            position: static;
-                            transform: none;
-                            order: 2;
-                            width: 100%;
-                            justify-content: center;
+                        /* Row 1: back+label (left) + search (right) */
+                        .floor-banner-topbar > div:first-child {
+                            order: 1;
+                            flex: 1 1 auto;
+                            min-width: 0;
+                            gap: 12px !important;
+                        }
+                        .floor-banner-topbar > div:first-child button[aria-label="Back"] {
+                            width: 36px !important;
+                            height: 36px !important;
+                        }
+                        .tenant-active-floor-label {
+                            font-size: 14px !important;
                         }
 
                         .floor-banner-search {
-                            order: 1;
+                            order: 2;
                             width: auto;
                             margin-left: auto;
+                            padding: 4px 0 6px;
+                        }
+                        .floor-banner-search .tenant-floor-search {
+                            font-size: 13px !important;
+                            width: 90px !important;
+                        }
+                        .floor-banner-search .tenant-floor-search:focus {
+                            width: 130px !important;
+                        }
+
+                        /* Row 2: full-width floor pills */
+                        .floor-banner-tabs {
+                            position: static;
+                            transform: none;
+                            order: 3;
+                            width: 100%;
+                            justify-content: space-between;
+                            padding: 4px 4px;
+                            gap: 0;
+                        }
+                        .floor-banner-tab {
+                            flex: 1 1 0;
+                            padding: 8px 6px;
+                            font-size: 11.5px;
+                            text-align: center;
+                        }
+                        .floor-banner-nav-arr {
+                            display: none;
                         }
 
                         .floor-banner-bottom-block {
@@ -1791,18 +1827,24 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         }
                     }
 
-                    @media (max-width: 480px) {
-                        .floor-banner-tab {
-                            padding: 8px 11px;
-                            font-size: 11px;
-                        }
-
-                        .floor-banner-nav-arr {
-                            display: none;
-                        }
-
+                    @media (max-width: 380px) {
                         .floor-banner-topbar {
-                            gap: 10px;
+                            padding: 12px 14px 12px;
+                        }
+                        .tenant-active-floor-label {
+                            font-size: 13px !important;
+                        }
+                        .floor-banner-tab {
+                            padding: 7px 4px;
+                            font-size: 10.5px;
+                            letter-spacing: 0.01em;
+                        }
+                        .floor-banner-search .tenant-floor-search {
+                            font-size: 12px !important;
+                            width: 72px !important;
+                        }
+                        .floor-banner-search .tenant-floor-search:focus {
+                            width: 110px !important;
                         }
                     }
 
