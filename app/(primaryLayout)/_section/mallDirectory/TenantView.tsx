@@ -297,7 +297,19 @@ function splitFloorLabel(label: string) {
 
 function CategoryButton({ cat, isSelected, onClick }: { cat: DynamicCategory; isSelected: boolean; onClick: () => void }) {
     const [isHover, setIsHover] = useState(false);
-    const isLifted = isHover || isSelected;
+    const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || !window.matchMedia) return;
+        const mql = window.matchMedia('(hover: none), (pointer: coarse)');
+        const update = () => setIsTouchDevice(mql.matches);
+        update();
+        mql.addEventListener?.('change', update);
+        return () => mql.removeEventListener?.('change', update);
+    }, []);
+
+    const effectiveHover = isTouchDevice ? false : isHover;
+    const isLifted = effectiveHover || isSelected;
     let buttonBackground = `linear-gradient(135deg, rgba(255,255,255,0.06) 0%, ${T.card} 54%, rgba(255,255,255,0.025) 100%)`;
     let buttonBorder = 'rgba(255,255,255,0.12)';
     let buttonShadow = 'inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 18px rgba(0,0,0,0.2)';
@@ -310,7 +322,7 @@ function CategoryButton({ cat, isSelected, onClick }: { cat: DynamicCategory; is
         buttonShadow = `0 16px 34px ${cat.accent}42, inset 0 1px 0 rgba(255,255,255,0.65)`;
         countColor = T.paper;
         countBackground = 'rgba(0,0,0,0.18)';
-    } else if (isHover) {
+    } else if (effectiveHover) {
         buttonBackground = `linear-gradient(135deg, rgba(255,255,255,0.13) 0%, ${cat.accent}2E 48%, rgba(255,255,255,0.06) 100%)`;
         buttonBorder = `${cat.accent}A8`;
         buttonShadow = `0 14px 30px ${cat.accent}30, 0 8px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.16)`;
@@ -358,8 +370,8 @@ function CategoryButton({ cat, isSelected, onClick }: { cat: DynamicCategory; is
                     zIndex: -1,
                     borderRadius: 999,
                     background: `linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.28) 42%, transparent 62%)`,
-                    opacity: isHover ? 0.82 : 0,
-                    transform: isHover ? 'translateX(48%) skewX(-18deg)' : 'translateX(-120%) skewX(-18deg)',
+                    opacity: effectiveHover ? 0.82 : 0,
+                    transform: effectiveHover ? 'translateX(48%) skewX(-18deg)' : 'translateX(-120%) skewX(-18deg)',
                     transition: 'transform .72s cubic-bezier(.19,1,.22,1), opacity .36s ease',
                 }}
             />
