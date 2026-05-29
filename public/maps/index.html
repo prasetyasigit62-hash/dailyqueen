@@ -2627,6 +2627,8 @@
       return tenantMap;
     }
 
+    let LIVE_API_DATA = { byId: {}, byName: {}, byFloor: { gf: [], '1f': [], '2f': [], '3f': [] } };
+
     async function loadTenantData() {
       try {
         const mapRes = await fetch('/maps/tenants-map-data.json');
@@ -2646,6 +2648,7 @@
         });
         if (apiRes.ok) {
           const api = await apiRes.json();
+          LIVE_API_DATA = api;
           mergeApiData(TENANTS_GF, api);
           mergeApiData(TENANTS_1F, api);
           mergeApiData(TENANTS_2F, api);
@@ -3250,35 +3253,61 @@
     const stripWrapEl = document.getElementById("tenantStripWrap");
     const stripCountEl = document.getElementById("tenantStripCount");
     const COLLAPSED_LIMIT = 18;
+    function findHotspotIdByName(name) {
+      if (!name) return null;
+      const key = name.toUpperCase().replace(/\s+/g, ' ').trim();
+      for (const [id, t] of Object.entries(TENANTS)) {
+        if (!t.name) continue;
+        const tKey = t.name.toUpperCase().replace(/\s+/g, ' ').trim();
+        if (tKey === key) return id;
+      }
+      return null;
+    }
+
     function renderTenantStrip() {
       const config = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["gf"];
       stripEl.replaceChildren();
       stripEl.classList.remove("expanded");
       if (stripToggleEl) stripToggleEl.textContent = "Show more";
 
-      const namedEntries = Object.entries(TENANTS).filter(([, t]) => t.name && t.name.trim());
+      // Source of truth: LIVE_API_DATA.byFloor[activeFloorId] (real-time from database)
+      // Fallback: TENANTS (from static JSON)
+      const liveList = (LIVE_API_DATA.byFloor && LIVE_API_DATA.byFloor[activeFloorId]) || [];
       const seen = new Set();
       const uniqueEntries = [];
-      namedEntries.forEach(entry => {
-        const key = entry[1].name.trim().toUpperCase();
-        if (seen.has(key)) return;
-        seen.add(key);
-        uniqueEntries.push(entry);
-      });
 
-      uniqueEntries.forEach(([id, t]) => {
-        const tenantName = t.name;
-        const hasHotspot = !config.hotspotIds || config.hotspotIds.includes(id);
+      if (liveList.length > 0) {
+        liveList.forEach(item => {
+          const name = (item.name || '').trim();
+          if (!name) return;
+          const key = name.toUpperCase();
+          if (seen.has(key)) return;
+          seen.add(key);
+          const hotspotId = findHotspotIdByName(name);
+          uniqueEntries.push({ id: hotspotId, name, apiId: item.id, cat: item.cat });
+        });
+      } else {
+        Object.entries(TENANTS).forEach(([id, t]) => {
+          if (!t.name || !t.name.trim()) return;
+          const key = t.name.trim().toUpperCase();
+          if (seen.has(key)) return;
+          seen.add(key);
+          uniqueEntries.push({ id, name: t.name, apiId: t.apiId, cat: t.cat });
+        });
+      }
+
+      uniqueEntries.forEach(item => {
+        const hasHotspot = item.id && (!config.hotspotIds || config.hotspotIds.includes(item.id));
         const chip = document.createElement("button");
         chip.className = "tenant-chip";
         if (!config.hasTenantHotspots || !hasHotspot) chip.classList.add("tenant-chip--static");
-        chip.textContent = tenantName;
-        chip.dataset.id = id;
-        chip.title = t.code ? `${t.code} · ${tenantName}` : tenantName;
+        chip.textContent = item.name;
+        if (item.id) chip.dataset.id = item.id;
+        chip.title = item.name;
         if (config.hasTenantHotspots && hasHotspot) {
           chip.onclick = () => {
-            selectTenant(id);
-            focusTenantOnMap(id);
+            selectTenant(item.id);
+            focusTenantOnMap(item.id);
           };
         }
         stripEl.appendChild(chip);

@@ -13,17 +13,28 @@ export async function GET() {
         );
 
         if (!res.ok) {
-            return NextResponse.json({ byId: {}, byName: {} }, { status: 502 });
+            return NextResponse.json({ byId: {}, byName: {}, byFloor: { gf: [], '1f': [], '2f': [], '3f': [] } }, { status: 502 });
         }
 
         const data = await res.json();
 
         // API structure: { data: { "Ground Floor": [{ tenant: [{id, nama, ...}] }] } }
-        // Build TWO indexes:
-        //   byId   — { "1290": { id, name, cat, floor } }  for direct lookup
-        //   byName — { "GION SUSHI": { id, name, cat, floor } }  for fallback matching
+        // Build indexes:
+        //   byId    — { "1290": { id, name, cat, floor } }  for direct lookup
+        //   byName  — { "GION SUSHI": { id, name, cat, floor } }  for fallback matching
+        //   byFloor — { "gf": [TenantInfo, ...], "1f": [...], ... }  live floor list
         const byId: Record<string, TenantInfo> = {};
         const byName: Record<string, TenantInfo> = {};
+        const byFloor: Record<string, TenantInfo[]> = { gf: [], '1f': [], '2f': [], '3f': [] };
+
+        const normalizeFloorKey = (label: string): string | null => {
+            const v = label.toLowerCase();
+            if (v.includes('ground') || v.includes('gf')) return 'gf';
+            if (v.includes('lantai 1') || v.includes('1st') || v.includes('first') || v === 'l1' || v === 'f1') return '1f';
+            if (v.includes('lantai 2') || v.includes('2nd') || v.includes('second') || v === 'l2' || v === 'f2') return '2f';
+            if (v.includes('lantai 3') || v.includes('3rd') || v.includes('third') || v === 'l3' || v === 'f3') return '3f';
+            return null;
+        };
 
         const root = data?.data ?? data;
 
@@ -43,6 +54,8 @@ export async function GET() {
                 byId[String(id)] = info;
                 const nameKey = name.toUpperCase().replace(/\s+/g, ' ').trim();
                 if (!byName[nameKey]) byName[nameKey] = info;
+                const floorKey = normalizeFloorKey(floorFromApi);
+                if (floorKey && byFloor[floorKey]) byFloor[floorKey].push(info);
             });
         };
 
@@ -62,7 +75,7 @@ export async function GET() {
             });
         }
 
-        return NextResponse.json({ byId, byName }, {
+        return NextResponse.json({ byId, byName, byFloor }, {
             headers: {
                 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
                 'Pragma': 'no-cache',
@@ -71,6 +84,6 @@ export async function GET() {
             },
         });
     } catch {
-        return NextResponse.json({ byId: {}, byName: {} }, { status: 200 });
+        return NextResponse.json({ byId: {}, byName: {}, byFloor: { gf: [], '1f': [], '2f': [], '3f': [] } }, { status: 200 });
     }
 }
