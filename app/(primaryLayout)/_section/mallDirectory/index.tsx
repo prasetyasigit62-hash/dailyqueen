@@ -22,6 +22,7 @@ type StoredMallDirectoryState = {
     activeFloor?: string | null;
     selectedTenantId?: string | number | null;
     selectedTenantName?: string | null;
+    fromMaps?: boolean | null;
     updatedAt?: number;
 };
 

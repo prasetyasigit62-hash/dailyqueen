@@ -2578,7 +2578,7 @@
         </div>
         <div class="info-cta">
           <button class="primary" id="navigateBtn" style="display:none;">Show Route</button>
-          <button class="secondary" style="flex:1;">View Details</button>
+          <button class="secondary" id="viewDetailsBtn" style="flex:1;">View Details</button>
         </div>
       </div>
     </div>
@@ -3013,6 +3013,28 @@
       const t = selectedId ? TENANTS[selectedId] : null;
       const floorConfig = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["1f"];
       if (selectedId && floorConfig.hasInteractiveMap && t?.door) drawPath(selectedId);
+    };
+
+    document.getElementById("viewDetailsBtn").onclick = () => {
+      const t = selectedId ? TENANTS[selectedId] : null;
+      if (!t || !t.name) return;
+      const floorIdMap = { gf: "gf", "1f": "f1", "2f": "f2", "3f": "f3" };
+      const targetFloor = floorIdMap[activeFloorId] || "f3";
+      try {
+        const parentWin = window.top || window.parent;
+        const storeKey = "queen-city:mall-directory:last-view";
+        const payload = {
+          activeFloor: targetFloor,
+          selectedTenantId: t.apiId || null,
+          selectedTenantName: t.name,
+          fromMaps: true,
+          updatedAt: Date.now(),
+        };
+        parentWin.sessionStorage.setItem(storeKey, JSON.stringify(payload));
+        parentWin.location.href = "/#mall-directory";
+      } catch (e) {
+        console.warn("[Maps] View Details navigation failed", e);
+      }
     };
 
     // ─── PATH DRAWING ────────────────────────────────────────

@@ -67,6 +67,7 @@ type StoredMallDirectoryState = {
     activeFloor?: string | null;
     selectedTenantId?: string | number | null;
     selectedTenantName?: string | null;
+    fromMaps?: boolean | null;
     updatedAt?: number;
 };
 
@@ -1190,12 +1191,14 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
             return;
         }
 
-        if (!isReloadNavigation()) {
+        const storedState = readStoredMallDirectoryState();
+        const cameFromMaps = Boolean(storedState?.fromMaps);
+
+        if (!isReloadNavigation() && !cameFromMaps) {
             setHasRestoredTenant(true);
             return;
         }
 
-        const storedState = readStoredMallDirectoryState();
         const storedTenantId = storedState?.selectedTenantId;
         const storedTenantName = storedState?.selectedTenantName?.toLowerCase();
 
@@ -1214,6 +1217,9 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
 
         if (restoredTenant) {
             setSelectedTenant(restoredTenant);
+            if (cameFromMaps) {
+                updateStoredMallDirectoryState({ fromMaps: null });
+            }
         }
 
         setHasRestoredTenant(true);

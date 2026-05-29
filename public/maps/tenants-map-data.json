@@ -1262,7 +1262,7 @@
     },
     "l3-h03": {
       "code": "L3-H03",
-      "name": "",
+      "name": "WAFFLELICIOUS",
       "cat": "Lantai 3",
       "door": [
         163,
@@ -1271,7 +1271,7 @@
     },
     "l3-h01": {
       "code": "L3-H01",
-      "name": "",
+      "name": "DAPUR GEPREK",
       "cat": "Lantai 3",
       "door": [
         107,
@@ -1280,7 +1280,7 @@
     },
     "l3-h05": {
       "code": "L3-H05",
-      "name": "",
+      "name": "GARDOE EXPRESS",
       "cat": "Lantai 3",
       "door": [
         181,
@@ -1289,7 +1289,7 @@
     },
     "l3-h04": {
       "code": "L3-H04",
-      "name": "",
+      "name": "SUTEKI",
       "cat": "Lantai 3",
       "door": [
         151,
@@ -1298,7 +1298,7 @@
     },
     "l3-h0607": {
       "code": "L3-H06&07",
-      "name": "",
+      "name": "PHOTOLOOKUP",
       "cat": "Lantai 3",
       "door": [
         287,
@@ -1307,7 +1307,7 @@
     },
     "l3-s11": {
       "code": "L3-S11",
-      "name": "",
+      "name": "BITES COIN",
       "cat": "Lantai 3",
       "door": [
         603,
@@ -1316,7 +1316,7 @@
     },
     "l3-s10": {
       "code": "L3-S10",
-      "name": "",
+      "name": "MAMATCHA",
       "cat": "Lantai 3",
       "door": [
         572,
@@ -1325,7 +1325,7 @@
     },
     "l3-s09": {
       "code": "L3-S09",
-      "name": "",
+      "name": "BLAZZ",
       "cat": "Lantai 3",
       "door": [
         540,
@@ -1334,7 +1334,7 @@
     },
     "l3-s08": {
       "code": "L3-S08",
-      "name": "",
+      "name": "BAKSO CHANDRA",
       "cat": "Lantai 3",
       "door": [
         469,
@@ -1361,7 +1361,7 @@
     },
     "l3-s05": {
       "code": "L3-S05",
-      "name": "",
+      "name": "TAUCY",
       "cat": "Lantai 3",
       "door": [
         363,
@@ -1370,7 +1370,7 @@
     },
     "l3-s04": {
       "code": "L3-S04",
-      "name": "",
+      "name": "HICARA X LAYAKNYA",
       "cat": "Lantai 3",
       "door": [
         326,
@@ -1379,7 +1379,7 @@
     },
     "l3-s03": {
       "code": "L3-S03",
-      "name": "",
+      "name": "PENTOL MONSTER",
       "cat": "Lantai 3",
       "door": [
         287,
@@ -1388,7 +1388,7 @@
     },
     "l3-s02": {
       "code": "L3-S02",
-      "name": "",
+      "name": "TIAN-TIAN POPPALICIOUS",
       "cat": "Lantai 3",
       "door": [
         248,
