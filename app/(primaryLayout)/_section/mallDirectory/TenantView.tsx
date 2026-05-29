@@ -1792,20 +1792,23 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                             width: 130px !important;
                         }
 
-                        /* Row 2: full-width floor pills */
+                        /* Row 2: compact centered floor pills */
                         .floor-banner-tabs {
                             position: static;
                             transform: none;
                             order: 3;
-                            width: 100%;
-                            justify-content: space-between;
-                            padding: 4px 4px;
+                            width: auto;
+                            max-width: 100%;
+                            margin: 0 auto;
+                            justify-content: center;
+                            padding: 3px 4px;
                             gap: 0;
                         }
                         .floor-banner-tab {
-                            flex: 1 1 0;
-                            padding: 8px 6px;
-                            font-size: 11.5px;
+                            flex: 0 0 auto;
+                            padding: 6px 12px;
+                            font-size: 10.5px;
+                            letter-spacing: 0.015em;
                             text-align: center;
                         }
                         .floor-banner-nav-arr {
@@ -1835,9 +1838,12 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                             font-size: 13px !important;
                         }
                         .floor-banner-tab {
-                            padding: 7px 4px;
-                            font-size: 10.5px;
+                            padding: 5px 9px;
+                            font-size: 9.5px;
                             letter-spacing: 0.01em;
+                        }
+                        .floor-banner-tabs {
+                            padding: 2px 3px;
                         }
                         .floor-banner-search .tenant-floor-search {
                             font-size: 12px !important;
