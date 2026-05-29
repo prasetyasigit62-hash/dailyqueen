@@ -270,7 +270,18 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
     };
 
     const openSearchResult = (tenant: TenantRecord) => {
-        openFloor(getFloorIdFromName(tenant.lantai?.nama));
+        const floorId = getFloorIdFromName(tenant.lantai?.nama);
+        updateStoredMallDirectoryState({
+            activeFloor: floorId,
+            selectedTenantId: tenant.id ?? null,
+            selectedTenantName: tenant.nama ?? null,
+            fromMaps: true,
+        });
+        setSearchQuery('');
+        setActiveFloor(floorId);
+        window.requestAnimationFrame(() => {
+            document.getElementById('mall-directory')?.scrollIntoView({ block: 'start' });
+        });
     };
 
     const submitSearch = (event: React.FormEvent<HTMLFormElement>) => {
