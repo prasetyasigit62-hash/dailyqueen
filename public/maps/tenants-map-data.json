@@ -1073,7 +1073,7 @@
     },
     "l3-0607": {
       "code": "L3-06&07",
-      "name": "TAWAN",
+      "name": "TA WAN",
       "cat": "Lantai 3",
       "door": [
         785,
@@ -1082,7 +1082,7 @@
     },
     "l3-08": {
       "code": "L3-08",
-      "name": "TEH JAWA RESTO",
+      "name": "TEH JAWA RESTAURANT",
       "cat": "Lantai 3",
       "door": [
         866,
@@ -1118,7 +1118,7 @@
     },
     "l3-10b": {
       "code": "L3-10B",
-      "name": "SHAKE SHAKE",
+      "name": "SHAKE SHAKE IN A TUB",
       "cat": "Lantai 3",
       "door": [
         916,
@@ -1127,7 +1127,7 @@
     },
     "l3-10a": {
       "code": "L3-10A",
-      "name": "D'CREPES",
+      "name": "DCREPES",
       "cat": "Lantai 3",
       "door": [
         887,
@@ -1145,7 +1145,7 @@
     },
     "l3-h17": {
       "code": "L3-H17",
-      "name": "MONTATO X DUMDUM",
+      "name": "MONTATO",
       "cat": "Lantai 3",
       "door": [
         653,
@@ -1154,7 +1154,7 @@
     },
     "l3-03": {
       "code": "L3-03",
-      "name": "ISTANA MIE & ES",
+      "name": "ISTANA MIE DAN ES",
       "cat": "Lantai 3",
       "door": [
         870,
@@ -1181,7 +1181,7 @@
     },
     "l3-02": {
       "code": "L3-02",
-      "name": "TONG TJI",
+      "name": "TONGTJI",
       "cat": "Lantai 3",
       "door": [
         950,
@@ -1199,7 +1199,7 @@
     },
     "l3-h15a": {
       "code": "L3-H15A",
-      "name": "JUSTFLUFF",
+      "name": "JUST FLUFF",
       "cat": "Lantai 3",
       "door": [
         594,
@@ -1208,7 +1208,7 @@
     },
     "l3-h14": {
       "code": "L3-H14",
-      "name": "BABAHKUNG",
+      "name": "KEDAI BABAH KUNG",
       "cat": "Lantai 3",
       "door": [
         554,
@@ -1235,7 +1235,7 @@
     },
     "l3-h10": {
       "code": "L3-H10",
-      "name": "GENDHIZ",
+      "name": "GEN-DHIZ",
       "cat": "Lantai 3",
       "door": [
         401,
@@ -1244,7 +1244,7 @@
     },
     "l3-h09": {
       "code": "L3-H09",
-      "name": "GENDHIZ",
+      "name": "GEN-DHIZ",
       "cat": "Lantai 3",
       "door": [
         368,
@@ -1262,7 +1262,7 @@
     },
     "l3-h03": {
       "code": "L3-H03",
-      "name": "WAFFLELICIOUS",
+      "name": "WAFFELICIOUS",
       "cat": "Lantai 3",
       "door": [
         163,
@@ -1280,7 +1280,7 @@
     },
     "l3-h05": {
       "code": "L3-H05",
-      "name": "GARDOE EXPRESS",
+      "name": "TEH GARDOE",
       "cat": "Lantai 3",
       "door": [
         181,
@@ -1298,7 +1298,7 @@
     },
     "l3-h0607": {
       "code": "L3-H06&07",
-      "name": "PHOTOLOOKUP",
+      "name": "PHOTO LOOK UP",
       "cat": "Lantai 3",
       "door": [
         287,
@@ -1307,7 +1307,7 @@
     },
     "l3-s11": {
       "code": "L3-S11",
-      "name": "BITES COIN",
+      "name": "BITE COIN",
       "cat": "Lantai 3",
       "door": [
         603,
@@ -1316,7 +1316,7 @@
     },
     "l3-s10": {
       "code": "L3-S10",
-      "name": "MAMATCHA",
+      "name": "MAMAMATCHA",
       "cat": "Lantai 3",
       "door": [
         572,
@@ -1334,7 +1334,7 @@
     },
     "l3-s08": {
       "code": "L3-S08",
-      "name": "BAKSO CHANDRA",
+      "name": "CHANDRA BAKSO SAPI ASLI",
       "cat": "Lantai 3",
       "door": [
         469,
@@ -1361,7 +1361,7 @@
     },
     "l3-s05": {
       "code": "L3-S05",
-      "name": "TAUCY",
+      "name": "TAUCI",
       "cat": "Lantai 3",
       "door": [
         363,
@@ -1370,7 +1370,7 @@
     },
     "l3-s04": {
       "code": "L3-S04",
-      "name": "HICARA X LAYAKNYA",
+      "name": "CHICARA",
       "cat": "Lantai 3",
       "door": [
         326,
@@ -1388,7 +1388,7 @@
     },
     "l3-s02": {
       "code": "L3-S02",
-      "name": "TIAN-TIAN POPPALICIOUS",
+      "name": "TIAN TIAN",
       "cat": "Lantai 3",
       "door": [
         248,

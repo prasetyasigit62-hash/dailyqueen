@@ -3296,38 +3296,20 @@
         });
       }
 
-      const floorIdMap = { gf: "gf", "1f": "f1", "2f": "f2", "3f": "f3" };
-      const targetFloorForDetail = floorIdMap[activeFloorId] || "gf";
-
       uniqueEntries.forEach(item => {
         const hasHotspot = item.id && (!config.hotspotIds || config.hotspotIds.includes(item.id));
         const chip = document.createElement("button");
         chip.className = "tenant-chip";
+        if (!config.hasTenantHotspots || !hasHotspot) chip.classList.add("tenant-chip--static");
         chip.textContent = item.name;
         if (item.id) chip.dataset.id = item.id;
         chip.title = item.name;
-        chip.onclick = () => {
-          if (config.hasTenantHotspots && hasHotspot) {
+        if (config.hasTenantHotspots && hasHotspot) {
+          chip.onclick = () => {
             selectTenant(item.id);
             focusTenantOnMap(item.id);
-          } else {
-            try {
-              const parentWin = window.top || window.parent;
-              const storeKey = "queen-city:mall-directory:last-view";
-              const payload = {
-                activeFloor: targetFloorForDetail,
-                selectedTenantId: item.apiId || null,
-                selectedTenantName: item.name,
-                fromMaps: true,
-                updatedAt: Date.now(),
-              };
-              parentWin.sessionStorage.setItem(storeKey, JSON.stringify(payload));
-              parentWin.location.href = "/#mall-directory";
-            } catch (e) {
-              console.warn("[Maps] Chip navigation failed", e);
-            }
-          }
-        };
+          };
+        }
         stripEl.appendChild(chip);
       });
 
