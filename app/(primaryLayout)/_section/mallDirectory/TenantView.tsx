@@ -1820,13 +1820,19 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         }
 
                         .floor-banner-bottom-block {
-                            padding: 0 20px 28px;
+                            padding: 0 20px 22px !important;
                         }
 
                         .floor-banner-bottom-inner {
                             flex-direction: column;
                             align-items: flex-start;
                             gap: 14px;
+                        }
+
+                        /* Push the kicker down so it doesn't crowd the floor pills above */
+                        .floor-banner-kicker {
+                            margin-top: 18px;
+                            margin-bottom: 10px;
                         }
 
                         .floor-banner-stats {
