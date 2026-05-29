@@ -905,7 +905,7 @@ export default function TenantDetailView({ tenant, onBack }: TenantDetailViewPro
                                         >
                                             <div className="tenant-detail-map-pin-label flex -translate-y-1 flex-col items-center">
                                                 <span className="whitespace-nowrap rounded-full border border-white/75 bg-white/70 px-1.5 py-[1.5px] text-[6.1px] font-black uppercase tracking-[0.012em] text-[#061a3c] shadow-[0_4px_10px_rgba(0,28,68,0.18)] backdrop-blur-[2px]">
-                                                    {tenant?.nama || mapTenantMarker?.label}
+                                                    {mapTenantMarker?.label}
                                                 </span>
                                                 <span className="tenant-detail-map-pin relative -mt-[1px] block h-[12px] w-[12px]" />
                                             </div>
