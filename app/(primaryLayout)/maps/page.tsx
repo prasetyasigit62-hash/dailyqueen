@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 
 export default function MapsPage() {
     const iframeRef = useRef<HTMLIFrameElement>(null);
-    const iframeSrc = useMemo(() => `/maps/index.html?v=${Date.now()}#mapWrap`, []);
+    // Static src — keeps server/client markup identical (no hydration mismatch, no iframe reload race).
+    // The iframe's own scripts fetch live data with cache: 'no-store', so cache-busting here is unnecessary.
+    const iframeSrc = '/maps/index.html#mapWrap';
 
     const focusMapArea = () => {
         window.setTimeout(() => {
