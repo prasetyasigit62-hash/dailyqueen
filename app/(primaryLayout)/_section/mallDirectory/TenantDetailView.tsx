@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { Floor } from '@/types/mallDirectoryInterface';
 import queenCityLogo from '@/public/logo_queencity_white.png';
 import srGroupLogo from '@/public/logo_srgroup_2026.png';
+import tenantsMapData from '@/public/maps/tenants-map-data.json';
 
 type TenantRecord = Floor['tenant'][number];
 
@@ -489,34 +490,23 @@ function getMapConfig(floorId: string): MapConfig {
     return ONE_F_MAP_CONFIG;
 }
 
-let API_ID_TO_SHAPE_ID: Record<string, string> | null = null;
-let apiIdMapPromise: Promise<Record<string, string>> | null = null;
-
-async function ensureApiIdMap(): Promise<Record<string, string>> {
-    if (API_ID_TO_SHAPE_ID) return API_ID_TO_SHAPE_ID;
-    if (apiIdMapPromise) return apiIdMapPromise;
-    apiIdMapPromise = fetch('/maps/tenants-map-data.json', { cache: 'no-store' })
-        .then((res) => (res.ok ? res.json() : {}))
-        .then((data: Record<string, Record<string, { apiId?: number | string }>>) => {
-            const map: Record<string, string> = {};
-            ['gf', '1f', '2f', '3f'].forEach((floor) => {
-                const entries = data[floor] || {};
-                Object.entries(entries).forEach(([shapeId, meta]) => {
-                    if (meta?.apiId) map[String(meta.apiId)] = shapeId;
-                });
-            });
-            API_ID_TO_SHAPE_ID = map;
-            return map;
-        })
-        .catch(() => ({}));
-    return apiIdMapPromise;
-}
+const API_ID_TO_SHAPE_ID: Record<string, string> = (() => {
+    const map: Record<string, string> = {};
+    const data = tenantsMapData as Record<string, Record<string, { apiId?: number | string }>>;
+    ['gf', '1f', '2f', '3f'].forEach((floor) => {
+        const entries = data[floor] || {};
+        Object.entries(entries).forEach(([shapeId, meta]) => {
+            if (meta?.apiId != null) map[String(meta.apiId)] = shapeId;
+        });
+    });
+    return map;
+})();
 
 function getMapTenantMarker(floorId: string, tenantName?: string, tenantApiId?: string | number | null) {
     const mapConfig = getMapConfig(floorId);
 
     // Priority 1: lookup by stable API id → shapeId (unaffected by name changes)
-    if (tenantApiId != null && API_ID_TO_SHAPE_ID) {
+    if (tenantApiId != null) {
         const shapeId = API_ID_TO_SHAPE_ID[String(tenantApiId)];
         if (shapeId) {
             const byShape = mapConfig.tenants.find((m) => m.shapeId === shapeId);
@@ -684,12 +674,6 @@ export default function TenantDetailView({ tenant, onBack }: TenantDetailViewPro
     const categoryLabel = tenant?.kategori?.nama || 'Tenant';
     const locationFloor = tenant?.lantai?.nama || floorVisual.label;
     const mallName = tenant?.lokasi?.nama_mall || 'Queen City Mall';
-    const [apiMapReady, setApiMapReady] = useState(Boolean(API_ID_TO_SHAPE_ID));
-    useEffect(() => {
-        if (!apiMapReady) {
-            ensureApiIdMap().then(() => setApiMapReady(true));
-        }
-    }, [apiMapReady]);
     const mapConfig = getMapConfig(floorId);
     const mapTenantMarker = getMapTenantMarker(floorId, tenant?.nama, tenant?.id);
     const mapMarkerPosition = getMapMarkerPosition(mapTenantMarker, mapConfig.size);
