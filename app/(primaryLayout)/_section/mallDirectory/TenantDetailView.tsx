@@ -489,10 +489,50 @@ function getMapConfig(floorId: string): MapConfig {
     return ONE_F_MAP_CONFIG;
 }
 
-function getMapTenantMarker(floorId: string, tenantName?: string) {
-    const normalizedTenantName = normalizeMapName(tenantName);
-    const compactTenantName = normalizedTenantName.replace(/\s+/g, '');
+let API_ID_TO_SHAPE_ID: Record<string, string> | null = null;
+let apiIdMapPromise: Promise<Record<string, string>> | null = null;
+
+async function ensureApiIdMap(): Promise<Record<string, string>> {
+    if (API_ID_TO_SHAPE_ID) return API_ID_TO_SHAPE_ID;
+    if (apiIdMapPromise) return apiIdMapPromise;
+    apiIdMapPromise = fetch('/maps/tenants-map-data.json', { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : {}))
+        .then((data: Record<string, Record<string, { apiId?: number | string }>>) => {
+            const map: Record<string, string> = {};
+            ['gf', '1f', '2f', '3f'].forEach((floor) => {
+                const entries = data[floor] || {};
+                Object.entries(entries).forEach(([shapeId, meta]) => {
+                    if (meta?.apiId) map[String(meta.apiId)] = shapeId;
+                });
+            });
+            API_ID_TO_SHAPE_ID = map;
+            return map;
+        })
+        .catch(() => ({}));
+    return apiIdMapPromise;
+}
+
+function getMapTenantMarker(floorId: string, tenantName?: string, tenantApiId?: string | number | null) {
     const mapConfig = getMapConfig(floorId);
+
+    // Priority 1: lookup by stable API id → shapeId (unaffected by name changes)
+    if (tenantApiId != null && API_ID_TO_SHAPE_ID) {
+        const shapeId = API_ID_TO_SHAPE_ID[String(tenantApiId)];
+        if (shapeId) {
+            const byShape = mapConfig.tenants.find((m) => m.shapeId === shapeId);
+            if (byShape) return byShape;
+            // Fallback: key-based lookup if shapeId not yet in marker config
+            const byKey = mapConfig.tenants.find((m) => m.keys.some((k) => normalizeMapName(k) === normalizeMapName(shapeId)));
+            if (byKey) return byKey;
+        }
+    }
+
+    // Priority 2: legacy name-based fuzzy match (fallback for tenants without apiId mapping)
+    const normalizedTenantName = normalizeMapName(tenantName);
+    if (normalizedTenantName.length < 3) {
+        return undefined;
+    }
+    const compactTenantName = normalizedTenantName.replace(/\s+/g, '');
 
     return mapConfig.tenants.find((mapTenant) =>
         mapTenant.keys.some((key) => {
@@ -644,8 +684,14 @@ export default function TenantDetailView({ tenant, onBack }: TenantDetailViewPro
     const categoryLabel = tenant?.kategori?.nama || 'Tenant';
     const locationFloor = tenant?.lantai?.nama || floorVisual.label;
     const mallName = tenant?.lokasi?.nama_mall || 'Queen City Mall';
+    const [apiMapReady, setApiMapReady] = useState(Boolean(API_ID_TO_SHAPE_ID));
+    useEffect(() => {
+        if (!apiMapReady) {
+            ensureApiIdMap().then(() => setApiMapReady(true));
+        }
+    }, [apiMapReady]);
     const mapConfig = getMapConfig(floorId);
-    const mapTenantMarker = getMapTenantMarker(floorId, tenant?.nama);
+    const mapTenantMarker = getMapTenantMarker(floorId, tenant?.nama, tenant?.id);
     const mapMarkerPosition = getMapMarkerPosition(mapTenantMarker, mapConfig.size);
     const mapTenantShape = getMapTenantShape(mapTenantMarker, mapConfig);
     const isGroundFloorMap = floorId === 'gf';
