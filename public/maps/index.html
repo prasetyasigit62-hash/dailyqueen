@@ -3364,6 +3364,8 @@
         chip.textContent = item.name;
         if (item.id) chip.dataset.id = item.id;
         chip.title = item.name;
+        // Re-apply .active state after rebuild (chips are recreated on every live refresh)
+        if (selectedId && item.id === selectedId) chip.classList.add("active");
         if (config.hasTenantHotspots && hasHotspot) {
           chip.onclick = () => {
             selectTenant(item.id);
