@@ -2993,19 +2993,10 @@
 
         hit.classList.toggle("active", isActive);
         if (isActive) {
-          const len = rim.getTotalLength();
-          rim.style.strokeDasharray = `${len}`;
-          rim.style.strokeDashoffset = `${len}`;
-          rim.getBoundingClientRect();
-          rim.style.transition = "stroke-dashoffset 3.8s ease-in-out, stroke .45s ease";
+          // Solid rim, persistent until another tenant is selected.
+          rim.style.transition = "stroke .45s ease";
+          rim.style.strokeDasharray = "none";
           rim.style.strokeDashoffset = "0";
-          window.setTimeout(() => {
-            if (!spot.classList.contains("active")) return;
-            rim.style.transition = "stroke .45s ease";
-            rim.style.removeProperty("stroke-dasharray");
-            rim.style.removeProperty("stroke-dashoffset");
-            if (!spot.querySelector(".tenant-runner")) startTenantRunner(spot, rim);
-          }, 3900);
         } else {
           rim.style.transition = "stroke .35s ease";
           rim.style.removeProperty("stroke-dasharray");
