@@ -2993,10 +2993,21 @@
 
         hit.classList.toggle("active", isActive);
         if (isActive) {
-          // Solid rim, persistent until another tenant is selected.
-          rim.style.transition = "stroke .45s ease";
-          rim.style.strokeDasharray = "none";
+          const len = rim.getTotalLength();
+          rim.style.strokeDasharray = `${len}`;
+          rim.style.strokeDashoffset = `${len}`;
+          rim.getBoundingClientRect();
+          rim.style.transition = "stroke-dashoffset 3.8s ease-in-out, stroke .45s ease";
           rim.style.strokeDashoffset = "0";
+          // After trace finishes: keep rim fully solid + start the moving white runner.
+          // Use explicit "none"/"0" instead of removeProperty so the rim stays visible permanently.
+          window.setTimeout(() => {
+            if (!spot.classList.contains("active")) return;
+            rim.style.transition = "stroke .45s ease";
+            rim.style.strokeDasharray = "none";
+            rim.style.strokeDashoffset = "0";
+            if (!spot.querySelector(".tenant-runner")) startTenantRunner(spot, rim);
+          }, 3850);
         } else {
           rim.style.transition = "stroke .35s ease";
           rim.style.removeProperty("stroke-dasharray");
