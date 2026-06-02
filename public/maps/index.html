@@ -3314,6 +3314,17 @@
       return null;
     }
 
+    // Stable lookup: map a tenant's API id → its shapeId (e.g. 1304 → "gf-spma1").
+    // Used because tenant names can change in the live DB; apiId is stable.
+    function findHotspotIdByApiId(apiId) {
+      if (apiId == null) return null;
+      const target = String(apiId);
+      for (const [id, t] of Object.entries(TENANTS)) {
+        if (t.apiId != null && String(t.apiId) === target) return id;
+      }
+      return null;
+    }
+
     function renderTenantStrip() {
       const config = FLOOR_CONFIG[activeFloorId] || FLOOR_CONFIG["gf"];
       stripEl.replaceChildren();
@@ -3332,7 +3343,8 @@
         const key = name.toUpperCase().replace(/\s+/g, ' ').trim();
         if (seen.has(key)) return;
         seen.add(key);
-        const hotspotId = findHotspotIdByName(name);
+        // Resolve hotspotId by apiId first (stable across name changes), fall back to name match.
+        const hotspotId = findHotspotIdByApiId(item.id) || findHotspotIdByName(name);
         uniqueEntries.push({ id: hotspotId, name, apiId: item.id, cat: item.cat });
       });
 
