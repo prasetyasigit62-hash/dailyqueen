@@ -2162,10 +2162,10 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                                     border: 'none',
                                     outline: 'none',
                                     color: '#fff',
-                                    // Match homepage Search style (capture 1): inherit default sans (Inter), italic
+                                    // Match homepage Search style (capture 1): upright sans (Inter), not italic
                                     fontSize: 15,
                                     fontWeight: 400,
-                                    fontStyle: 'italic',
+                                    fontStyle: 'normal',
                                     letterSpacing: '0.01em',
                                     width: isSearchFocused || tenantSearch ? 180 : 110,
                                     transition: 'width 0.45s cubic-bezier(0.2,0.8,0.2,1)',
