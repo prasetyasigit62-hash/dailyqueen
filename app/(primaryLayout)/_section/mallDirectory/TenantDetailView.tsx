@@ -859,7 +859,7 @@ export default function TenantDetailView({ tenant, onBack }: TenantDetailViewPro
                                         <IconPin />
                                     </span>
                                     <span>
-                                        {locationFloor} | {mallName}
+                                        {locationFloor}
                                     </span>
                                 </div>
 
