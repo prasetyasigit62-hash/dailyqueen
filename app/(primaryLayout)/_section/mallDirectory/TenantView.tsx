@@ -838,7 +838,7 @@ function FloorSwitcher({ active, onChange }: FloorSwitcherProps) {
         if (!activeTab || !container || !pill) return;
         const tabRect = activeTab.getBoundingClientRect();
         const contRect = container.getBoundingClientRect();
-        pill.style.left = `${tabRect.left - contRect.left}px`;
+        pill.style.left = `${tabRect.left - contRect.left - 6}px`;
         pill.style.width = `${tabRect.width}px`;
     }, [active]);
 
@@ -1288,7 +1288,7 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         display: flex;
                         align-items: center;
                         gap: 2px;
-                        padding: 4px 6px;
+                        padding: 4px 12px 4px 12px;
                         border-radius: 999px;
                         background: rgba(255, 255, 255, 0.07);
                         border: 1px solid rgba(255, 255, 255, 0.1);
