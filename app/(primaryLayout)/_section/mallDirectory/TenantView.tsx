@@ -838,7 +838,7 @@ function FloorSwitcher({ active, onChange }: FloorSwitcherProps) {
         if (!activeTab || !container || !pill) return;
         const tabRect = activeTab.getBoundingClientRect();
         const contRect = container.getBoundingClientRect();
-        pill.style.left = `${tabRect.left - contRect.left - 6}px`;
+        pill.style.left = `${tabRect.left - contRect.left}px`;
         pill.style.width = `${tabRect.width}px`;
     }, [active]);
 
