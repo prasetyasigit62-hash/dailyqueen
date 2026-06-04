@@ -1517,7 +1517,7 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
 
                     .tenant-floor-search::placeholder {
                         color: rgba(255, 255, 255, 0.85);
-                        font-style: italic;
+                        font-style: normal;
                         opacity: 1;
                     }
 
