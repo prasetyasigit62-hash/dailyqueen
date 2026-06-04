@@ -629,18 +629,6 @@ function TenantCard({ tenant, idx, onClick }: { tenant: TenantRecord; idx: numbe
                         >
                             {tenant.lantai?.nama || 'Location'}
                         </div>
-                        {tenant.lokasi?.nama_mall && (
-                            <div
-                                className="mall-directory-tenant-card-mall"
-                                style={{
-                                    fontFamily: T.sans,
-                                    fontSize: isLarge ? 13 : 11,
-                                    color: 'rgba(255,255,255,0.7)',
-                                }}
-                            >
-                                {tenant.lokasi.nama_mall}
-                            </div>
-                        )}
                     </div>
                 </div>
 
