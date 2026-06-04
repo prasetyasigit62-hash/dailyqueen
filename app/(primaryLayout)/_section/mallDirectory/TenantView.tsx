@@ -1349,9 +1349,11 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                         z-index: 1;
                         padding: 8px 18px;
                         border-radius: 999px;
-                        font-family: ${T.sans};
+                        /* Match homepage Search font (default Inter sans, upright) */
+                        font-family: inherit;
                         font-size: 12px;
                         font-weight: 600;
+                        font-style: normal;
                         letter-spacing: 0.02em;
                         color: rgba(255, 255, 255, 0.6);
                         white-space: nowrap;
