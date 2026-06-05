@@ -910,20 +910,27 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
     const [animatedTenantCount, setAnimatedTenantCount] = useState(0);
     const [animatedCategoryCount, setAnimatedCategoryCount] = useState(0);
     // Live mall-directory banner overrides — { gf: '/storage/...', f1: ..., ... }
+    // `coversLoaded` gates the background-image render to avoid the flash-old-then-swap-new flicker.
     const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
+    const [coversLoaded, setCoversLoaded] = useState(false);
     useEffect(() => {
         let cancelled = false;
         fetch(`/api/floor-covers?type=directory&_=${Date.now()}`, { cache: 'no-store' })
             .then((res) => (res.ok ? res.json() : null))
             .then((json) => {
-                if (cancelled || !json?.byKey) return;
-                const next: Record<string, string> = {};
-                Object.entries(json.byKey as Record<string, { image: string | null }>).forEach(([k, v]) => {
-                    if (v?.image) next[k] = v.image;
-                });
-                setCoverOverrides(next);
+                if (cancelled) return;
+                if (json?.byKey) {
+                    const next: Record<string, string> = {};
+                    Object.entries(json.byKey as Record<string, { image: string | null }>).forEach(([k, v]) => {
+                        if (v?.image) next[k] = v.image;
+                    });
+                    setCoverOverrides(next);
+                }
+                setCoversLoaded(true);
             })
-            .catch(() => {});
+            .catch(() => {
+                if (!cancelled) setCoversLoaded(true);
+            });
         return () => { cancelled = true; };
     }, []);
     const bannerRef = useRef<HTMLDivElement | null>(null);
@@ -1979,7 +1986,10 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                                     left: 0,
                                     width: '100%',
                                     height: bannerHeight,
-                                    backgroundImage: `url(${coverOverrides[floorItem.id] || floorItem.cover})`,
+                                    backgroundImage: coversLoaded
+                                        ? `url(${coverOverrides[floorItem.id] || floorItem.cover})`
+                                        : 'none',
+                                    backgroundColor: '#13091e',
                                     backgroundPosition: 'center',
                                     backgroundSize: 'cover',
                                     opacity: slideOpacity,

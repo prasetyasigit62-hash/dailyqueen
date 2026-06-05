@@ -208,7 +208,9 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [hasRestoredFloor, setHasRestoredFloor] = useState(false);
     // Live floor cover images from back-office (overrides defaults in floorDesign when present).
+    // `coversLoaded` gates the image render so we never flash the old static, then swap to the new one.
     const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
+    const [coversLoaded, setCoversLoaded] = useState(false);
 
     useEffect(() => {
         const storedActiveFloor = getStoredActiveFloor();
@@ -228,14 +230,19 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
         fetch(`/api/floor-covers?type=homepage&_=${Date.now()}`, { cache: 'no-store' })
             .then((res) => (res.ok ? res.json() : null))
             .then((json) => {
-                if (cancelled || !json?.byKey) return;
-                const next: Record<string, string> = {};
-                Object.entries(json.byKey as Record<string, { image: string | null }>).forEach(([key, val]) => {
-                    if (val?.image) next[key] = val.image;
-                });
-                setCoverOverrides(next);
+                if (cancelled) return;
+                if (json?.byKey) {
+                    const next: Record<string, string> = {};
+                    Object.entries(json.byKey as Record<string, { image: string | null }>).forEach(([key, val]) => {
+                        if (val?.image) next[key] = val.image;
+                    });
+                    setCoverOverrides(next);
+                }
+                setCoversLoaded(true);
             })
-            .catch(() => {});
+            .catch(() => {
+                if (!cancelled) setCoversLoaded(true);
+            });
         return () => { cancelled = true; };
     }, []);
 
@@ -478,15 +485,19 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                                         )}
                                         style={{ animationDelay: `${0.05 + index * 0.09}s` }}
                                     >
-                                        <Image
-                                            src={liveCover || design.image}
-                                            alt={design.label}
-                                            unoptimized={Boolean(liveCover)}
-                                            fill
-                                            sizes="(max-width: 1024px) 100vw, 25vw"
-                                            className="pointer-events-none object-cover transition duration-[1300ms] ease-out group-hover:scale-[1.08] group-hover:brightness-105"
-                                            priority={index === 0}
-                                        />
+                                        {coversLoaded ? (
+                                            <Image
+                                                src={liveCover || design.image}
+                                                alt={design.label}
+                                                unoptimized={Boolean(liveCover)}
+                                                fill
+                                                sizes="(max-width: 1024px) 100vw, 25vw"
+                                                className="pointer-events-none object-cover transition duration-[1300ms] ease-out group-hover:scale-[1.08] group-hover:brightness-105"
+                                                priority={index === 0}
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 bg-[#13091e]" />
+                                        )}
                                         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,transparent_35%,rgba(0,0,0,0.72)_100%)]" />
                                         <div className="pointer-events-none absolute inset-0 text-white">
                                             <div className="flex h-full items-end justify-center px-6 pb-[13%] transition duration-[420ms] ease-out group-hover:translate-y-3 group-hover:opacity-0">
