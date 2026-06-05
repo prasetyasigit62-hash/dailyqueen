@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import axios from 'axios';
 import fs from 'fs';
+import path from 'path';
 import fetchWithRetry from './api';
 
 async function downloadImage(url: string, imagePath: string) {
@@ -35,7 +36,9 @@ function getTimestampInSeconds() {
 export function resolveFaviconPath(): string {
     const timestamp = getTimestampInSeconds();
     try {
-        if (fs.existsSync(`./public/favicon-${timestamp}.png`)) {
+        // Resolve from CWD so it works in both `next dev` and the standalone prod build.
+        const file = path.join(process.cwd(), 'public', `favicon-${timestamp}.png`);
+        if (fs.existsSync(file)) {
             return `/favicon-${timestamp}.png`;
         }
     } catch {
@@ -88,7 +91,7 @@ export default async function getInfoMall() {
         }
 
         const timestamp = getTimestampInSeconds();
-        const faviconFile = `./public/favicon-${timestamp}.png`;
+        const faviconFile = path.join(process.cwd(), 'public', `favicon-${timestamp}.png`);
 
         // Skip image downloading during build/CI to avoid network failures and race conditions
         const isCI = process.env.CI || process.env.VERCEL;
