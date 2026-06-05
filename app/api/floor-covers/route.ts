@@ -7,9 +7,12 @@ export const dynamic = 'force-dynamic';
 // with the same { byKey: { gf, f1, f2, f3 } } shape.
 export async function GET(req: NextRequest) {
     const type = req.nextUrl.searchParams.get('type') === 'directory' ? 'directory' : 'homepage';
+    // Allow pointing this endpoint at a local Laravel during dev (e.g. 127.0.0.1:8000)
+    // without forcing the rest of the app off production. Unset in prod → falls back to HOST_API.
+    const baseUrl = process.env.FLOOR_COVERS_API_URL || process.env.HOST_API;
     try {
         const res = await fetchWithRetry(
-            `${process.env.HOST_API}/api/guest/floorCovers/${type}?_=${Date.now()}`,
+            `${baseUrl}/api/guest/floorCovers/${type}?_=${Date.now()}`,
             { cache: 'no-store' }
         );
         if (!res.ok) {
