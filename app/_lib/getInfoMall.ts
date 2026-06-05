@@ -29,6 +29,21 @@ function getTimestampInSeconds() {
     return new Date().setHours(0, 0, 0, 0);
 }
 
+// Resolve the favicon URL for <metadata>. Prefer today's downloaded favicon, but fall
+// back to the static /favicon.png if it hasn't been fetched yet — avoids the 404 that
+// happens when metadata renders before getInfoMall() has written today's file.
+export function resolveFaviconPath(): string {
+    const timestamp = getTimestampInSeconds();
+    try {
+        if (fs.existsSync(`./public/favicon-${timestamp}.png`)) {
+            return `/favicon-${timestamp}.png`;
+        }
+    } catch {
+        // ignore — fall through to static favicon
+    }
+    return '/favicon.png';
+}
+
 export default async function getInfoMall() {
     const defaultData = {
         data: {

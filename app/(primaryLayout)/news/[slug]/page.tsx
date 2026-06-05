@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { resolveFaviconPath } from '@/app/_lib/getInfoMall';
 import { sanitize } from 'isomorphic-dompurify';
 import { Metadata } from 'next';
 import Image from 'next/image';
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
             title: `${meta?.data?.title || 'News'} - ${process.env.MALL_NAME}`,
             description: meta?.data?.meta_description || '',
             icons: {
-                icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+                icon: resolveFaviconPath(),
             },
         };
     } catch (error) {
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
             title: `News - ${process.env.MALL_NAME}`,
             description: '',
             icons: {
-                icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+                icon: resolveFaviconPath(),
             },
         };
     }

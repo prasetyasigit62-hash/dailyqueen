@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { resolveFaviconPath } from '@/app/_lib/getInfoMall';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import getDataLoyalty from '@/app/_lib/getDataLoyalty';
@@ -12,7 +13,7 @@ import Tenant from './_section/tenant';
 export const metadata = {
     title: process.env.NAME_LOYALTY,
     icons: {
-        icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+        icon: resolveFaviconPath(),
     },
 };
 

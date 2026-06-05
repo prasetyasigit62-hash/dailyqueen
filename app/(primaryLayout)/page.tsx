@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { resolveFaviconPath } from '../_lib/getInfoMall';
 import getBanner from '../_lib/getBanner';
 import getDataLoyalty from '../_lib/getDataLoyalty';
 import getLatestNews from '../_lib/getLatestNews';
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
         google: process.env.GOOGLE_SITE_VERIFICATION,
     },
     icons: {
-        icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+        icon: resolveFaviconPath(),
     },
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { resolveFaviconPath } from '@/app/_lib/getInfoMall';
 import getBanner from '@/app/_lib/getBanner';
 import getEvents from '@/app/_lib/getEvents';
 // import getLatestNews from '@/app/_lib/getLatestNews';
@@ -9,7 +10,7 @@ import TopThree from './_section/TopThree';
 export const metadata = {
     title: `Schedule Event - ${process.env.MALL_NAME}`,
     icons: {
-        icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+        icon: resolveFaviconPath(),
     },
 };
 

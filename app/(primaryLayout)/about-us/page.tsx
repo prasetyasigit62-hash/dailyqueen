@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { resolveFaviconPath } from '@/app/_lib/getInfoMall';
 import getAboutUs from '@/app/_lib/getAboutUs';
 import { infoMallInterface } from '@/types/infoMallInterface';
 import AboutUsSection from './_section/aboutUsSection';
@@ -16,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
             title: `About Us - ${about.title} - ${process.env.MALL_NAME}`,
             description: about.meta_description,
             icons: {
-                icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+                icon: resolveFaviconPath(),
             },
         };
     } catch (error) {
@@ -26,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
             title: `About Us - ${process.env.MALL_NAME}`,
             description: '',
             icons: {
-                icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+                icon: resolveFaviconPath(),
             },
         };
     }

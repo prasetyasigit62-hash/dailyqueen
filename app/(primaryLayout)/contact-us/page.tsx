@@ -1,11 +1,12 @@
 import ContactForm from './_section/contactForm';
+import { resolveFaviconPath } from '@/app/_lib/getInfoMall';
 import HeroImage from './_section/heroImage';
 import { infoMallInterface } from '@/types/infoMallInterface';
 
 export const metadata = {
     title: `Contact Us - ${process.env.MALL_NAME}`,
     icons: {
-        icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+        icon: resolveFaviconPath(),
     },
 };
 

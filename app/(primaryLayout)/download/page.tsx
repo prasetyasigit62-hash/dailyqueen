@@ -1,10 +1,11 @@
 import Table from './_section/table';
+import { resolveFaviconPath } from '@/app/_lib/getInfoMall';
 import getDownload from '@/app/_lib/getDownload';
 
 export const metadata = {
     title: `Download - ${process.env.MALL_NAME}`,
     icons: {
-        icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+        icon: resolveFaviconPath(),
     },
 };
 

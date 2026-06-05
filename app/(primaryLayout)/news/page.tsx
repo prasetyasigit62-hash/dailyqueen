@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { resolveFaviconPath } from '@/app/_lib/getInfoMall';
 import React from 'react';
 import getNews from '@/app/_lib/getAllArticles';
 import getBanner from '@/app/_lib/getBanner';
@@ -15,7 +16,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
     title: `News - ${process.env.MALL_NAME}`,
     icons: {
-        icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+        icon: resolveFaviconPath(),
     },
 };
 

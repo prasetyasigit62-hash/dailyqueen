@@ -1,4 +1,5 @@
 import { sanitize } from 'isomorphic-dompurify';
+import { resolveFaviconPath } from '@/app/_lib/getInfoMall';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title: `${meta.segment} - ${process.env.MALL_NAME}`,
         description: meta.meta_description,
         icons: {
-            icon: `/favicon-${new Date().setHours(0, 0, 0, 0)}.png`,
+            icon: resolveFaviconPath(),
         },
     };
 }
