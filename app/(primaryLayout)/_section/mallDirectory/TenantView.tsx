@@ -909,6 +909,23 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
     const [isSweeping, setIsSweeping] = useState(false);
     const [animatedTenantCount, setAnimatedTenantCount] = useState(0);
     const [animatedCategoryCount, setAnimatedCategoryCount] = useState(0);
+    // Live mall-directory banner overrides — { gf: '/storage/...', f1: ..., ... }
+    const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
+    useEffect(() => {
+        let cancelled = false;
+        fetch(`/api/floor-covers?type=directory&_=${Date.now()}`, { cache: 'no-store' })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((json) => {
+                if (cancelled || !json?.byKey) return;
+                const next: Record<string, string> = {};
+                Object.entries(json.byKey as Record<string, { image: string | null }>).forEach(([k, v]) => {
+                    if (v?.image) next[k] = v.image;
+                });
+                setCoverOverrides(next);
+            })
+            .catch(() => {});
+        return () => { cancelled = true; };
+    }, []);
     const bannerRef = useRef<HTMLDivElement | null>(null);
     const floorCoverTimeoutRef = useRef<number | null>(null);
     const sweepTimeoutRef = useRef<number | null>(null);
@@ -1962,7 +1979,7 @@ export default function TenantView({ initialFloor, onClose, mallDirectory, initi
                                     left: 0,
                                     width: '100%',
                                     height: bannerHeight,
-                                    backgroundImage: `url(${floorItem.cover})`,
+                                    backgroundImage: `url(${coverOverrides[floorItem.id] || floorItem.cover})`,
                                     backgroundPosition: 'center',
                                     backgroundSize: 'cover',
                                     opacity: slideOpacity,

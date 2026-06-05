@@ -207,6 +207,8 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
     const [activeFloor, setActiveFloor] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [hasRestoredFloor, setHasRestoredFloor] = useState(false);
+    // Live floor cover images from back-office (overrides defaults in floorDesign when present).
+    const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>({});
 
     useEffect(() => {
         const storedActiveFloor = getStoredActiveFloor();
@@ -219,6 +221,22 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
         }
 
         setHasRestoredFloor(true);
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        fetch(`/api/floor-covers?type=homepage&_=${Date.now()}`, { cache: 'no-store' })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((json) => {
+                if (cancelled || !json?.byKey) return;
+                const next: Record<string, string> = {};
+                Object.entries(json.byKey as Record<string, { image: string | null }>).forEach(([key, val]) => {
+                    if (val?.image) next[key] = val.image;
+                });
+                setCoverOverrides(next);
+            })
+            .catch(() => {});
+        return () => { cancelled = true; };
     }, []);
 
     useEffect(() => {
@@ -438,6 +456,7 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                     <div className="grid grid-cols-2 gap-[8px] bg-[#0a0a0a] px-3 pb-4 md:grid-cols-2 md:gap-[10px] md:px-5 md:pb-5 lg:grid-cols-4">
                         {floorDesign.map((design, index) => {
                             const floorId = getFloorId(design.label);
+                            const liveCover = floorId ? coverOverrides[floorId] : undefined;
 
                             return (
                                 <div
@@ -460,8 +479,9 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                                         style={{ animationDelay: `${0.05 + index * 0.09}s` }}
                                     >
                                         <Image
-                                            src={design.image}
+                                            src={liveCover || design.image}
                                             alt={design.label}
+                                            unoptimized={Boolean(liveCover)}
                                             fill
                                             sizes="(max-width: 1024px) 100vw, 25vw"
                                             className="pointer-events-none object-cover transition duration-[1300ms] ease-out group-hover:scale-[1.08] group-hover:brightness-105"
