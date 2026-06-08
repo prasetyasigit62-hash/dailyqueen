@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import type { Floor } from '@/types/mallDirectoryInterface';
+import { formatFloorLabel } from '@/app/_lib/formatFloorLabel';
 import queenCityLogo from '@/public/logo_queencity_white.png';
 import srGroupLogo from '@/public/logo_srgroup_2026.png';
 import tenantsMapData from '@/public/maps/tenants-map-data.json';
@@ -672,7 +673,7 @@ export default function TenantDetailView({ tenant, onBack }: TenantDetailViewPro
     const floorVisual = FLOOR_VISUALS[floorId] || FLOOR_VISUALS.gf;
     const tenantImage = tenant?.gambarTenant || DEFAULT_TENANT_IMAGE;
     const categoryLabel = tenant?.kategori?.nama || 'Tenant';
-    const locationFloor = tenant?.lantai?.nama || floorVisual.label;
+    const locationFloor = formatFloorLabel(tenant?.lantai?.nama) || floorVisual.label;
     const mallName = tenant?.lokasi?.nama_mall || 'Queen City Mall';
     const mapConfig = getMapConfig(floorId);
     const mapTenantMarker = getMapTenantMarker(floorId, tenant?.nama, tenant?.id);

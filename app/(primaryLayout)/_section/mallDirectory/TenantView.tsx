@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Floor, mallDirectoryInterface } from '@/types/mallDirectoryInterface';
+import { formatFloorLabel } from '@/app/_lib/formatFloorLabel';
 import TenantDetailView from './TenantDetailView';
 
 const T = {
@@ -627,7 +628,7 @@ function TenantCard({ tenant, idx, onClick }: { tenant: TenantRecord; idx: numbe
                                 border: `1px solid ${T.accent}40`,
                             }}
                         >
-                            {tenant.lantai?.nama || 'Location'}
+                            {formatFloorLabel(tenant.lantai?.nama) || 'Location'}
                         </div>
                     </div>
                 </div>
