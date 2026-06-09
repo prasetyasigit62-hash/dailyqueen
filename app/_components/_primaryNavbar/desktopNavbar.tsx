@@ -15,6 +15,10 @@ interface navbarProps {
     logo: string;
 }
 
+// The Maps menu is a Queen City (MALL_ID=1) only feature for now. Read the public env so this
+// client component can gate it; other branches deploy with their own NEXT_PUBLIC_MALL_ID.
+const SHOW_MAPS = (process.env.NEXT_PUBLIC_MALL_ID || '1') === '1';
+
 function Navbar(props: navbarProps) {
     const { logo } = props;
     const [selectedItem, setSelectedItem] = useState(null);
@@ -147,11 +151,13 @@ function Navbar(props: navbarProps) {
                             About Us
                         </a>
                     </li>
-                    <li className="mx-4 text-lg py-3">
-                        <a href="/maps" className="text-[#29328d] hover:text-orange-400">
-                            Maps
-                        </a>
-                    </li>
+                    {SHOW_MAPS && (
+                        <li className="mx-4 text-lg py-3">
+                            <a href="/maps" className="text-[#29328d] hover:text-orange-400">
+                                Maps
+                            </a>
+                        </li>
+                    )}
                     <li className="mx-4 text-lg py-3">
                         <a href="/contact-us" className="text-[#29328d] hover:text-orange-400">
                             Contact Us

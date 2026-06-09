@@ -9,9 +9,14 @@ import getPromo from '../_lib/getPromo';
 import HeroImage from './_section/heroImage';
 import LatestNews from './_section/latestNews';
 import MallDirectory from './_section/mallDirectory';
+import LegacyMallDirectory from './_section/mallDirectory/LegacyMallDirectory';
 import QcLoyalty from './_section/qcLoyalty';
 
 export const dynamic = 'force-dynamic';
+
+// The redesigned mall directory + Maps menu are scoped to Queen City Mall (MALL_ID=1) only.
+// Other branches (Kediri/Lawu/Pacific) keep the legacy directory until there's a go-ahead.
+const IS_QUEEN_CITY = (process.env.MALL_ID || '1') === '1';
 
 export const metadata: Metadata = {
     verification: {
@@ -60,7 +65,7 @@ export default async function Home() {
     return (
         <div className="lg:pt-[7.9rem] pt-16">
             <HeroImage banner={banner} />
-            <MallDirectory mallDirectory={mallDirectory} />
+            {IS_QUEEN_CITY ? <MallDirectory mallDirectory={mallDirectory} /> : <LegacyMallDirectory mallDirectory={mallDirectory} />}
             <QcLoyalty promo={promo} aboutLoyalty={aboutLoyalty} />
             <LatestNews latestNews={latestNews} news={popularNews} />
         </div>

@@ -17,6 +17,9 @@ interface mobileNavbarProps {
     appstore: string;
 }
 
+// Maps menu is Queen City (MALL_ID=1) only for now; other branches set their own NEXT_PUBLIC_MALL_ID.
+const SHOW_MAPS = (process.env.NEXT_PUBLIC_MALL_ID || '1') === '1';
+
 function mobileNavbar(props: mobileNavbarProps) {
     const { logo, playstore, appstore } = props;
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -115,11 +118,13 @@ function mobileNavbar(props: mobileNavbarProps) {
                                 About Us
                             </a>
                         </li>
-                        <li className="border-b pb-3">
-                            <a href="/maps" className="text-[#29328d] hover:text-indigo-500 font-bold text-sm">
-                                Maps
-                            </a>
-                        </li>
+                        {SHOW_MAPS && (
+                            <li className="border-b pb-3">
+                                <a href="/maps" className="text-[#29328d] hover:text-indigo-500 font-bold text-sm">
+                                    Maps
+                                </a>
+                            </li>
+                        )}
                         <li className="border-b pb-3">
                             <a href="/contact-us" className="text-[#29328d] hover:text-indigo-500 font-bold text-sm">
                                 Contact Us
