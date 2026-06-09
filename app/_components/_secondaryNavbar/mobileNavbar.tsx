@@ -27,7 +27,7 @@ function MobileNavbar(props: mobileNavbarProps) {
                 <div className="w-full flex bg-[#b29130] justify-between p-4">
                     <div className="flex justify-center">
                         <Link href="/">
-                            <Image src={logo || fallbackLogo} width={140} height={40} className="h-auto" alt="Queen City" priority />
+                            <Image src={logo || fallbackLogo} width={0} height={0} sizes="200px" style={{ width: 140, height: 'auto' }} alt="Queen City" priority />
                         </Link>
                     </div>
                     {/* eslint-disable-next-line react/button-has-type */}

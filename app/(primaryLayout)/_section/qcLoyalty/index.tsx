@@ -31,7 +31,9 @@ export default function QcLoyalty({ promo, aboutLoyalty }: propsInterface) {
             </div>
             <div>
                 <Link href="/loyalty" className="text-blue-500">
-                    <Image src={aboutLoyalty.image} alt="hero image" height="0" width="0" sizes="100vw" className="w-full h-auto " />
+                    {aboutLoyalty.image && (
+                        <Image src={aboutLoyalty.image} alt="hero image" height={0} width={0} sizes="100vw" className="h-auto w-full" />
+                    )}
                 </Link>
             </div>
             <div className="w-full container mx-auto">

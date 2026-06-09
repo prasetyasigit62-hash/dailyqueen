@@ -48,7 +48,7 @@ function mobileNavbar(props: mobileNavbarProps) {
                 {/* Off-canvas button */}
                 <div className="w-full flex bg-white justify-between p-4">
                     <div className="flex justify-center">
-                        <Image src={logo || fallbackLogo} width={140} height={40} className="h-auto" alt="Queen City" priority />
+                        <Image src={logo || fallbackLogo} width={0} height={0} sizes="200px" style={{ width: 140, height: 'auto' }} alt="Queen City" priority />
                     </div>
                     {/* eslint-disable-next-line react/button-has-type */}
                     <button className="flex items-center justify-center w-6 h-6 text-gray-800" onClick={toggleMenu}>
@@ -71,7 +71,7 @@ function mobileNavbar(props: mobileNavbarProps) {
                 <div className="flex w-full justify-between p-4">
                     <div className="flex justify-center">
                         <Link href="/">
-                            <Image src={logo || fallbackLogo} className="h-auto" width={140} height={40} alt="Queen City" priority />
+                            <Image src={logo || fallbackLogo} width={0} height={0} sizes="200px" style={{ width: 140, height: 'auto' }} alt="Queen City" priority />
                         </Link>
                     </div>
                     {/* eslint-disable-next-line react/button-has-type */}

@@ -79,7 +79,7 @@ function Navbar(props: navbarProps) {
     return (
         <div className="navbar w-full bg-white pt-4 z-50">
             <div className="flex justify-center my-2">
-                <Image src={logo || fallbackLogo} className="h-auto" width={220} height={64} alt="Queen City" priority />
+                <Image src={logo || fallbackLogo} width={0} height={0} sizes="300px" style={{ width: 220, height: 'auto' }} alt="Queen City" priority />
             </div>
             <div className="menu container mx-auto">
                 <ul className="flex w-full justify-between font-bold items-center">

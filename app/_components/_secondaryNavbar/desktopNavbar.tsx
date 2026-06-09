@@ -14,7 +14,7 @@ function DesktopNavbar(props: navbarProps) {
         <div className="bg-[#b29130]">
             <div className="flex justify-center py-8">
                 <Link href="/">
-                    <Image src={logo || fallbackLogo} width={220} height={64} className="h-auto" alt="Queen City White" priority />
+                    <Image src={logo || fallbackLogo} width={0} height={0} sizes="300px" style={{ width: 220, height: 'auto' }} alt="Queen City White" priority />
                 </Link>
             </div>
             <nav className="bg-[#534a2b] w-100 rounded-t-3xl text-lg px-12">
