@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Floor, mallDirectoryInterface } from '@/types/mallDirectoryInterface';
+import { formatFloorLabel } from '@/app/_lib/formatFloorLabel';
 import TenantView, { FLOORS } from './TenantView';
 import mallDirectoryImage from '@/public/mall_directory.png';
 import qCimage from '@/public/qc_fromtop.jpg';
@@ -448,7 +449,7 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                                             >
                                                 <span className="block text-[13px] font-semibold text-white">{tenant.nama}</span>
                                                 <span className="mt-1 block text-[11px] text-white/58">
-                                                    {tenant.lantai?.nama || 'Floor'} · {tenant.kategori?.nama || 'Tenant'}
+                                                    {formatFloorLabel(tenant.lantai?.nama) || 'Floor'} · {tenant.kategori?.nama || 'Tenant'}
                                                 </span>
                                             </button>
                                         ))
