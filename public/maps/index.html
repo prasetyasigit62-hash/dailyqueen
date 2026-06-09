@@ -2631,6 +2631,40 @@
 
     let LIVE_API_DATA = { byId: {}, byName: {}, byFloor: { gf: [], '1f': [], '2f': [], '3f': [] } };
 
+    // Admin-managed unit → tenant assignments from the back office (keyed by UPPERCASE unit code).
+    // { "GF-SPM03": { floorKey, idTenant } }. Applying this sets each unit's apiId so mergeApiData()
+    // can pull the live tenant name — letting admins fill empty units just by assigning a tenant.
+    let UNIT_MAPPING = {};
+
+    function applyUnitMapping(tenantMap) {
+      if (!UNIT_MAPPING || !tenantMap) return tenantMap;
+      Object.values(tenantMap).forEach(t => {
+        const code = (t.code || '').toUpperCase();
+        const m = UNIT_MAPPING[code];
+        if (!m) return;
+        if (m.idTenant) {
+          t.apiId = m.idTenant;          // mergeApiData will resolve the live name from this
+        } else {
+          // Admin explicitly cleared this unit → treat as vacant.
+          t.apiId = null;
+          t.name = '';
+          t.desc = '';
+        }
+      });
+      return tenantMap;
+    }
+
+    async function loadUnitMapping() {
+      try {
+        const res = await fetch('/api/map-units?_=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return;
+        const json = await res.json();
+        UNIT_MAPPING = json && json.byUnitCode ? json.byUnitCode : {};
+      } catch (e) {
+        console.warn('[Maps] Unit mapping load failed', e);
+      }
+    }
+
     async function loadTenantData() {
       try {
         const mapRes = await fetch('/maps/tenants-map-data.json');
@@ -2642,6 +2676,13 @@
       } catch (e) {
         console.warn('[Maps] Tenant data load failed, using empty fallback', e);
       }
+
+      // Pull admin unit→tenant assignments and apply them (sets apiId) BEFORE merging live names.
+      await loadUnitMapping();
+      applyUnitMapping(TENANTS_GF);
+      applyUnitMapping(TENANTS_1F);
+      applyUnitMapping(TENANTS_2F);
+      applyUnitMapping(TENANTS_3F);
 
       try {
         const apiRes = await fetch('/api/maps-tenants?_=' + Date.now(), {
@@ -2681,6 +2722,12 @@
         if (!apiRes.ok) return;
         const api = await apiRes.json();
         LIVE_API_DATA = api;
+        // Re-pull admin assignments too so newly-assigned units appear without a full reload.
+        await loadUnitMapping();
+        applyUnitMapping(TENANTS_GF);
+        applyUnitMapping(TENANTS_1F);
+        applyUnitMapping(TENANTS_2F);
+        applyUnitMapping(TENANTS_3F);
         mergeApiData(TENANTS_GF, api);
         mergeApiData(TENANTS_1F, api);
         mergeApiData(TENANTS_2F, api);
