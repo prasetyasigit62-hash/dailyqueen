@@ -180,7 +180,7 @@ function FloorDivider() {
             aria-hidden="true"
             viewBox="0 0 220 8"
             preserveAspectRatio="none"
-            className="mt-[3px] block h-[6px] w-[190px] max-w-full self-center overflow-visible"
+            className="mt-[3px] block h-[6px] w-[120px] max-w-[78%] self-center overflow-visible md:w-[190px] md:max-w-full"
         >
             <defs>
                 <linearGradient id="floorTitleUnderline" x1="0" y1="0" x2="1" y2="0">
@@ -501,7 +501,7 @@ export default function MallDirectory({ mallDirectory }: mallDirectoryProps) {
                                         )}
                                         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,transparent_35%,rgba(0,0,0,0.72)_100%)]" />
                                         <div className="pointer-events-none absolute inset-0 text-white">
-                                            <div className="flex h-full items-end justify-center px-6 pb-[13%] transition duration-[420ms] ease-out group-hover:translate-y-3 group-hover:opacity-0">
+                                            <div className="flex h-full items-end justify-center px-6 pb-[18%] transition duration-[420ms] ease-out group-hover:translate-y-3 group-hover:opacity-0 md:pb-[13%]">
                                                 <div className="flex w-full flex-col items-center">
                                                     {renderFloorTitle(design.label, 'default')}
                                                     <FloorDivider />
