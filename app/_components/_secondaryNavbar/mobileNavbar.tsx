@@ -5,6 +5,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import Playstore from '@/public/play_store.png';
 import Appstore from '@/public/app_store.png';
+import fallbackLogo from '@/public/logo_queencity_white.png';
 
 interface mobileNavbarProps {
     logo: string;
@@ -26,7 +27,7 @@ function MobileNavbar(props: mobileNavbarProps) {
                 <div className="w-full flex bg-[#b29130] justify-between p-4">
                     <div className="flex justify-center">
                         <Link href="/">
-                            <Image src={logo} width={140} height="0" className="h-auto" alt="Queen City" priority />
+                            <Image src={logo || fallbackLogo} width={140} height={40} className="h-auto" alt="Queen City" priority />
                         </Link>
                     </div>
                     {/* eslint-disable-next-line react/button-has-type */}

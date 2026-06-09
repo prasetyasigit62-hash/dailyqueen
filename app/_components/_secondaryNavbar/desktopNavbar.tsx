@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import fallbackLogo from '@/public/logo_queencity_white.png';
 
 interface navbarProps {
     logo: string;
@@ -13,7 +14,7 @@ function DesktopNavbar(props: navbarProps) {
         <div className="bg-[#b29130]">
             <div className="flex justify-center py-8">
                 <Link href="/">
-                    <Image src={logo} width={220} height="0" className="h-auto" alt="Queen City White" priority />
+                    <Image src={logo || fallbackLogo} width={220} height={64} className="h-auto" alt="Queen City White" priority />
                 </Link>
             </div>
             <nav className="bg-[#534a2b] w-100 rounded-t-3xl text-lg px-12">

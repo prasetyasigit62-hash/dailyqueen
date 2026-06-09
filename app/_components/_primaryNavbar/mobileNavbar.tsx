@@ -10,6 +10,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import Playstore from '@/public/play_store.png';
 import Appstore from '@/public/app_store.png';
+import fallbackLogo from '@/public/logo_queencity.png';
 
 interface mobileNavbarProps {
     logo: string;
@@ -47,7 +48,7 @@ function mobileNavbar(props: mobileNavbarProps) {
                 {/* Off-canvas button */}
                 <div className="w-full flex bg-white justify-between p-4">
                     <div className="flex justify-center">
-                        <Image src={logo} width={140} height="0" className="h-auto" alt="Queen City" priority />
+                        <Image src={logo || fallbackLogo} width={140} height={40} className="h-auto" alt="Queen City" priority />
                     </div>
                     {/* eslint-disable-next-line react/button-has-type */}
                     <button className="flex items-center justify-center w-6 h-6 text-gray-800" onClick={toggleMenu}>
@@ -70,7 +71,7 @@ function mobileNavbar(props: mobileNavbarProps) {
                 <div className="flex w-full justify-between p-4">
                     <div className="flex justify-center">
                         <Link href="/">
-                            <Image src={logo} className="h-auto" width={140} height={40} alt="Queen City" priority />
+                            <Image src={logo || fallbackLogo} className="h-auto" width={140} height={40} alt="Queen City" priority />
                         </Link>
                     </div>
                     {/* eslint-disable-next-line react/button-has-type */}

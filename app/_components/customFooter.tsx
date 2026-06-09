@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import appstore from '@/public/app_store.png';
 import playstore from '@/public/play_store.png';
+import fallbackLogo from '@/public/logo_queencity_white.png';
 import { infoMallInterface } from '@/types/infoMallInterface';
 
 interface propsColor extends infoMallInterface {
@@ -27,7 +28,7 @@ function CustomFooter(props: propsColor) {
                 <div className="flex justify-center px-3">
                     <div className="w-[500px] h-auto">
                         {/* eslint-disable-next-line camelcase */}
-                        <Image alt="queen city footer" src={logo_footer} width="0" height="0" sizes="100vw" className="w-full h-auto" />
+                        <Image alt="queen city footer" src={logo_footer || fallbackLogo} width="0" height="0" sizes="100vw" className="w-full h-auto" />
                     </div>
                 </div>
                 <div className="mt-8 text-sm md:text-base">

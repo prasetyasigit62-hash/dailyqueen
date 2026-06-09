@@ -31,11 +31,13 @@ export default function HeroImage({ banner }: bannerInterface) {
                 modules={[Autoplay, Pagination, Navigation, Keyboard]}
                 className="bannerSwiper"
             >
-                {banner.map((item) => (
-                    <SwiperSlide key={item.id}>
-                        <Image src={item.image} alt={item.title} width="0" height="0" sizes="100vw" className="w-full h-auto" priority />
-                    </SwiperSlide>
-                ))}
+                {banner
+                    .filter((item) => Boolean(item.image)) // skip empty src to avoid Next preload error
+                    .map((item) => (
+                        <SwiperSlide key={item.id}>
+                            <Image src={item.image} alt={item.title} width="0" height="0" sizes="100vw" className="w-full h-auto" priority />
+                        </SwiperSlide>
+                    ))}
             </Swiper>
         </section>
     );

@@ -68,7 +68,7 @@ export default function Promo({ className, promo }: propsInterface) {
                                     </div>
                                 </div>
                                 <div className="lg:basis-1/2">
-                                    <Image src={item.image} className="rounded-xl w-auto" alt="tenant" width={200} height={200} />
+                                    {item.image && <Image src={item.image} className="rounded-xl w-auto" alt="tenant" width={200} height={200} />}
                                     <div className="lg:basis-1/2 items-center block lg:hidden my-3">
                                         <p className="text-gray-500 leading-tight text-sm">{item.simpleDescription}</p>
                                         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
