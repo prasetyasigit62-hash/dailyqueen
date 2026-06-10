@@ -5,6 +5,21 @@
  * Optimized to be less noisy in Vercel logs and handle network errors.
  */
 
+// HOST_API (mysrland.id) publishes an AAAA (IPv6) record that is NOT actually reachable —
+// the server only answers on IPv4. Node 18+/Vercel prefer IPv6 by default, so server-side
+// fetches hang on the dead IPv6 address and the whole homepage renders empty. Forcing the
+// DNS resolver to return IPv4 first makes fetch use the address that actually works.
+// (No effect in the browser, where `dns` is unavailable — it's wrapped in a guard.)
+try {
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    const dns = require('dns');
+    if (dns && typeof dns.setDefaultResultOrder === 'function') {
+        dns.setDefaultResultOrder('ipv4first');
+    }
+} catch {
+    // Browser / edge runtime: no dns module. Safe to ignore.
+}
+
 const fetchWithRetry = async (url: string, options: any = {}, attempt: number = 0): Promise<Response> => {
     const { timeout = 15000, retries = 3, ...fetchOptions } = options;
 
