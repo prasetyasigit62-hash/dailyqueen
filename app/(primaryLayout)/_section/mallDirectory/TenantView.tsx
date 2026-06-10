@@ -774,7 +774,19 @@ function groupTenantsByCategory(tenants: TenantRecord[]) {
         });
     });
 
-    return Array.from(groupedCategories.values());
+    // Merge groups whose labels are identical or effectively the same (typos, plural variants)
+    // to prevent duplicates when admins create a category with a name that already exists.
+    const merged: TenantCategoryGroup[] = [];
+    for (const group of Array.from(groupedCategories.values())) {
+        const match = merged.find((m) => areCategoryLabelsRelated(m.label, group.label));
+        if (match) {
+            match.tenants.push(...group.tenants);
+        } else {
+            merged.push({ ...group, tenants: [...group.tenants] });
+        }
+    }
+
+    return merged;
 }
 
 function buildDynamicCategories(floorTenants: TenantRecord[], floorSections: Floor[]) {
